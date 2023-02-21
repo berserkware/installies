@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Create an App{% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="/static/css/create_app.css">
+{% endblock %}
+
+
+{% block body %}
+<div class="container black create-app-container">
+    <h2 class="container-header">Create an App</h2>
+    <hr class="breakline">
+    
+    <form class="create-app-form" action="/createapp" method="post">
+        <div class="form-input-container">
+            <label for="app-name" >App Name</label><br>
+            <input type="text" name="app-name" class="textbox create-app-textbox" required><br>
+        </div>
+        
+        <div class="form-input-container">
+            <label for="app-desc" >Description</label><br>
+            <textarea name="app-desc" class="textbox create-app-textbox" cols="30" rows="6"></textarea>
+        </div>
+        
+        <div class="form-input-container">
+            <input type="submit" value="Submit" class="button create-app-submit">
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,208 @@
+@font-face {
+    font-family: "Assurant Standard";
+    src: url("/static/fonts/Assurant-Standard.otf");
+}
+
+@font-face {
+    font-family: "Inter Light";
+    src: url("/static/fonts/Inter-Light.ttf");
+}
+
+@font-face {
+    font-family: "Inter Medium";
+    src: url("/static/fonts/Inter-Medium.ttf");
+}
+
+@font-face {
+    font-family: "Inter Regular";
+    src: url("/static/fonts/Inter-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Inter Bold";
+    src: url("/static/fonts/Inter-Bold.ttf");
+}
+
+:root {
+    --black: #161616;
+    --dark-grey: #222222;
+    --grey: #5e5e5e;
+    --light-grey: #c5c5c5;
+    --off-white: #e5e5e5;
+    --red: #fc3a3a;
+    --green: #5bf24d;
+    --blue: #014fb5;
+}
+
+body {
+    text-align: center;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    width: 60%;
+    margin: auto;
+    background-color: var(--dark-grey);
+    color: white;
+    font-family: Inter Regular;
+}
+
+h1, h2, h3 {
+    font-family: Inter Bold;
+}
+
+p {
+    text-align: left;
+    margin: auto;
+    margin-top: 10px;
+    color: var(--light-grey);
+}
+
+a {
+    color: var(--blue);
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.white-link {
+    color: var(--off-white);
+}
+
+.white-link:hover {
+    color: white;
+}
+
+input, textarea {
+    background-color: var(--dark-grey);
+    color: var(--off-white);
+    border-color: var(--grey);
+    border-radius: 0px;
+    border-width: 1px;
+    border-style: solid;
+    font-family: Inter Regular;
+    vertical-align: middle;
+    font-size: 16px;
+    padding: 5px;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--light-grey);
+}
+
+input[type=submit] {
+    background-color: var(--dark-grey);
+    color: var(--off-white);
+    border-color: var(--grey);
+    border-radius: 0px;
+    border-width: 1px;
+    border-style: solid;
+    font-family: Inter Regular;
+    vertical-align: middle;
+    padding: 0;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+input[type=submit]:hover {
+    background-color: var(--black);
+}
+
+hr {
+    color: var(--grey);
+    border-style: solid;
+}
+
+th {
+    font-family: Inter Bold;
+}
+
+.value-cell {
+    font-family: Inter Regular;
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.container {
+    width: 70%;
+    margin: auto;
+    text-align: left;
+    padding: 10px;
+}
+
+.container-header {
+    text-align: left;
+    margin: auto;
+    margin-bottom: 0;
+}
+
+.error-container {
+    color: var(--red);
+}
+
+.error-container hr {
+    border-color: var(--red);
+}
+
+.error-container .container-description {
+    color: var(--red);
+}
+
+.success-container {
+    color: var(--green);
+}
+
+.success-container hr {
+    border-color: var(--green);
+}
+
+
+.black  {
+    background-color: var(--black);
+}
+
+.form-input-container {
+    margin-top: 10px;
+}
+
+.logo-header {
+    text-align: left;
+    font-family: Assurant Standard;
+    letter-spacing: 2px;
+    font-size: 50px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.nav-link-group {
+    float: left;
+}
+
+.nav-link .nav-search {
+    display: inline-block;
+}
+
+.nav-link {
+    margin-right: 10px;
+}
+
+.nav-search {
+    display: inline;
+    float: right;
+}
+
+.searchbox {
+    font-size: 15px;
+    height: 10px;
+    vertical-align: middle;
+    background-color: var(--black);
+}
+
+.searchbutton {
+    font-size: 15px;
+    height: 22px;
+    vertical-align: middle;
+}

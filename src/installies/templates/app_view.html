@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{{ app.name }}{% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="/static/css/app_view.css">
+{% endblock %}
+
+{% block body %}
+    <div class="container app-view-container">
+        <h2 class="app-name container-header">{{ app.name }}</h2>
+        
+        <hr class="breakline">
+        
+        <table>
+            <tr>
+                <th>Author:</th>
+                <th class="value-cell"><a class="link" href="{{ url_for("auth.profile", username=app.author.username) }}">{{ app.author.username }}</a></th>
+            </tr>
+            <tr>
+                <th>Creation Date:</th>
+                <th class="value-cell">{{ app.creation_date.day }}-{{app.creation_date.month}}-{{app.creation_date.year}}</th>
+            </tr>
+            <tr>
+                <th>Description:</th>
+                <th class="value-cell">{{ app.description }}</th>
+            </tr>
+        </table>
+    </div>
+{% endblock %}

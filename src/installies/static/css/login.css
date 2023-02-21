@@ -1,0 +1,21 @@
+.login-container  {
+    text-align: left;
+    margin: auto;
+    width: 40%;
+}
+
+.login-textbox {
+    margin-top: 5px;
+    width: 300px;
+}
+
+.login-submit {
+    font-size: 15px;
+    display: inline;
+}
+
+.signup-text {
+    color: var(--grey);
+    margin-top: 10px;
+    margin-bottom: 0;
+}

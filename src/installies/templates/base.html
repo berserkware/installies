@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=yes">
+    <title>{% block title %}{% endblock %} - Installies</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    {% block header %}
+    {% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <h1 class="logo-header">
+            <a class="white-link" href="/">installies</a>
+        </h1>
+        
+        </div class="nav-menu">
+            <div class="nav-link-group">
+                <a class="white-link nav-link" href="/">Home</a>
+                <a class="white-link nav-link" href="/createapp">Create an App</a>
+                {% if g.is_authed == True %}
+                    <a class="white-link nav-link" href="/profile/{{ g.user.username }}">Profile</a>
+                    <a class="white-link nav-link" href="/logout">Logout</a>
+                {% else %}
+                    <a class="white-link nav-link" href="/login">Log In</a>
+                    <a class="white-link nav-link" href="/signup">Sign Up</a>
+                {% endif %}
+            </div>
+            
+            <form action="/search" method="get" class="nav-search">
+                <input type="text" name="k" placeholder="Search an App..." class="searchbox black">
+                <input type="submit" value="Search" class="searchbutton">
+            </form>
+        </div>
+        
+        <br>
+        <hr>
+    </nav>
+    
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+    {% if errors %}
+        {% for msg in errors %}
+            <div class="container error-container">
+                <h3 class="container-header">Error!</h3>
+                <hr>
+                <p class="container-description">{{ msg }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    
+    {% with errors = get_flashed_messages(category_filter=["success"]) %}
+    {% if errors %}
+        {% for msg in errors %}
+            <div class="container success-container">
+                <h3 class="container-header">Error!</h3>
+                <hr class="breakline">
+                <p class="container-description">{{ msg }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% block body %}
+    {% endblock %}
+    </div>
+</body>
+</html>

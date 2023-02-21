@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ username }}'s Profile{% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="/static/css/profile.css">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h2 class="container-header">{{ username }}'s Profile</h2>
+        <hr class="breakline">
+        
+        <table>
+            <tr>
+                <th>Join Date:</th>
+                <th class="value-cell">{{ day_joined }} {{ month_joined }}, {{ year_joined }}</th>
+            </tr>
+        </table>
+    </div>
+{% endblock %}

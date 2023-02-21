@@ -1,0 +1,12 @@
+.create-app-textbox {
+    margin-top: 5px;
+}
+
+.create-app-container {
+    width: 50%;
+}
+
+.create-app-submit {
+    font-size: 15px;
+    display: inline;
+}

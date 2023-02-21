@@ -1,0 +1,30 @@
+.colour-blue {
+    background-color: #c7e0e4;
+}
+
+.colour-green {
+    background-color: #c5e2d3;
+}
+
+.colour-mid-green {
+    background-color: #8bfc71;
+}
+
+.colour-purple {
+    background-color: #f2d0f1;
+}
+
+.colour-red {
+    background-color: #fc7b7b;
+}
+
+.colour-yellow {
+    background-color: #dbbe02;
+}
+
+.shadow-box {
+    width: 100%;
+    margin: auto;
+    box-shadow: 0px 5px 5px #7a7a7a;
+    margin-top: 20px;
+}

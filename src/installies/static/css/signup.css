@@ -1,0 +1,21 @@
+.signup-container  {
+    text-align: left;
+    margin: auto;
+    width: 40%;
+}
+
+.signup-textbox {
+    margin-top: 5px;
+    width: 300px;
+}
+
+.signup-submit {
+    font-size: 15px;
+    display: inline;
+}
+
+.signup-text {
+    color: var(--grey);
+    margin-top: 10px;
+    margin-bottom: 0;
+}
