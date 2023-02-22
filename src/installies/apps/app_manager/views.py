@@ -64,7 +64,7 @@ def createapp():
         # adds the app to the database, and gets its id
         app.save()
 
-        return redirect(url_for('app_view', app.slug))
+        return redirect(url_for('app_view', slug=app.slug))
 
     return render_template('create_app.html')
 

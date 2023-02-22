@@ -1,7 +1,7 @@
 import bleach
 
 from flask import Blueprint, render_template, redirect, abort, request, g, flash
-from installies.lib.validate import (
+from installies.apps.auth.validate import (
     PasswordValidator,
     UsernameValidator,
     EmailValidator,
@@ -63,6 +63,7 @@ def signup():
         # If success, return response with cookie
         res = redirect('/')
         res.set_cookie('user-token', new_user.token)
+        flash('Account successfully created.')
         return res
     else:
         return render_template('signup.html')
@@ -87,20 +88,22 @@ def login():
             flash('You need to supply a password.', 'error')
             return render_template('login.html')
 
-        # Makes sure user exists with the username
-        if check_username_exists(username) == False:
+        user = User.select().where(User.username == username)
+        
+        if user.exists() is False:
             flash('Could not find a user with that username.', 'error')
             return render_template('login.html')
 
-        user = User.get(User.username == username)
+        user = user.get()
 
         # Checks password is correct
         if user.match_password(password) is False:
-            flash('Password is incorrect', 'error')
+            flash('Password is incorrect.', 'error')
             return render_template('login.html')
 
         res = redirect('/')
         res.set_cookie('user-token', user.token)
+        flash('You are now logged in.', 'success')
         return res
     else:
         return render_template('login.html')
@@ -110,15 +113,18 @@ def login():
 def logout():
     res = redirect('/')
     res.set_cookie('user-token', 'deleted', '/', '-1')
+    flash('You are now logged out.', 'success')
     return res
 
 
 @auth.route('/profile/<username>')
 def profile(username):
-    try:
-        user = User.get(User.username == username)
-    except DoesNotExist:
-        return abort(404)
+    user = User.select().where(User.username == username)
+    
+    if user.exists() is False:
+        abort(404)
+
+    user = user.get()
 
     username = bleach.clean(user.username)
 
