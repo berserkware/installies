@@ -1,4 +1,4 @@
-from installies.globals import (
+from installies.config import (
     supported_distros, 
     database, 
     apps_path

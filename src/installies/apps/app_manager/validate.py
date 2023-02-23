@@ -9,7 +9,7 @@ from installies.lib.check import (
 )
 from installies.database.models import App
 from installies.lib.url import make_slug
-from installies.globals import supported_script_actions, supported_distros
+from installies.config import supported_script_actions, supported_distros
 
 class AppNameValidator(Validator):
     """A class for validating app names submitted by the user."""

@@ -1,5 +1,5 @@
 from peewee import *
-from installies.globals import database
+from installies.config import database
 
 import json
 import bcrypt
