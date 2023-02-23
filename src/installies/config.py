@@ -1,4 +1,13 @@
+import os
+
 from peewee import *
+from dotenv import load_dotenv
+from pathlib import Path
+
+dotenv_path = os.path.join(Path(__file__).parent.resolve(), '.env')
+load_dotenv(dotenv_path)
+
+test = os.environ.get('TEST')
 
 database = MySQLDatabase(
     'Installies', 

@@ -3,3 +3,5 @@ recursive-include src/installies/static/* *
 
 recursive-include src/installies/templates *
 recursive-include src/installies/templates/* *
+
+include src/installies/.env
