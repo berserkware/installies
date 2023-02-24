@@ -1,20 +1,19 @@
 import os
 
-from peewee import *
+from peewee import MySQLDatabase
 from dotenv import load_dotenv
 from pathlib import Path
 
 dotenv_path = os.path.join(Path(__file__).parent.resolve(), '.env')
 load_dotenv(dotenv_path)
 
-test = os.environ.get('TEST')
-
 database = MySQLDatabase(
-    'Installies', 
-    user='installies', 
-    password='password', 
-    host='localhost', 
-    port=3306)
+    os.environ.get('DATABASE_NAME'),
+    user=os.environ.get('DATABASE_USER'),
+    password=os.environ.get('DATABASE_PASS'),
+    host=os.environ.get('DATABASE_HOST'),
+    port=int(os.environ.get('DATABASE_PORT'))
+)
 
 supported_distros = [
     'ubuntu',
@@ -32,4 +31,4 @@ supported_script_actions = [
     'remove'
 ]
 
-apps_path = '/media/berserkware/Data/Code/Installies/apps/'
+apps_path = os.environ.get('SCRIPT_UPLOAD_PATH')
