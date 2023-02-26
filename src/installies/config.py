@@ -32,3 +32,5 @@ supported_script_actions = [
 ]
 
 apps_path = os.environ.get('SCRIPT_UPLOAD_PATH')
+
+max_script_length = os.environ.get('MAX_SCRIPT_LEN', 10000)

@@ -75,7 +75,7 @@ a:hover {
     color: white;
 }
 
-input, textarea {
+input, textarea, select {
     background-color: var(--dark-grey);
     color: var(--off-white);
     border-color: var(--grey);
@@ -86,9 +86,10 @@ input, textarea {
     vertical-align: middle;
     font-size: 16px;
     padding: 5px;
+    margin-top: 5px;
 }
 
-input:focus, textarea:focus {
+input:focus, textarea:focus, select:focus {
     border-color: var(--light-grey);
 }
 
@@ -104,6 +105,8 @@ input[type=submit] {
     padding: 0;
     padding-left: 5px;
     padding-right: 5px;
+    display: inline;
+    
 }
 
 input[type=submit]:hover {
@@ -199,10 +202,12 @@ th {
     height: 10px;
     vertical-align: middle;
     background-color: var(--black);
+    margin-top: 0;
 }
 
 .searchbutton {
     font-size: 15px;
     height: 22px;
     vertical-align: middle;
+    margin-top: 0;
 }

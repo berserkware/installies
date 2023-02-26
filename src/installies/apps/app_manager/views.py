@@ -1,4 +1,6 @@
 import bleach
+import json
+import os
 
 from flask import (
     Blueprint,
@@ -12,13 +14,22 @@ from flask import (
 )
 from installies.apps.app_manager.upload import (
     create_app,
-    )
+    create_user_folder,
+    create_app_folder,
+    create_script_file,
+    get_distros_from_string,
+)
 from installies.apps.app_manager.validate import (
     AppNameValidator,
     AppDescriptionValidator,
+    ScriptActionValidator,
+    ScriptDistroValidator,
+    ScriptContentValidator
 )
 from installies.database.models import App, Script
-from peewee import JOIN, DoesNotExist
+from installies.config import supported_script_actions, apps_path
+from installies.lib.random import gen_random_id
+from peewee import JOIN
 
 app_manager = Blueprint('app_manager', __name__)
 
@@ -71,16 +82,17 @@ def createapp():
 
 @app_manager.route('/apps/<slug>')
 def app_view(slug):
-    try:
-        app = (
-            App
-            .select()
-            .join(Script, JOIN.LEFT_OUTER)
-            .where(App.slug == slug)
-            .get()
-            )
-    except DoesNotExist:
-        return abort(404)
+    app = (
+        App
+        .select()
+        .join(Script, JOIN.LEFT_OUTER)
+        .where(App.slug == slug)
+    )
+
+    if app.exists() is False:
+        abort(404)
+
+    app = app.get()
 
     return render_template('app_view.html', app=app)
 
@@ -99,14 +111,103 @@ def app_edit(slug):
 def make_app_public(slug):
     pass
 
+
 @app_manager.route('/apps/<slug>/makeprivate')
 def make_app_private(slug):
     pass
 
 
-@app_manager.route('/apps/<slug>/addscript')
+
+
+@app_manager.route('/apps/<slug>/addscript', methods=['get', 'post'])
 def add_script(slug):
-    return render_template('add_script.html')
+
+    if g.is_authed is False:
+        return redirect('/login')
+
+    app = (
+        App
+        .select()
+        .join(Script, JOIN.LEFT_OUTER)
+        .where(App.slug == slug)
+    )
+
+    if app.exists() is False:
+        abort(404)
+
+    app = app.get()
+
+    if app.author != g.user:
+        flash(
+            'You cannot add a script to an app you have not authored.',
+            'error'
+        )
+        return redirect(f'/apps/{slug}/')
+
+    if request.method == 'POST':
+
+        script_action = request.form.get('script-action')
+
+        try:
+            ScriptActionValidator.validate(script_action)
+        except ValueError as e:
+            flash(str(e), 'error')
+            return render_template(
+                'add_script.html',
+                app=app,
+                possible_script_actions=supported_script_actions
+            )
+
+        # gets the comma seported list of distros sent by the user
+        supported_distros = request.form.get('script-supported-distros', '')
+
+        supported_distros = get_distros_from_string(supported_distros)
+
+        # validates the distros
+        for distro in supported_distros:
+            try:
+                ScriptDistroValidator.validate(distro)
+            except ValueError as e:
+                flash(str(e), 'error')
+                return render_template(
+                    'add_script.html',
+                    app=app,
+                    possible_script_actions=supported_script_actions
+                )
+
+        script_content = request.form.get('script-content')
+
+        try:
+            ScriptContentValidator.validate(script_content)
+        except ValueError as e:
+            flash(str(e), 'error')
+            return render_template(
+                'add_script.html',
+                app=app,
+                possible_script_actions=supported_script_actions
+            )
+
+        user_path = create_user_folder(app.author)
+
+        app_path = create_app_folder(app, user_path)
+
+        script_filepath = create_script_file(app_path, script_content)
+
+        script = Script(
+            action=script_action,
+            works_on=json.dumps(supported_distros),
+            filepath=script_filepath,
+            public=False,
+            app=app
+        )
+
+        script.save()
+
+    return render_template(
+        'add_script.html',
+        app=app,
+        possible_script_actions=supported_script_actions
+    )
 
 
 @app_manager.route('/apps/<slug>/script/<int:script_id>/delete')

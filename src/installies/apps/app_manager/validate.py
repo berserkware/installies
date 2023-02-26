@@ -9,7 +9,11 @@ from installies.lib.check import (
 )
 from installies.database.models import App
 from installies.lib.url import make_slug
-from installies.config import supported_script_actions, supported_distros
+from installies.config import (
+    supported_script_actions,
+    supported_distros,
+    max_script_length
+)
 
 class AppNameValidator(Validator):
     """A class for validating app names submitted by the user."""
@@ -68,3 +72,12 @@ class ScriptDistroValidator(Validator):
     data_name = 'Script distro'
 
 
+class ScriptContentValidator(Validator):
+    """A class for validating script content submitted by the user."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=max_script_length),
+    ]
+
+    data_name = 'Script content'

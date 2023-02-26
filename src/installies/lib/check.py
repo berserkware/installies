@@ -14,7 +14,7 @@ class EmptyChecker:
 
         :param data: The data to check.
         """
-        if data is None or data.strip() == '':
+        if data is None or data.strip() == '' or data == []:
             raise ValueError(
                 '{} cannot be empty.'
             )

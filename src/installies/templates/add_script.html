@@ -1,10 +1,39 @@
 {% extends "base.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}Add Script{% endblock %}
 
 {% block header %}
+<link rel="stylesheet" href="/static/css/add_script.css">
 {% endblock %}
 
-
 {% block body %}
+<div class="container black add-script-container">
+  <h2 class="container-header">Add a Script to App "{{ app.name }}"</h2>
+  <hr class="breakline">
+
+  <form class="add-script-form" action="/apps/{{ app.slug }}/addscript" method="post">
+    <div class="form-input-container">
+      <label for="script-action">Script Action</label><br>
+      <select name="script-action" id="script-action" required>
+	{% for action in possible_script_actions %}
+	  <option value="{{ action }}">{{ action.capitalize() }}</option>
+	{% endfor %}
+      </select>
+    </div>
+    
+    <div class="form-input-container">
+      <label for="script-supported-distros">Supported Distros</label><br>
+      <input type="text" name="script-supported-distros" id="script-supported-distros" class="textbox" placeholder="distro1, distro2, distro3..." required>
+    </div>
+
+    <div class="form-input-container">
+      <label for="script-content">Script Content</label><br>
+      <textarea name="script-content" id="script-content" cols="60" rows="20" required></textarea>
+    </div>
+
+    <div class="form-input-container">
+      <input type="submit" value="Submit" class="button">
+     </div>
+  </form>
+</div>
 {% endblock %}
