@@ -116,9 +116,6 @@ def make_app_public(slug):
 def make_app_private(slug):
     pass
 
-
-
-
 @app_manager.route('/apps/<slug>/addscript', methods=['get', 'post'])
 def add_script(slug):
 
@@ -187,16 +184,10 @@ def add_script(slug):
                 possible_script_actions=supported_script_actions
             )
 
-        user_path = create_user_folder(app.author)
-
-        app_path = create_app_folder(app, user_path)
-
-        script_filepath = create_script_file(app_path, script_content)
-
-        script = Script(
+        script = Script.create(
             action=script_action,
             works_on=json.dumps(supported_distros),
-            filepath=script_filepath,
+            content=script_content,
             public=False,
             app=app
         )

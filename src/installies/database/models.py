@@ -1,8 +1,10 @@
 from peewee import *
-from installies.config import database
+from installies.config import database, apps_path
+from installies.lib.random import gen_random_id
 
 import json
 import bcrypt
+import os
 
 class BaseModel(Model):
     
@@ -104,6 +106,85 @@ class Script(BaseModel):
     def works_on_list(self):
         """Gets the distros the scripts works on in a list."""
         return json.loads(self.works_on)
+
+    @classmethod
+    def create_user_folder(cls, user: User):
+        """
+        Create a folder to store a user's apps if one does not exist already.
+
+        The folder path is returned.
+
+        :param user: The user to make the folder for.
+        """
+        user_dir = os.path.join(apps_path, user.username)
+        if os.path.isdir(user_dir) is False:
+            os.mkdir(user_dir)
+
+        return user_dir
+
+    @classmethod
+    def create_app_folder(cls, app: App, apps_dir: str):
+        """
+        Create a folder to store an app's scripts if one does not exist already.
+
+        The folder path is returned.
+
+        :param app: The app to make the folder for.
+        :param apps_dir: The directory to put the app folder in.
+        """
+        app_dir = os.path.join(apps_dir, app.slug)
+        if os.path.isdir(app_dir) is False:
+            os.mkdir(app_dir)
+
+            return app_dir
+
+    @classmethod
+    def create_script_file(cls, app_dir: str, script_content: str):
+        """
+        Create a file to store the data for the script.
+
+        The path is returned.
+
+        :param app_dir: The directory of the app the script is for.
+        :param script_content: The content of the script.
+        """
+        script_filename = ''
+        script_path = ''
+
+        # since script file names are randomly generated there is a slight
+        # chance that it generates the name of a script file that already
+        # exists.
+        while True:
+            script_filename = f'script-{gen_random_id()}'
+
+            script_path = os.path.join(app_dir, script_filename)
+
+            if os.path.exists(script_path) is False:
+                break
+
+            with open(script_path, 'w') as f:
+                f.write(script_content)
+
+        return script_filename
+
+    @classmethod
+    def create(cls, **kwargs):
+        """Create a Script object, and makes the files for the script."""
+        app = kwargs['app']
+
+        if 'content' in kwargs.keys():
+            user_path = cls.create_user_folder(app.author)
+
+            app_path = cls.create_app_folder(app, user_path)
+
+            script_filepath = cls.create_script_file(
+                app_path,
+                kwargs['content']
+            )
+
+            kwargs['filepath'] = script_filepath
+
+        return super().create(**kwargs)
 
 
 class AppGroup:
