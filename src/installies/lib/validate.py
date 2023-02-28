@@ -20,21 +20,36 @@ class Validator:
     data_name = 'Data'
 
     @classmethod
-    def validate(cls, data: str):
+    def check_data(cls, data: str, checker):
         """
-        Validate a string argument.
+        Check a piece of data against a checker class.
+
+        :param data: The data to check.
+        :param checker: The checking class to check the data.
+        """
+        try:
+            checker.check(data)
+        except ValueError as e:
+            new_message = str(e).format(cls.data_name)
+            raise ValueError(new_message)
+
+    @classmethod
+    def validate(cls, data):
+        """
+        Validate a string or list argument.
 
         An error will be raised if the data is not valid. None is
         is returned if the data is valid. It uses the checker classes
-        in the ``checkers`` list attribute.
+        in the ``checkers`` list attribute. If the data is a list then
+        all the elements in the list will be checked.
 
         :param data: The data to check.
         """
         checkers = cls.checkers
 
         for checker in checkers:
-            try:
-                checker.check(data)
-            except ValueError as e:
-                new_message = str(e).format(cls.data_name)
-                raise ValueError(new_message)
+            if type(data) == list:
+                for item in data:
+                    cls.check_data(item, checker)
+            else:
+                cls.check_data(data, checker)

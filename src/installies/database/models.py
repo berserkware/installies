@@ -1,4 +1,11 @@
-from peewee import *
+from peewee import (
+    Model,
+    CharField,
+    DateField,
+    BooleanField,
+    TextField,
+    ForeignKeyField,
+)
 from installies.config import database, apps_path
 from installies.lib.random import gen_random_id
 
@@ -6,13 +13,19 @@ import json
 import bcrypt
 import os
 
+
 class BaseModel(Model):
-    
+    """A base class that defines the default database for the models to use."""
+
     class Meta:
+        """Meta data for the BaseModel."""
+
         database = database
 
 
 class User(BaseModel):
+    """A model for storing data about users."""
+
     username = CharField(255, unique=True)
     email = CharField(255, unique=True)
     password = CharField(255)
@@ -44,6 +57,8 @@ class User(BaseModel):
 
 
 class App(BaseModel):
+    """A class for storing app data."""
+
     name = CharField(255, unique=True)
     slug = CharField(255, unique=True)
     description = TextField()
@@ -73,8 +88,24 @@ class App(BaseModel):
 
         return works_on
 
+    def create_or_get_folder(self, apps_dir: str=apps_path):
+        """
+        Create a folder for the app if it does not exist.
+
+        Returns the path to the app folder.
+
+        :param apps_dir: The directory to put the apps in.
+        """
+        app_path = os.path.join(apps_dir, self.slug)
+        if os.path.isdir(app_path) is False:
+            os.mkdir(app_path)
+
+        return app_path
+
 
 class Script(BaseModel):
+    """A model for storing data about scripts."""
+
     action = CharField(255)
     works_on = CharField(255)
     filepath = CharField(255)
@@ -108,37 +139,6 @@ class Script(BaseModel):
         return json.loads(self.works_on)
 
     @classmethod
-    def create_user_folder(cls, user: User):
-        """
-        Create a folder to store a user's apps if one does not exist already.
-
-        The folder path is returned.
-
-        :param user: The user to make the folder for.
-        """
-        user_dir = os.path.join(apps_path, user.username)
-        if os.path.isdir(user_dir) is False:
-            os.mkdir(user_dir)
-
-        return user_dir
-
-    @classmethod
-    def create_app_folder(cls, app: App, apps_dir: str):
-        """
-        Create a folder to store an app's scripts if one does not exist already.
-
-        The folder path is returned.
-
-        :param app: The app to make the folder for.
-        :param apps_dir: The directory to put the app folder in.
-        """
-        app_dir = os.path.join(apps_dir, app.slug)
-        if os.path.isdir(app_dir) is False:
-            os.mkdir(app_dir)
-
-            return app_dir
-
-    @classmethod
     def create_script_file(cls, app_dir: str, script_content: str):
         """
         Create a file to store the data for the script.
@@ -160,31 +160,46 @@ class Script(BaseModel):
             script_path = os.path.join(app_dir, script_filename)
 
             if os.path.exists(script_path) is False:
-                break
 
-            with open(script_path, 'w') as f:
-                f.write(script_content)
+                with open(script_path, 'w') as f:
+                    f.write(script_content)
+
+                break
 
         return script_filename
 
     @classmethod
-    def create(cls, **kwargs):
-        """Create a Script object, and makes the files for the script."""
-        app = kwargs['app']
+    def create(
+            cls,
+            action: str,
+            works_on: list,
+            content: str,
+            public: bool,
+            app: App
+    ):
+        """
+        Create a Script.
 
-        if 'content' in kwargs.keys():
-            user_path = cls.create_user_folder(app.author)
+        :param action: The action that the script preforms.
+        :param works_on: A list of distros that the script works_on.
+        :param content: The content of the script.
+        :param public: If the script is public.
+        :param app: The app the script is for.
+        """
+        app_dir = app.create_or_get_folder()
 
-            app_path = cls.create_app_folder(app, user_path)
+        script_path = cls.create_script_file(app_dir, content)
 
-            script_filepath = cls.create_script_file(
-                app_path,
-                kwargs['content']
-            )
+        # serializes the distros with json
+        works_on = json.dumps(works_on)
 
-            kwargs['filepath'] = script_filepath
-
-        return super().create(**kwargs)
+        return super().create(
+            action=action,
+            works_on=works_on,
+            filepath=script_path,
+            public=public,
+            app=app
+        )
 
 
 class AppGroup:

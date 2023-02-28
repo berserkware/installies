@@ -14,9 +14,6 @@ from flask import (
 )
 from installies.apps.app_manager.upload import (
     create_app,
-    create_user_folder,
-    create_app_folder,
-    create_script_file,
     get_distros_from_string,
 )
 from installies.apps.app_manager.validate import (
@@ -26,9 +23,8 @@ from installies.apps.app_manager.validate import (
     ScriptDistroValidator,
     ScriptContentValidator
 )
+from installies.config import supported_script_actions
 from installies.database.models import App, Script
-from installies.config import supported_script_actions, apps_path
-from installies.lib.random import gen_random_id
 from peewee import JOIN
 
 app_manager = Blueprint('app_manager', __name__)
@@ -75,7 +71,7 @@ def createapp():
         # adds the app to the database, and gets its id
         app.save()
 
-        return redirect(url_for('app_view', slug=app.slug))
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
 
     return render_template('create_app.html')
 
@@ -144,37 +140,14 @@ def add_script(slug):
     if request.method == 'POST':
 
         script_action = request.form.get('script-action')
-
-        try:
-            ScriptActionValidator.validate(script_action)
-        except ValueError as e:
-            flash(str(e), 'error')
-            return render_template(
-                'add_script.html',
-                app=app,
-                possible_script_actions=supported_script_actions
-            )
-
         # gets the comma seported list of distros sent by the user
         supported_distros = request.form.get('script-supported-distros', '')
-
         supported_distros = get_distros_from_string(supported_distros)
-
-        # validates the distros
-        for distro in supported_distros:
-            try:
-                ScriptDistroValidator.validate(distro)
-            except ValueError as e:
-                flash(str(e), 'error')
-                return render_template(
-                    'add_script.html',
-                    app=app,
-                    possible_script_actions=supported_script_actions
-                )
-
         script_content = request.form.get('script-content')
 
         try:
+            ScriptActionValidator.validate(script_action)
+            ScriptDistroValidator.validate(supported_distros)
             ScriptContentValidator.validate(script_content)
         except ValueError as e:
             flash(str(e), 'error')
@@ -184,15 +157,13 @@ def add_script(slug):
                 possible_script_actions=supported_script_actions
             )
 
-        script = Script.create(
+        Script.create(
             action=script_action,
-            works_on=json.dumps(supported_distros),
+            works_on=supported_distros,
             content=script_content,
             public=False,
             app=app
         )
-
-        script.save()
 
     return render_template(
         'add_script.html',
