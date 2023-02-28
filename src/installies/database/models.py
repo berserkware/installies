@@ -166,7 +166,7 @@ class Script(BaseModel):
 
                 break
 
-        return script_filename
+        return script_path
 
     @classmethod
     def create(
