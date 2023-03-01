@@ -8,10 +8,14 @@ from peewee import (
 )
 from installies.config import database, apps_path
 from installies.lib.random import gen_random_id
+from installies.lib.url import make_slug
+from datetime import date
 
 import json
 import bcrypt
 import os
+import string
+import random
 
 
 class BaseModel(Model):
@@ -55,6 +59,50 @@ class User(BaseModel):
 
         return data
 
+    @classmethod
+    def hash_password(cls, password: str):
+        """
+        Hashes a password, and returns the hashed password in a string.
+
+        :param password: The password to hash.
+        """
+        byte_pass = password.encode('utf8')
+        salt = bcrypt.gensalt()
+
+        password = bcrypt.hashpw(byte_pass, salt)
+        return password.decode('utf-8')
+
+    @classmethod
+    def make_token(cls):
+        """Create a 50 letter long string of random letters and numbers."""
+        letters = string.ascii_letters + string.digits
+        return ''.join(random.choice(letters) for i in range(50))
+
+    @classmethod
+    def create(cls, username: str, email: str, password: str, admin: bool=False):
+        """
+        Create a User, and saves it to the database.
+
+        :param username: The user's username.
+        :param email: The user's email.
+        :param password: The user's password.
+        :param admin: The user's admin status.
+        """
+        creation_date = date.today()
+
+        token = cls.make_token()
+
+        hashed_pass = cls.hash_password(password)
+
+        return super().create(
+            username=username,
+            email=email,
+            password=hashed_pass,
+            creation_date=creation_date,
+            token=token,
+            admin=admin
+        )
+
 
 class App(BaseModel):
     """A class for storing app data."""
@@ -64,6 +112,27 @@ class App(BaseModel):
     description = TextField()
     creation_date = DateField()
     author = ForeignKeyField(User, backref='apps')
+
+    @classmethod
+    def create(self, name: str, description: str, author: User):
+        """
+        Create a App object, and adds it to the database.
+
+        :param name: The name of the app.
+        :param description: The app's description.
+        :param author: The app's author.
+        """
+        slug = make_slug(name)
+
+        creation_date = date.today()
+
+        return super().create(
+            name=name,
+            slug=slug,
+            description=description,
+            creation_date=creation_date,
+            author=author
+        )
 
     def serialize(self):
         """Turn the App into a json string."""
@@ -83,8 +152,7 @@ class App(BaseModel):
         works_on = []
 
         for script in self.scripts:
-            for varient in script.varients:
-                works_on.extend(varient.works_on_list)
+            works_on.extend(script.works_on_list)
 
         return works_on
 
@@ -107,7 +175,7 @@ class Script(BaseModel):
     """A model for storing data about scripts."""
 
     action = CharField(255)
-    works_on = CharField(255)
+    supported_distros = CharField(255)
     filepath = CharField(255)
     public = BooleanField(default=False)
     app = ForeignKeyField(App, backref='scripts')
@@ -117,7 +185,7 @@ class Script(BaseModel):
         data = {}
 
         data['action'] = self.action
-        data['works_on'] = self.works_on_list
+        data['supported_distros'] = self.supported_distros_list
 
         if include_content:
             with self.open_content() as f:
@@ -134,9 +202,9 @@ class Script(BaseModel):
         return open(self.filepath, mode)
 
     @property
-    def works_on_list(self):
-        """Gets the distros the scripts works on in a list."""
-        return json.loads(self.works_on)
+    def supported_distros_list(self):
+        """Gets the distros the script supports in a list."""
+        return json.loads(self.supported_distros)
 
     @classmethod
     def create_script_file(cls, app_dir: str, script_content: str):
@@ -172,16 +240,16 @@ class Script(BaseModel):
     def create(
             cls,
             action: str,
-            works_on: list,
+            supported_distros: list,
             content: str,
             public: bool,
             app: App
     ):
         """
-        Create a Script.
+        Create a Script object, and adds it to the database.
 
         :param action: The action that the script preforms.
-        :param works_on: A list of distros that the script works_on.
+        :param supported_distros: A list of distros that the script supports.
         :param content: The content of the script.
         :param public: If the script is public.
         :param app: The app the script is for.
@@ -191,11 +259,11 @@ class Script(BaseModel):
         script_path = cls.create_script_file(app_dir, content)
 
         # serializes the distros with json
-        works_on = json.dumps(works_on)
+        supported_distros = json.dumps(supported_distros)
 
         return super().create(
             action=action,
-            works_on=works_on,
+            supported_distros=supported_distros,
             filepath=script_path,
             public=public,
             app=app

@@ -7,10 +7,6 @@ from installies.apps.auth.validate import (
     EmailValidator,
     PasswordConfirmValidator,
 )
-from installies.apps.auth.signup import (
-    hash_password,
-    make_token
-)
 from installies.database.models import User
 from peewee import *
 from datetime import date
@@ -27,10 +23,10 @@ def signup():
 
     if request.method == 'POST':
         # Gets the form data
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        password_confirm = request.form.get('password-confirm')
+        username = request.form.get('username').strip()
+        email = request.form.get('email').strip()
+        password = request.form.get('password').strip()
+        password_confirm = request.form.get('password-confirm').strip()
 
         try:
             UsernameValidator.validate(username)
@@ -46,19 +42,9 @@ def signup():
             flash('Passwords do not match.', 'error')
             return render_template('signup.html')
 
-        # Hashes the password
-        str_pass = hash_password(password)
+        username = bleach.clean(username)
 
-        new_user = User(
-            username=username,
-            email=email,
-            password=str_pass,
-            creation_date=date.today(),
-            token=make_token(),
-            admin=False
-        )
-
-        new_user.save()
+        new_user = User.create(username, email, password)
 
         # If success, return response with cookie
         res = redirect('/')
@@ -89,7 +75,7 @@ def login():
             return render_template('login.html')
 
         user = User.select().where(User.username == username)
-        
+
         if user.exists() is False:
             flash('Could not find a user with that username.', 'error')
             return render_template('login.html')

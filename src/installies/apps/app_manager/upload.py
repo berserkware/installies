@@ -19,30 +19,3 @@ def get_distros_from_string(distros: str):
             striped_distros.append(distro.strip())
 
     return striped_distros
-
-def create_app(name: str, description: str, author_id: int) -> App:
-    """
-    Creates an App object.
-
-    :param name: The name of the app.
-    :param description: The app description.
-    :param author_id: The id of the author of the script.
-    """
-
-    # creates a slug out of the name of the script
-    slug = make_slug(name)
-
-    # gets the creation date of the app
-    creation_date = date.today()
-
-    author = User.get(User.id == author_id)
-
-    app = App(
-        name=name,
-        slug=slug,
-        description=description,
-        creation_date=creation_date,
-        author=author
-    )
-
-    return app

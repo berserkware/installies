@@ -13,7 +13,6 @@ from flask import (
     url_for
 )
 from installies.apps.app_manager.upload import (
-    create_app,
     get_distros_from_string,
 )
 from installies.apps.app_manager.validate import (
@@ -31,45 +30,29 @@ app_manager = Blueprint('app_manager', __name__)
 
 
 @app_manager.route('/createapp', methods=['GET', 'POST'])
-def createapp():
+def create_app():
     # Makes sure user is authenticated
     if g.is_authed is False:
         return redirect('/login')
 
     if request.method == 'POST':
         app_name = request.form.get('app-name', '').strip()
+        app_description = request.form.get('app-desc', '').strip()
 
         # returns error to user if app name is not clean
         try:
             AppNameValidator.validate(app_name)
-        except ValueError as e:
-            flash(str(e), 'error')
-            return render_template(
-                'create_app.html',
-            )
-
-        app_description = request.form.get('app-desc', '').strip()
-
-        # returns error to user if app desctiption is not clean
-        try:
             AppDescriptionValidator.validate(app_description)
         except ValueError as e:
             flash(str(e), 'error')
-            return render_template(
-                'create_app.html',
-            )
+            return redirect('app_manager.createapp')
 
         # cleans the app name and description,
         # to make sure there is no malicious stuff
-
         app_name = bleach.clean(app_name)
         app_description = bleach.clean(app_description)
 
-        # creates the app to be put in the database
-        app = create_app(app_name, app_description, g.user.id)
-
-        # adds the app to the database, and gets its id
-        app.save()
+        app = App.create(app_name, app_description, g.user)
 
         return redirect(url_for('app_manager.app_view', slug=app.slug))
 
@@ -112,6 +95,7 @@ def make_app_public(slug):
 def make_app_private(slug):
     pass
 
+
 @app_manager.route('/apps/<slug>/addscript', methods=['get', 'post'])
 def add_script(slug):
 
@@ -151,15 +135,11 @@ def add_script(slug):
             ScriptContentValidator.validate(script_content)
         except ValueError as e:
             flash(str(e), 'error')
-            return render_template(
-                'add_script.html',
-                app=app,
-                possible_script_actions=supported_script_actions
-            )
+            return redirect('app_manager.add_script', slug=app.slug)
 
         Script.create(
             action=script_action,
-            works_on=supported_distros,
+            supported_distros=supported_distros,
             content=script_content,
             public=False,
             app=app
