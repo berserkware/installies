@@ -147,7 +147,7 @@ def add_script(slug):
 
         try:
             ScriptActionValidator.validate(script_action)
-            ScriptDistroValidator.validate(supported_distros)
+            ScriptDistroValidator.validate_many(supported_distros)
             ScriptContentValidator.validate(script_content)
         except ValueError as e:
             flash(str(e), 'error')

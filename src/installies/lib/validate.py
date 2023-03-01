@@ -34,6 +34,24 @@ class Validator:
             raise ValueError(new_message)
 
     @classmethod
+    def validate_many(cls, data: list):
+        """
+        Validates a list of data.
+
+        An error will be raised if the data is not valid. None is
+        is returned if the data is valid. It uses the checker classes
+        in the ``checkers`` list attribute. If the data is a list then
+        all the elements in the list will be checked.
+
+        :param data: A list of data to check.
+        """
+        checkers = cls.checkers
+
+        for checker in checkers:
+            for item in data:
+                cls.check_data(item, checker)
+
+    @classmethod
     def validate(cls, data):
         """
         Validate a string or list argument.
@@ -48,8 +66,4 @@ class Validator:
         checkers = cls.checkers
 
         for checker in checkers:
-            if type(data) == list:
-                for item in data:
-                    cls.check_data(item, checker)
-            else:
-                cls.check_data(data, checker)
+            cls.check_data(data, checker)
