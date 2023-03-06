@@ -159,4 +159,14 @@ def delete_script(slug, script_id):
 
 @app_manager.route('/apps/<slug>/script/<int:script_id>/edit')
 def edit_script(slug, script_id):
-    return render_template('edit_script.html')
+    app = App.get(App.slug == slug)
+    script = Script.get(Script.id == script_id)
+
+    return render_template(
+        'edit_script.html',
+        app=app,
+        script=script,
+        possible_script_actions=supported_script_actions,
+    )
+
+
