@@ -11,7 +11,7 @@
     <h2 class="container-header">Sign Up</h2>
     <hr class="breakline">
     
-    <form class="signup-form" action="/signup" method="post">
+    <form class="signup-form" action="{{ url_for('auth.signup') }}" method="post">
         <div class="form-input-container">
             <label for="username">Username</label><br>
             <input type="text" name="username" class="textbox signup-textbox" required><br>

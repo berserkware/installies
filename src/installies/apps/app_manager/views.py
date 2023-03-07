@@ -29,7 +29,7 @@ from peewee import JOIN
 app_manager = Blueprint('app_manager', __name__)
 
 
-@app_manager.route('/createapp', methods=['GET', 'POST'])
+@app_manager.route('/create-app', methods=['GET', 'POST'])
 def create_app():
     # Makes sure user is authenticated
     if g.is_authed is False:
@@ -86,17 +86,17 @@ def app_edit(slug):
     return render_template('edit_app.html')
 
 
-@app_manager.route('/apps/<slug>/makepublic')
+@app_manager.route('/apps/<slug>/make-public')
 def make_app_public(slug):
     pass
 
 
-@app_manager.route('/apps/<slug>/makeprivate')
+@app_manager.route('/apps/<slug>/make-private')
 def make_app_private(slug):
     pass
 
 
-@app_manager.route('/apps/<slug>/addscript', methods=['get', 'post'])
+@app_manager.route('/apps/<slug>/add-script', methods=['get', 'post'])
 def add_script(slug):
 
     if g.is_authed is False:

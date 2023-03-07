@@ -17,18 +17,18 @@
         
         </div class="nav-menu">
             <div class="nav-link-group">
-                <a class="white-link nav-link" href="/">Home</a>
-                <a class="white-link nav-link" href="/createapp">Create an App</a>
+                <a class="white-link nav-link" href="{{ url_for('app_library.index') }}">Home</a>
+                <a class="white-link nav-link" href="{{ url_for('app_manager.create_app') }}">Create an App</a>
                 {% if g.is_authed == True %}
-                    <a class="white-link nav-link" href="/profile/{{ g.user.username }}">Profile</a>
-                    <a class="white-link nav-link" href="/logout">Logout</a>
+                    <a class="white-link nav-link" href="{{ url_for('auth.profile', username=g.user.username) }}">Profile</a>
+                    <a class="white-link nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                 {% else %}
-                    <a class="white-link nav-link" href="/login">Log In</a>
-                    <a class="white-link nav-link" href="/signup">Sign Up</a>
+                    <a class="white-link nav-link" href="{{ url_for('auth.login') }}">Log In</a>
+                    <a class="white-link nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
                 {% endif %}
             </div>
             
-            <form action="/search" method="get" class="nav-search">
+            <form action="{{ url_for('app_library.search') }}" method="get" class="nav-search">
                 <input type="text" name="k" placeholder="Search an App..." class="searchbox black">
                 <input type="submit" value="Search" class="searchbutton">
             </form>

@@ -10,7 +10,7 @@
   <h2 class="container-header">Edit Script for "{{ app.name }}"</h2>
   <hr class="breakline">
 
-  <form class="edit-script-form" action="/apps/{{ app.slug }}/script/{{ script.id }}/ edit" method="post">
+  <form class="edit-script-form" action="{{ url_for('app_manager.edit_scrpt' slug=app.slug, script_id=script.id) }}" method="post">
     <div class="form-input-container">
       <label for="script-action">Script Action</label><br>
       <select name="script-action" id="script-action" required>

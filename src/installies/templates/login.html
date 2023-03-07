@@ -11,7 +11,7 @@
     <h2 class="container-header">Log In</h2>
     <hr class="breakline">
     
-    <form class="login-form" action="/login" method="post">
+    <form class="login-form" action="{{ url_for('auth.login') }}" method="post">
         <div class="form-input-container">
             <label for="username" >Username</label><br>
             <input type="text" name="username" class="textbox login-textbox" required><br>
