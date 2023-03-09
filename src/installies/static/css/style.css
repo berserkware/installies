@@ -1,0 +1,158 @@
+@font-face {
+    font-family: "Assurant Standard";
+    src: url("/static/fonts/Assurant-Standard.otf");
+}
+
+@font-face {
+    font-family: "Inter Light";
+    src: url("/static/fonts/Inter-Light.ttf");
+}
+
+@font-face {
+    font-family: "Inter Medium";
+    src: url("/static/fonts/Inter-Medium.ttf");
+}
+
+@font-face {
+    font-family: "Inter Regular";
+    src: url("/static/fonts/Inter-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Inter Bold";
+    src: url("/static/fonts/Inter-Bold.ttf");
+}
+
+:root {
+    --black: #161616;
+    --dark-grey: #222222;
+    --grey: #5e5e5e;
+    --light-grey: #c5c5c5;
+    --off-white: #e5e5e5;
+    --red: #fc3a3a;
+    --green: #5bf24d;
+    --blue: #014fb5;
+}
+
+body {
+    text-align: center;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    width: 60%;
+    margin: auto;
+    background-color: var(--dark-grey);
+    color: white;
+    font-family: Inter Regular;
+}
+
+h1, h2, h3 {
+    font-family: Inter Bold;
+}
+
+p {
+    text-align: left;
+    margin: auto;
+    margin-top: 10px;
+    color: var(--light-grey);
+}
+
+a {
+    color: var(--blue);
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.white-link {
+    color: var(--off-white);
+}
+
+.white-link:hover {
+    color: white;
+}
+
+input, textarea, select {
+    background-color: var(--dark-grey);
+    color: var(--off-white);
+    border-color: var(--grey);
+    border-radius: 0px;
+    border-width: 1px;
+    border-style: solid;
+    font-family: Inter Regular;
+    vertical-align: middle;
+    font-size: 16px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin-top: 5px;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--light-grey);
+}
+
+input[type=submit] {
+    background-color: var(--dark-grey);
+    color: var(--off-white);
+    border-color: var(--grey);
+    border-radius: 0px;
+    border-width: 1px;
+    border-style: solid;
+    font-family: Inter Regular;
+    vertical-align: middle;
+    padding: 0;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    display: inline;
+    
+}
+
+input[type=submit]:hover {
+    background-color: var(--black);
+}
+
+hr {
+    color: var(--grey);
+    border-style: solid;
+    margin-top: 5px;
+    border-bottom: 0;
+}
+
+th {
+    font-family: Inter Bold;
+}
+
+.value-cell {
+    font-family: Inter Regular;
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.container {
+    width: 70%;
+    margin: auto;
+    text-align: left;
+    padding: 10px;
+}
+
+.container-header {
+    text-align: left;
+    margin: auto;
+    margin-bottom: 0;
+}
+
+.black  {
+    background-color: var(--black);
+}
+
+.form-input-container {
+    margin-top: 10px;
+}

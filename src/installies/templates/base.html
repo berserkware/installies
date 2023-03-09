@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=yes">
     <title>{% block title %}{% endblock %} - Installies</title>
     <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/style.css">
     <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
     {% block header %}
     {% endblock %}
@@ -15,7 +16,7 @@
             <a class="white-link" href="/">installies</a>
         </h1>
         
-        </div class="nav-menu">
+        <div class="nav-menu">
             <div class="nav-link-group">
                 <a class="white-link nav-link" href="{{ url_for('app_library.index') }}">Home</a>
                 <a class="white-link nav-link" href="{{ url_for('app_manager.create_app') }}">Create an App</a>
@@ -27,11 +28,13 @@
                     <a class="white-link nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
                 {% endif %}
             </div>
-            
-            <form action="{{ url_for('app_library.search') }}" method="get" class="nav-search">
-                <input type="text" name="k" placeholder="Search an App..." class="searchbox black">
+
+	    <div class="nav-search">
+              <form action="{{ url_for('app_library.search') }}" method="get" class="nav-search-form">
+		<input type="text" name="k" placeholder="Search an App..." class="searchbox black">
                 <input type="submit" value="Search" class="searchbutton">
-            </form>
+              </form>
+	    </div>
         </div>
         
         <br>

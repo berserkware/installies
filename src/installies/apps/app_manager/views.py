@@ -78,7 +78,16 @@ def app_view(slug):
 
 @app_manager.route('/apps/<slug>/delete')
 def app_delete(slug):
-    return render_template('delete_app.html')
+    app = (
+        App
+        .select()
+        .join(Script, JOIN.LEFT_OUTER)
+        .where(App.slug == slug)
+    )
+
+    app = app.get()
+
+    return render_template('delete_app.html', app=app)
 
 
 @app_manager.route('/apps/<slug>/edit', methods=['GET', 'POST'])
