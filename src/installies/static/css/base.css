@@ -18,7 +18,6 @@
     border-color: var(--green);
 }
 
-
 .logo-header {
     text-align: left;
     font-family: Assurant Standard;
@@ -28,36 +27,38 @@
     margin-bottom: 0px;
 }
 
-.nav-link-group {
-    float: left;
+.nav-menu {
+    width: 100%;
+    display: table;
+    table-layout: fixed;
 }
 
-.nav-link .nav-search {
-    display: inline-block;
+.nav-link-group {
+    text-align: left;
+    display: table-cell;
 }
 
 .nav-link {
     margin-right: 10px;
 }
 
-.nav-search-form {
-    display: inline;
-    padding-bottom: 5px;
+.nav-search {
+    display: table-cell;
+    text-align: right;
+    height: 19px;
 }
 
-.nav-search {
-    float: right;
-    text-align: center;
-    height: 19px;
-    margin-bottom: 5px;
+.nav-search-form {
+    display: inline;
 }
 
 .searchbox {
     background-color: var(--black);
     height: 19px;
-    margin: auto;
+    margin-top: 0px;
 }
 
 .searchbutton {
-    margin: auto;
+    margin-top: 0px;
+
 }
