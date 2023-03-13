@@ -59,7 +59,6 @@ p {
 a {
     color: var(--blue);
     text-decoration: none;
-    margin-right: 10px;
 }
 
 a:hover {
