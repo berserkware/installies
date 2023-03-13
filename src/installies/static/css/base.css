@@ -31,7 +31,6 @@
     display: flex;
     gap: 15px;
     align-items: flex-end;
-    padding-bottom: 5px;
     flex-wrap: wrap;
 }
 
