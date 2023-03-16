@@ -6,3 +6,8 @@
     width: 80%;
     resize: vertical;
 }
+
+.add-script-container {
+    text-align: left;
+    width: auto;
+}

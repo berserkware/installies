@@ -1,14 +1,10 @@
-{% extends "base.html" %}
+{% extends "app_view/base.html" %}
 
-{% block title %}{% endblock %}
+{% block app_page_title %}Edit {% endblock %}
 
-{% block header %}
-{% endblock %}
-
-
-{% block body %}
-<div class="container black" style="width:50%">
-    <h2 class="container-header">Edit App "{{app.name}}"</h2>
+{% block content %}
+<div class="container black" style="width:auto">
+    <h2 class="container-header">Edit App</h2>
     <hr class="breakline">
     
     <form class="edit-app-form" action="{{ url_for('app_manager.app_edit', slug=app.slug) }}" method="post">

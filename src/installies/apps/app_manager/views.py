@@ -73,7 +73,7 @@ def app_view(slug):
 
     app = app.get()
 
-    return render_template('app_view.html', app=app)
+    return render_template('app_view/info.html', app=app)
 
 
 @app_manager.route('/apps/<slug>/delete')
@@ -87,12 +87,21 @@ def app_delete(slug):
 
     app = app.get()
 
-    return render_template('delete_app.html', app=app)
+    return render_template('app_view/delete.html', app=app)
 
 
 @app_manager.route('/apps/<slug>/edit', methods=['GET', 'POST'])
 def app_edit(slug):
-    return render_template('edit_app.html')
+    app = (
+        App
+        .select()
+        .join(Script, JOIN.LEFT_OUTER)
+        .where(App.slug == slug)
+    )
+
+    app = app.get()
+    
+    return render_template('app_view/edit.html', app=app)
 
 
 @app_manager.route('/apps/<slug>/make-public')
@@ -104,6 +113,9 @@ def make_app_public(slug):
 def make_app_private(slug):
     pass
 
+@app_manager.route('/apps/<slug>/scripts')
+def app_scripts(slug):
+    return render_template('app_view/scripts.html')
 
 @app_manager.route('/apps/<slug>/add-script', methods=['get', 'post'])
 def add_script(slug):
@@ -155,7 +167,7 @@ def add_script(slug):
         )
 
     return render_template(
-        'add_script.html',
+        'app_view/add_script.html',
         app=app,
         possible_script_actions=supported_script_actions
     )
@@ -163,16 +175,19 @@ def add_script(slug):
 
 @app_manager.route('/apps/<slug>/script/<int:script_id>/delete')
 def delete_script(slug, script_id):
-    return render_template('delete_script.html')
+    app = App.get(App.slug == slug)
+    script = Script.select().where(Script.id == script_id).get()
+    
+    return render_template('app_view/delete_script.html', app=app, script=script)
 
 
 @app_manager.route('/apps/<slug>/script/<int:script_id>/edit')
 def edit_script(slug, script_id):
     app = App.get(App.slug == slug)
-    script = Script.get(Script.id == script_id)
+    script = Script.select().where(Script.id == script_id).get()
 
     return render_template(
-        'edit_script.html',
+        'app_view/edit_script.html',
         app=app,
         script=script,
         possible_script_actions=supported_script_actions,

@@ -43,6 +43,7 @@ body {
     background-color: var(--dark-grey);
     color: white;
     font-family: Inter Regular;
+    padding: 0;
 }
 
 h1, h2, h3 {
@@ -153,4 +154,12 @@ th {
 
 .form-input-container {
     margin-top: 10px;
+}
+
+.textbox {
+    font-size: 18px;
+    padding-bottom: 3px;
+    padding-top: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
