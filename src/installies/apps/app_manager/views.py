@@ -28,7 +28,6 @@ from peewee import JOIN
 
 app_manager = Blueprint('app_manager', __name__)
 
-
 @app_manager.route('/create-app', methods=['GET', 'POST'])
 def create_app():
     # Makes sure user is authenticated
@@ -45,7 +44,7 @@ def create_app():
             AppDescriptionValidator.validate(app_description)
         except ValueError as e:
             flash(str(e), 'error')
-            return redirect('app_manager.createapp')
+            return redirect(url_for('app_manager.createapp'))
 
         # cleans the app name and description,
         # to make sure there is no malicious stuff
@@ -59,7 +58,7 @@ def create_app():
     return render_template('create_app.html')
 
 
-@app_manager.route('/apps/<slug>')
+@app_manager.route('/apps/<slug>', methods=['GET', 'POST'])
 def app_view(slug):
     app = (
         App
@@ -76,7 +75,7 @@ def app_view(slug):
     return render_template('app_view/info.html', app=app)
 
 
-@app_manager.route('/apps/<slug>/delete')
+@app_manager.route('/apps/<slug>/delete', methods=['GET', 'POST'])
 def app_delete(slug):
     app = (
         App
@@ -85,7 +84,22 @@ def app_delete(slug):
         .where(App.slug == slug)
     )
 
+    if app.exists() is False:
+        abort(404)
+    
     app = app.get()
+
+    if app.author != g.user:
+        flash(
+            'You cannot delete an app you have not authored.',
+            'error'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+
+    if request.method == 'POST':
+        app.delete_instance()
+        flash('App successfully deleted!', 'success')
+        return redirect('/')
 
     return render_template('app_view/delete.html', app=app)
 
@@ -99,7 +113,34 @@ def app_edit(slug):
         .where(App.slug == slug)
     )
 
+    if app.exists() is False:
+        abort(404)
+    
     app = app.get()
+
+    if app.author != g.user:
+        flash(
+            'You cannot edit an app you have not authored.',
+            'error'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+
+    if request.method == 'POST':
+        app_description = request.form.get('app-desc', '').strip()
+
+        try:
+            AppDescriptionValidator.validate(app_description)
+        except ValueError as e:
+            flash(str(e), 'error')
+            return redirect(url_for('app_manager.app_edit', slug=app.slug))
+
+        app_description = bleach.clean(app_description)
+
+        app.description = app_description
+        app.save()
+
+        flash('App succesfully edited.', 'success')
+        return redirect(url_for('app_manager.app_view', slug=slug))
     
     return render_template('app_view/edit.html', app=app)
 
@@ -166,6 +207,9 @@ def add_script(slug):
             app=app
         )
 
+        flash('Script successfully created.', 'success')
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+
     return render_template(
         'app_view/add_script.html',
         app=app,
@@ -177,15 +221,61 @@ def add_script(slug):
 def delete_script(slug, script_id):
     app = App.get(App.slug == slug)
     script = Script.select().where(Script.id == script_id).get()
+
+    if app.author != g.user:
+        flash(
+            'You cannot delete a script of an app you have not authored.',
+            'error'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+
+    if request.method == 'POST':
+        script.delete_instance()
+        flash('Script successfully deleted.', 'success')
+        return redirect(url_for('app_mananger.app_view', slug=app.slug))
     
     return render_template('app_view/delete_script.html', app=app, script=script)
 
 
-@app_manager.route('/apps/<slug>/script/<int:script_id>/edit')
+@app_manager.route('/apps/<slug>/script/<int:script_id>/edit', methods=['GET', 'POST'])
 def edit_script(slug, script_id):
     app = App.get(App.slug == slug)
     script = Script.select().where(Script.id == script_id).get()
 
+    if app.author != g.user:
+        flash(
+            'You cannot edit a script of an app you have not authored.',
+            'error'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+
+    if request.method == 'POST':
+        script_action = request.form.get('script-action')
+        # gets the comma seported list of distros sent by the user
+        supported_distros = request.form.get('script-supported-distros', '')
+        supported_distros = get_distros_from_string(supported_distros)
+        script_content = request.form.get('script-content')
+
+        try:
+            ScriptActionValidator.validate(script_action)
+            ScriptDistroValidator.validate_many(supported_distros)
+            ScriptContentValidator.validate(script_content)
+        except ValueError as e:
+            flash(str(e), 'error')
+            return redirect('app_manager.add_script', slug=app.slug)
+
+        script.action = script_action
+        script.supported_distros = json.dumps(supported_distros)
+
+        # updates the script content
+        with script.open_content('w') as f:
+            f.write(script_content)
+        
+        script.save()
+
+        flash('Script successfully edited.', 'success')
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+    
     return render_template(
         'app_view/edit_script.html',
         app=app,

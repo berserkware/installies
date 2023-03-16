@@ -170,7 +170,7 @@ class App(BaseModel):
 
         return app_path
 
-    def delete_app(self):
+    def delete_instance(self):
         """Deletes the app and all of its scripts."""
 
         for script in self.scripts:
