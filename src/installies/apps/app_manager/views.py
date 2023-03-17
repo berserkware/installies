@@ -136,8 +136,9 @@ def app_edit(slug):
 
         app_description = bleach.clean(app_description)
 
-        app.description = app_description
-        app.save()
+        app.edit(
+            description=app_description
+        )
 
         flash('App succesfully edited.', 'success')
         return redirect(url_for('app_manager.app_view', slug=slug))
@@ -203,7 +204,6 @@ def add_script(slug):
             action=script_action,
             supported_distros=supported_distros,
             content=script_content,
-            public=False,
             app=app
         )
 
@@ -217,7 +217,7 @@ def add_script(slug):
     )
 
 
-@app_manager.route('/apps/<slug>/script/<int:script_id>/delete')
+@app_manager.route('/apps/<slug>/scripts/<int:script_id>/delete')
 def delete_script(slug, script_id):
     app = App.get(App.slug == slug)
     script = Script.select().where(Script.id == script_id).get()
@@ -237,7 +237,7 @@ def delete_script(slug, script_id):
     return render_template('app_view/delete_script.html', app=app, script=script)
 
 
-@app_manager.route('/apps/<slug>/script/<int:script_id>/edit', methods=['GET', 'POST'])
+@app_manager.route('/apps/<slug>/scripts/<int:script_id>/edit', methods=['GET', 'POST'])
 def edit_script(slug, script_id):
     app = App.get(App.slug == slug)
     script = Script.select().where(Script.id == script_id).get()
@@ -264,14 +264,11 @@ def edit_script(slug, script_id):
             flash(str(e), 'error')
             return redirect('app_manager.add_script', slug=app.slug)
 
-        script.action = script_action
-        script.supported_distros = json.dumps(supported_distros)
-
-        # updates the script content
-        with script.open_content('w') as f:
-            f.write(script_content)
-        
-        script.save()
+        script.edit(
+            action=script_action,
+            supported_distros=supported_distros,
+            content=script_content,
+        )
 
         flash('Script successfully edited.', 'success')
         return redirect(url_for('app_manager.app_view', slug=app.slug))

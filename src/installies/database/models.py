@@ -170,8 +170,19 @@ class App(BaseModel):
 
         return app_path
 
+    def edit(self, description: str):
+        """
+        Edits the app.
+
+        :param description: The new description for the app.
+        """
+
+        self.description = description
+
+        self.save()
+
     def delete_instance(self):
-        """Deletes the app and all of its scripts."""
+        """Delete the app and all of its scripts."""
 
         for script in self.scripts:
             script.delete_instance()
@@ -185,7 +196,6 @@ class Script(BaseModel):
     action = CharField(255)
     supported_distros = CharField(255)
     filepath = CharField(255)
-    public = BooleanField(default=False)
     app = ForeignKeyField(App, backref='scripts')
 
     def serialize(self, include_content=True):
@@ -250,7 +260,6 @@ class Script(BaseModel):
             action: str,
             supported_distros: list,
             content: str,
-            public: bool,
             app: App
     ):
         """
@@ -259,7 +268,6 @@ class Script(BaseModel):
         :param action: The action that the script preforms.
         :param supported_distros: A list of distros that the script supports.
         :param content: The content of the script.
-        :param public: If the script is public.
         :param app: The app the script is for.
         """
         app_dir = app.create_or_get_folder()
@@ -273,9 +281,24 @@ class Script(BaseModel):
             action=action,
             supported_distros=supported_distros,
             filepath=script_path,
-            public=public,
             app=app
         )
+
+    def edit(self, action: str, supported_distros: list, content: str):
+        """
+        Edits the script.
+
+        :param action: The new action for the script.
+        :param supported_distros: The new supported distros.
+        :param content: The new content.
+        """
+
+        self.action = action
+        self.supported_distros = json.dumps(supported_distros)
+        with self.open_content('w') as f:
+            f.write(content)
+
+        self.save()
 
 
 class AppGroup:
