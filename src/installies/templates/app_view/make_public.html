@@ -1,0 +1,17 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}Make Public {% endblock %}
+
+{% block content %}
+<div class="container black" style="width:auto">
+  <h2 class="container-header">Make App Public</h2>
+  <hr class="breakline">
+  <p>
+    Are you sure you want to make this app public?
+  </p>
+
+  <form class="make-app-public-form" action="{{ url_for('app_manager.make_app_public', slug=app.slug) }}" method="post">
+    <input type="submit" value="Make Public" class="button">
+  </form>
+</div>
+{% endblock %}

@@ -77,6 +77,10 @@ def app_view(slug):
 
 @app_manager.route('/apps/<slug>/delete', methods=['GET', 'POST'])
 def app_delete(slug):
+
+    if g.is_authed is False:
+        return redirect('/login')
+    
     app = (
         App
         .select()
@@ -106,6 +110,10 @@ def app_delete(slug):
 
 @app_manager.route('/apps/<slug>/edit', methods=['GET', 'POST'])
 def app_edit(slug):
+
+    if g.is_authed is False:
+        return redirect('/login')
+    
     app = (
         App
         .select()
@@ -146,14 +154,87 @@ def app_edit(slug):
     return render_template('app_view/edit.html', app=app)
 
 
-@app_manager.route('/apps/<slug>/make-public')
+@app_manager.route('/apps/<slug>/make-public', methods=['GET', 'POST'])
 def make_app_public(slug):
-    pass
+
+    if g.is_authed is False:
+        return redirect('/login')
+    
+    app = (
+        App
+        .select()
+        .join(Script, JOIN.LEFT_OUTER)
+        .where(App.slug == slug)
+    )
+
+    if app.exists() is False:
+        abort(404)
+    
+    app = app.get()
+
+    if app.author != g.user:
+        flash(
+            'You cannot change the visibility of an app your are not the author of.',
+            'error'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+
+    if request.method == 'POST':
+        if len(app.scripts) == 0:
+            flash(
+                'App must have at least one script to make it public.',
+                'error'
+            )
+            return redirect(url_for('app_manager.app_view', slug=app.slug))
+
+        app.public = True
+        app.save()
+
+        flash(
+            'App successfully made public.',
+            'success'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+
+    return render_template('app_view/make_public.html', app=app)
 
 
-@app_manager.route('/apps/<slug>/make-private')
+@app_manager.route('/apps/<slug>/make-private', methods=['GET', 'POST'])
 def make_app_private(slug):
-    pass
+
+    if g.is_authed is False:
+        return redirect('/login')
+    
+    app = (
+        App
+        .select()
+        .join(Script, JOIN.LEFT_OUTER)
+        .where(App.slug == slug)
+    )
+
+    if app.exists() is False:
+        abort(404)
+    
+    app = app.get()
+
+    if app.author != g.user:
+        flash(
+            'You cannot change the visibility of an app your are not the author of.',
+            'error'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+
+    if request.method == 'POST':
+        app.public = False
+        app.save()
+
+        flash(
+            'App successfully made private.',
+            'success'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug))
+
+    return render_template('app_view/make_private.html', app=app)
 
 @app_manager.route('/apps/<slug>/scripts')
 def app_scripts(slug):
@@ -219,6 +300,10 @@ def add_script(slug):
 
 @app_manager.route('/apps/<slug>/scripts/<int:script_id>/delete')
 def delete_script(slug, script_id):
+
+    if g.is_authed is False:
+        return redirect('/login')
+    
     app = App.get(App.slug == slug)
     script = Script.select().where(Script.id == script_id).get()
 
@@ -239,6 +324,10 @@ def delete_script(slug, script_id):
 
 @app_manager.route('/apps/<slug>/scripts/<int:script_id>/edit', methods=['GET', 'POST'])
 def edit_script(slug, script_id):
+
+    if g.is_authed is False:
+        return redirect('/login')
+    
     app = App.get(App.slug == slug)
     script = Script.select().where(Script.id == script_id).get()
 

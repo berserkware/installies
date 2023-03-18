@@ -111,7 +111,9 @@ class App(BaseModel):
     slug = CharField(255, unique=True)
     description = TextField()
     creation_date = DateField()
+    last_modified = DateField()
     author = ForeignKeyField(User, backref='apps')
+    public = BooleanField(default=False)
 
     @classmethod
     def create(self, name: str, description: str, author: User):
@@ -131,6 +133,7 @@ class App(BaseModel):
             slug=slug,
             description=description,
             creation_date=creation_date,
+            last_modified=creation_date,
             author=author
         )
 
@@ -178,6 +181,8 @@ class App(BaseModel):
         """
 
         self.description = description
+
+        self.last_modified = date.today()
 
         self.save()
 
@@ -277,12 +282,17 @@ class Script(BaseModel):
         # serializes the distros with json
         supported_distros = json.dumps(supported_distros)
 
-        return super().create(
+        created_script = super().create(
             action=action,
             supported_distros=supported_distros,
             filepath=script_path,
             app=app
         )
+
+        self.app.last_modified = date.today()
+        self.app.save()
+
+        return created_scrupt
 
     def edit(self, action: str, supported_distros: list, content: str):
         """
@@ -297,6 +307,9 @@ class Script(BaseModel):
         self.supported_distros = json.dumps(supported_distros)
         with self.open_content('w') as f:
             f.write(content)
+
+        self.app.last_modified = date.today()
+        self.app.save()
 
         self.save()
 
