@@ -15,6 +15,10 @@
     <th class="value-cell">{{ app.last_modified.day }}-{{app.last_modified.month}}-{{app.last_modified.year}}</th>
   </tr>
   <tr>
+    <th>Visibility:</th>
+    <th class="value-cell">{{ app.visibility.capitalize() }}</th>
+  </tr>
+  <tr>
     <th>Description:</th>
     <th class="value-cell">{{ app.description }}</th>
   </tr>
