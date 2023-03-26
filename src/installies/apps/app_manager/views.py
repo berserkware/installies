@@ -18,11 +18,15 @@ from installies.apps.app_manager.upload import (
 from installies.apps.app_manager.validate import (
     AppNameValidator,
     AppDescriptionValidator,
+    AppVisibilityValidator,
     ScriptActionValidator,
     ScriptDistroValidator,
     ScriptContentValidator
 )
-from installies.config import supported_script_actions
+from installies.config import (
+    supported_script_actions,
+    supported_visibility_options,
+)
 from installies.apps.app_manager.models import App, Script
 from peewee import JOIN
 
@@ -44,7 +48,7 @@ def create_app():
             AppDescriptionValidator.validate(app_description)
         except ValueError as e:
             flash(str(e), 'error')
-            return redirect(url_for('app_manager.createapp'))
+            return redirect(url_for('app_manager.createapp'), 303)
 
         # cleans the app name and description,
         # to make sure there is no malicious stuff
@@ -53,7 +57,8 @@ def create_app():
 
         app = App.create(app_name, app_description, g.user)
 
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
+        flash('App successfully created.', 'success')
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     return render_template('create_app.html')
 
@@ -98,12 +103,12 @@ def app_delete(slug):
             'You cannot delete an app you have not authored.',
             'error'
         )
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
         app.delete_instance()
         flash('App successfully deleted!', 'success')
-        return redirect('/')
+        return redirect('/', 303)
 
     return render_template('app_view/delete.html', app=app)
 
@@ -131,7 +136,7 @@ def app_edit(slug):
             'You cannot edit an app you have not authored.',
             'error'
         )
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
         app_description = request.form.get('app-desc', '').strip()
@@ -140,7 +145,7 @@ def app_edit(slug):
             AppDescriptionValidator.validate(app_description)
         except ValueError as e:
             flash(str(e), 'error')
-            return redirect(url_for('app_manager.app_edit', slug=app.slug))
+            return redirect(url_for('app_manager.app_edit', slug=app.slug), 303)
 
         app_description = bleach.clean(app_description)
 
@@ -149,17 +154,17 @@ def app_edit(slug):
         )
 
         flash('App succesfully edited.', 'success')
-        return redirect(url_for('app_manager.app_view', slug=slug))
+        return redirect(url_for('app_manager.app_view', slug=slug), 303)
     
     return render_template('app_view/edit.html', app=app)
 
 
-@app_manager.route('/apps/<slug>/make-public', methods=['GET', 'POST'])
-def make_app_public(slug):
+@app_manager.route('/apps/<slug>/change-visibility', methods=['GET', 'POST'])
+def change_visibility(slug):
 
     if g.is_authed is False:
         return redirect('/login')
-    
+
     app = (
         App
         .select()
@@ -174,67 +179,35 @@ def make_app_public(slug):
 
     if app.author != g.user:
         flash(
-            'You cannot change the visibility of an app your are not the author of.',
+            'You cannot edit an app you have not authored.',
             'error'
         )
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
-        if len(app.scripts) == 0:
-            flash(
-                'App must have at least one script to make it public.',
-                'error'
-            )
-            return redirect(url_for('app_manager.app_view', slug=app.slug))
+        visibility = request.form.get('visibility').strip()
 
-        app.public = True
+        try:
+            AppVisibilityValidator.validate(visibility)
+        except ValueError as e:
+            flash(str(e), 'error')
+            return redirect(url_for('app_manager.change_visibility', slug=app.slug), 303)
+
+        if visibility != 'private' and len(app.scripts) == 0:
+            flash('App must have at least one script to be made public', 'error')
+            return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
+
+        app.visibility = visibility
         app.save()
 
-        flash(
-            'App successfully made public.',
-            'success'
-        )
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
+        flash(f'App visibility successfully changed to {visibility}.', 'success')
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
-    return render_template('app_view/make_public.html', app=app)
-
-
-@app_manager.route('/apps/<slug>/make-private', methods=['GET', 'POST'])
-def make_app_private(slug):
-
-    if g.is_authed is False:
-        return redirect('/login')
-    
-    app = (
-        App
-        .select()
-        .join(Script, JOIN.LEFT_OUTER)
-        .where(App.slug == slug)
+    return render_template(
+        'app_view/change_visibility.html',
+        app=app,
+        visibility_options=supported_visibility_options,
     )
-
-    if app.exists() is False:
-        abort(404)
-    
-    app = app.get()
-
-    if app.author != g.user:
-        flash(
-            'You cannot change the visibility of an app your are not the author of.',
-            'error'
-        )
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
-
-    if request.method == 'POST':
-        app.public = False
-        app.save()
-
-        flash(
-            'App successfully made private.',
-            'success'
-        )
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
-
-    return render_template('app_view/make_private.html', app=app)
 
 @app_manager.route('/apps/<slug>/scripts')
 def app_scripts(slug):
@@ -263,7 +236,7 @@ def add_script(slug):
             'You cannot add a script to an app you have not authored.',
             'error'
         )
-        return redirect(f'/apps/{slug}/')
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
 
@@ -289,7 +262,7 @@ def add_script(slug):
         )
 
         flash('Script successfully created.', 'success')
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     return render_template(
         'app_view/add_script.html',
@@ -312,12 +285,12 @@ def delete_script(slug, script_id):
             'You cannot delete a script of an app you have not authored.',
             'error'
         )
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
         script.delete_instance()
         flash('Script successfully deleted.', 'success')
-        return redirect(url_for('app_mananger.app_view', slug=app.slug))
+        return redirect(url_for('app_mananger.app_view', slug=app.slug), 303)
     
     return render_template('app_view/delete_script.html', app=app, script=script)
 
@@ -336,7 +309,7 @@ def edit_script(slug, script_id):
             'You cannot edit a script of an app you have not authored.',
             'error'
         )
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
         script_action = request.form.get('script-action')
@@ -351,7 +324,7 @@ def edit_script(slug, script_id):
             ScriptContentValidator.validate(script_content)
         except ValueError as e:
             flash(str(e), 'error')
-            return redirect('app_manager.add_script', slug=app.slug)
+            return redirect(url_for('app_manager.add_script', slug=app.slug), 303)
 
         script.edit(
             action=script_action,
@@ -360,7 +333,7 @@ def edit_script(slug, script_id):
         )
 
         flash('Script successfully edited.', 'success')
-        return redirect(url_for('app_manager.app_view', slug=app.slug))
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
     
     return render_template(
         'app_view/edit_script.html',

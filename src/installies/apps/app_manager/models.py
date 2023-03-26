@@ -10,6 +10,7 @@ from installies.database.models import BaseModel
 from installies.apps.auth.models import User
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
+from installies.lib.random import gen_random_id
 from datetime import date
 
 import json
@@ -26,7 +27,7 @@ class App(BaseModel):
     creation_date = DateField()
     last_modified = DateField()
     author = ForeignKeyField(User, backref='apps')
-    public = BooleanField(default=False)
+    visibility = CharField(255, default='private')
 
     @classmethod
     def create(self, name: str, description: str, author: User):
@@ -202,10 +203,10 @@ class Script(BaseModel):
             app=app
         )
 
-        self.app.last_modified = date.today()
-        self.app.save()
+        app.last_modified = date.today()
+        app.save()
 
-        return created_scrupt
+        return created_script
 
     def edit(self, action: str, supported_distros: list, content: str):
         """

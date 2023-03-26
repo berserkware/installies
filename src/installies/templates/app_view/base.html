@@ -33,11 +33,7 @@
       <li class="app-option"><a href="{{ url_for("app_manager.app_edit", slug=app.slug) }}">Edit</a></li>
       <li class="app-option"><a href="{{ url_for("app_manager.app_delete", slug=app.slug) }}">Delete</a></li>
       <li class="app-option"><a href="{{ url_for("app_manager.add_script", slug=app.slug) }}">Add Script</a></li>
-      {% if app.public %}
-      <li class="app-option"><a href="{{ url_for("app_manager.make_app_private", slug=app.slug) }}">Make Private</a></li>
-      {% else %}
-      <li class="app-option"><a href="{{ url_for("app_manager.make_app_public", slug=app.slug) }}">Make Public</a></li>
-      {% endif %}
+      <li class="app-option"><a href="{{ url_for("app_manager.change_visibility", slug=app.slug) }}">Change Visibility</a></li>
       {% endif %}
     <ul>
   </div>
