@@ -1,5 +1,6 @@
 from installies.config import database
-from installies.database.models import User, App, Script
+from installies.apps.app_manager.models import App, Script
+from installies.apps.auth.models import User
 
 
 def create_database():

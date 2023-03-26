@@ -1,5 +1,7 @@
 from flask import Blueprint, abort, request
-from installies.database.models import App, Script, User, AppGroup
+from installies.database.models import AppGroup
+from installies.apps.app_manager.models import App, Script
+from installies.apps.auth.models import User
 from peewee import *
 
 import json

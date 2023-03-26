@@ -7,12 +7,13 @@ from installies.lib.check import (
     ExistsInDatabaseChecker,
     NotInContainerChecker,
 )
-from installies.database.models import App
+from installies.apps.app_manager.models import App
 from installies.lib.url import make_slug
 from installies.config import (
     supported_script_actions,
     supported_distros,
-    max_script_length
+    max_script_length,
+    supported_visibility_options,
 )
 
 class AppNameValidator(Validator):
@@ -45,6 +46,20 @@ class AppDescriptionValidator(Validator):
     data_name = 'App description'
 
 
+class AppVisibilityValidator(Validator):
+    """A class for validating visibility options submitted by the user."""
+
+    checkers = [
+        EmptyChecker(),
+        NotInContainerChecker(
+            container=supported_visibility_options,
+            container_name='the supported visibility options'
+        ),
+    ]
+
+    data_name = 'Visibility option'
+
+
 class ScriptActionValidator(Validator):
     """A class for validating script actions submitted by the user."""
 
@@ -70,7 +85,7 @@ class ScriptDistroValidator(Validator):
     ]
 
     data_name = 'Script distro'
-
+    
 
 class ScriptContentValidator(Validator):
     """A class for validating script content submitted by the user."""

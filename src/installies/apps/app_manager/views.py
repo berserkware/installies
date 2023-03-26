@@ -23,7 +23,7 @@ from installies.apps.app_manager.validate import (
     ScriptContentValidator
 )
 from installies.config import supported_script_actions
-from installies.database.models import App, Script
+from installies.apps.app_manager.models import App, Script
 from peewee import JOIN
 
 app_manager = Blueprint('app_manager', __name__)

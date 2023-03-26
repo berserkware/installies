@@ -7,7 +7,7 @@ from installies.apps.auth.validate import (
     EmailValidator,
     PasswordConfirmValidator,
 )
-from installies.database.models import User
+from installies.apps.auth.models import User
 from peewee import *
 from datetime import date
 import calendar

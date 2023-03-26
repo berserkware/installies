@@ -1,5 +1,4 @@
 from flask import render_template, Blueprint, request, g, Response
-from installies.database.models import App, Script, User
 from peewee import *
 
 app_library = Blueprint('app_library', __name__)

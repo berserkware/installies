@@ -43,7 +43,7 @@ class AppGroup:
 
     @classmethod
     def sort_by_creation_date(cls, apps, order_by: str='desc'):
-        """
+        """a
         Sort the apps by their creation_date.
 
         :param apps: The apps to sort.

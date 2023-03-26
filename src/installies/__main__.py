@@ -3,7 +3,7 @@ from installies.apps.app_library.views import app_library
 from installies.apps.app_manager.views import app_manager
 from installies.apps.auth.views import auth
 from installies.config import database
-from installies.database.models import User
+from installies.apps.auth.models import User
 from flask import Flask, request, g, render_template
 from peewee import *
 

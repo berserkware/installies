@@ -1,4 +1,5 @@
-from installies.database.models import App, User
+from installies.apps.app_manager.models import App
+from installies.apps.auth.models import User
 from installies.lib.url import make_slug
 from datetime import date
 from peewee import *

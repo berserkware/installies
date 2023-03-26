@@ -5,7 +5,7 @@ from installies.lib.check import (
     AllowedCharactersChecker,
     ExistsInDatabaseChecker,
 )
-from installies.database.models import User
+from installies.apps.auth.models import User
 
 
 class UsernameValidator(Validator):
