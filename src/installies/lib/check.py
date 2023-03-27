@@ -3,10 +3,31 @@ import typing as t
 
 from peewee import DoesNotExist
 
+class MakeCheckerFromKwargsWrapper:
+    """
+    A wrapper for checker classes that initializes the checker from kwargs when the check method is called.
+
+    :param checker: The checker to check with.
+    """
+
+    def __init__(self, checker: t.Callable):
+        self.checker = checker
+
+    def check(self, data: str, **kwargs):
+        """
+        Creates the checker object, then runs the check method on it.
+
+        :param data: The data to check.
+        """
+
+        checker = self.checker(**kwargs)
+        checker.check(data)
+
+
 class EmptyChecker:
     """A checker class that checks if a string is empty."""
 
-    def check(self, data: str):
+    def check(self, data: str, **kwargs):
         """
         Check if data string is empty.
 
@@ -32,7 +53,7 @@ class LengthChecker:
         self.max_len = max_len
         self.min_len = min_len
 
-    def check(self, data: str):
+    def check(self, data: str, **kwargs):
         """
         Check the length of a data string.
 
@@ -86,7 +107,7 @@ class AllowedCharactersChecker:
 
         self.allowed_characters.extend(allow_extra)
 
-    def check(self, data: str):
+    def check(self, data: str, **kwargs):
         """
         Check that only allowed characters in data string.
 
@@ -108,7 +129,7 @@ class DisallowedCharactersChecker:
     :param disallowed_characters: The characters that are not allowed.
     """
 
-    def __init__(self, disallowed_characters=[]):
+    def __init__(self, disallowed_characters=[], **kwargs):
         self.disallowed_characters = disallowed_characters
 
     def check(self, data: str):
@@ -146,7 +167,7 @@ class ExistsInDatabaseChecker:
         self.column_name = column_name
         self.data_modifier = data_modifier
 
-    def check(self, data: str):
+    def check(self, data: str, **kwargs):
         """
         Check that data string does not exist in the database.
 
@@ -179,7 +200,7 @@ class NotInContainerChecker:
         self.container = container
         self.container_name = container_name
 
-    def check(self, data: str):
+    def check(self, data: str, **kwargs):
         """
         Check that a data string exists in the database.
 

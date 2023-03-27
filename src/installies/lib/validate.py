@@ -10,7 +10,9 @@ class Validator:
     contain a message suitable for returning to the user. The message
     should contain curly braces to be formatted with the name of the
     data. The name of the data should be put in the ``data_name``
-    attribute of the validator. The data name is defaulted to "Data"
+    attribute of the validator. The data name is defaulted to "Data".
+    The kwargs passed to the validate methods are also passed to the
+    checker classes's check method.
     """
 
     # An empty list for the checker functions
@@ -20,7 +22,7 @@ class Validator:
     data_name = 'Data'
 
     @classmethod
-    def check_data(cls, data: str, checker):
+    def check_data(cls, data: str, checker, **kwargs):
         """
         Check a piece of data against a checker class.
 
@@ -28,13 +30,13 @@ class Validator:
         :param checker: The checking class to check the data.
         """
         try:
-            checker.check(data)
+            checker.check(data, **kwargs)
         except ValueError as e:
             new_message = str(e).format(cls.data_name)
             raise ValueError(new_message)
 
     @classmethod
-    def validate_many(cls, data: list):
+    def validate_many(cls, data: list, **kwargs):
         """
         Validates a list of data.
 
@@ -49,10 +51,10 @@ class Validator:
 
         for checker in checkers:
             for item in data:
-                cls.check_data(item, checker)
+                cls.check_data(item, checker, **kwargs)
 
     @classmethod
-    def validate(cls, data):
+    def validate(cls, data, **kwargs):
         """
         Validate a string or list argument.
 
@@ -66,4 +68,4 @@ class Validator:
         checkers = cls.checkers
 
         for checker in checkers:
-            cls.check_data(data, checker)
+            cls.check_data(data, checker, **kwargs)
