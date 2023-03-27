@@ -26,17 +26,17 @@ class App(BaseModel):
     description = TextField()
     creation_date = DateTimeField(default=datetime.now)
     last_modified = DateTimeField(default=datetime.now)
-    author = ForeignKeyField(User, backref='apps')
+    submitter = ForeignKeyField(User, backref='apps')
     visibility = CharField(255, default='private')
 
     @classmethod
-    def create(self, name: str, description: str, author: User):
+    def create(self, name: str, description: str, submitter: User):
         """
         Create a App object, and adds it to the database.
 
         :param name: The name of the app.
         :param description: The app's description.
-        :param author: The app's author.
+        :param submitter: The app's submitter.
         """
         slug = make_slug(name)
 
@@ -44,7 +44,7 @@ class App(BaseModel):
             name=name,
             slug=slug,
             description=description,
-            author=author
+            submitter=submitter,
         )
 
     def serialize(self):

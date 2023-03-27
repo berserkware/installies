@@ -3,8 +3,8 @@
 {% block content %}
 <table>
   <tr>
-    <th>Author:</th>
-    <th class="value-cell"><a class="link" href="{{ url_for("auth.profile", username=app.author.username) }}">{{ app.author.username }}</a></th>
+    <th>Original Submitter:</th>
+    <th class="value-cell"><a class="link" href="{{ url_for("auth.profile", username=app.submitter.username) }}">{{ app.submitter.username }}</a></th>
   </tr>
   <tr>
     <th>Creation Date:</th>
