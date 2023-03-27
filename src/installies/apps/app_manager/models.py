@@ -1,7 +1,7 @@
 from peewee import (
     Model,
     CharField,
-    DateField,
+    DateTimeField,
     BooleanField,
     TextField,
     ForeignKeyField,
@@ -11,7 +11,7 @@ from installies.apps.auth.models import User
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
-from datetime import date
+from datetime import datetime
 
 import json
 import os
@@ -24,8 +24,8 @@ class App(BaseModel):
     name = CharField(255, unique=True)
     slug = CharField(255, unique=True)
     description = TextField()
-    creation_date = DateField()
-    last_modified = DateField()
+    creation_date = DateTimeField(default=datetime.now)
+    last_modified = DateTimeField(default=datetime.now)
     author = ForeignKeyField(User, backref='apps')
     visibility = CharField(255, default='private')
 
@@ -40,14 +40,10 @@ class App(BaseModel):
         """
         slug = make_slug(name)
 
-        creation_date = date.today()
-
         return super().create(
             name=name,
             slug=slug,
             description=description,
-            creation_date=creation_date,
-            last_modified=creation_date,
             author=author
         )
 
@@ -96,7 +92,7 @@ class App(BaseModel):
 
         self.description = description
 
-        self.last_modified = date.today()
+        self.last_modified = datetime.today()
 
         self.save()
 
@@ -203,7 +199,7 @@ class Script(BaseModel):
             app=app
         )
 
-        app.last_modified = date.today()
+        app.last_modified = datetime.today()
         app.save()
 
         return created_script
@@ -222,7 +218,7 @@ class Script(BaseModel):
         with self.open_content('w') as f:
             f.write(content)
 
-        self.app.last_modified = date.today()
+        self.app.last_modified = datetime.today()
         self.app.save()
 
         self.save()

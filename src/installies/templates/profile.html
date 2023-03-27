@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ username }}'s Profile{% endblock %}
+{% block title %}{{ user.username }}'s Profile{% endblock %}
 
 {% block header %}
 <link rel="stylesheet" href="/static/css/profile.css">
@@ -8,13 +8,13 @@
 
 {% block body %}
     <div class="container">
-        <h2 class="container-header">{{ username }}'s Profile</h2>
+        <h2 class="container-header">{{ user.username }}'s Profile</h2>
         <hr class="breakline">
         
         <table>
             <tr>
                 <th>Join Date:</th>
-                <th class="value-cell">{{ day_joined }} {{ month_joined }}, {{ year_joined }}</th>
+                <th class="value-cell">{{ user.creation_date.day }}-{{ user.creation_date.month }}-{{ user.creation_date.year }} {{ user.creation_date.hour }}:{{ user.creation_date.minute }} (UTC)</th>
             </tr>
         </table>
     </div>

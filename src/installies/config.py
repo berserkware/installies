@@ -6,6 +6,7 @@ from pathlib import Path
 
 dotenv_path = os.path.join(Path(__file__).parent.resolve(), '.env')
 load_dotenv(dotenv_path)
+os.environ['TZ'] = 'UTC'
 
 database = MySQLDatabase(
     os.environ.get('DATABASE_NAME'),

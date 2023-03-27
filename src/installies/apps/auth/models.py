@@ -3,12 +3,13 @@ from peewee import (
     CharField,
     DateField,
     BooleanField,
+    DateTimeField,
 )
 from installies.database.models import BaseModel
 from installies.config import database, apps_path
 from installies.lib.random import gen_random_id
 from installies.lib.url import make_slug
-from datetime import date
+from datetime import datetime
 
 import json
 import bcrypt
@@ -22,7 +23,7 @@ class User(BaseModel):
     username = CharField(255, unique=True)
     email = CharField(255, unique=True)
     password = CharField(255)
-    creation_date = DateField()
+    creation_date = DateTimeField(default=datetime.now)
     token = CharField(255, unique=True)
     admin = BooleanField(default=False)
 
@@ -77,7 +78,6 @@ class User(BaseModel):
         :param password: The user's password.
         :param admin: The user's admin status.
         """
-        creation_date = date.today()
 
         token = cls.make_token()
 
@@ -87,7 +87,6 @@ class User(BaseModel):
             username=username,
             email=email,
             password=hashed_pass,
-            creation_date=creation_date,
             token=token,
             admin=admin
         )
