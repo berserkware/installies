@@ -7,10 +7,10 @@
     <h2 class="container-header">Edit App</h2>
     <hr class="breakline">
     
-    <form class="edit-app-form" action="{{ url_for('app_manager.app_edit', slug=app.slug) }}" method="post">
+    <form action="{{ url_for('app_manager.app_edit', slug=app.slug) }}" method="post">
         <div class="form-input-container">
             <label for="app-desc" >Description</label><br>
-            <textarea name="app-desc" class="textbox" cols="30" rows="6">{{ app.description }}</textarea>
+            <textarea name="app-desc" id="app-desc" class="textbox" cols="30" rows="6">{{ app.description }}</textarea>
         </div>
         
         <div class="form-input-container">

@@ -10,22 +10,22 @@
     <form class="signup-form" action="{{ url_for('auth.signup') }}" method="post">
         <div class="form-input-container">
             <label for="username">Username</label><br>
-            <input type="text" name="username" class="textbox margin-top-5 wide-textbox" required><br>
+            <input type="text" name="username" id="username" class="textbox margin-top-5 wide-textbox" required><br>
         </div>
         
         <div class="form-input-container">
             <label for="email">Email</label><br>
-            <input type="email" name="email" class="textbox margin-top-5 wide-textbox" required><br>
+            <input type="email" name="email" id="email" class="textbox margin-top-5 wide-textbox" required><br>
         </div>
         
         <div class="form-input-container">
             <label for="password">Password</label><br>
-            <input type="password" name="password" class="textbox margin-top-5 wide-textbox" required><br>
+            <input type="password" name="password" id="password" class="textbox margin-top-5 wide-textbox" required><br>
         </div>
         
         <div class="form-input-container">
             <label for="password-confirm">Password Confirm</label><br>
-            <input type="password" name="password-confirm" class="textbox margin-top-5 wide-textbox" required><br>
+            <input type="password" name="password-confirm" id="password-confirm" class="textbox margin-top-5 wide-textbox" required><br>
         </div>
         
         <div class="form-input-container">
