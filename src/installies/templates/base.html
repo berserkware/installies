@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, user-scalable=yes">
     <title>{% block title %}{% endblock %} - Installies</title>
     <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/style.css">
     {% block header %}
     {% endblock %}
 </head>
 <body>
   <nav>
-    <div class="navbar">
-      <h1 class="logo-header">
-        <a class="white-link logo-link" href="/">installies</a>
+    <div class="flex gap-15 align-flex-end flex-wrap">
+      <h1 class="logo">
+        <a class="white-link" href="/">installies</a>
       </h1>
       
       <a class="white-link nav-link" href="{{ url_for('app_library.index') }}">Home</a>
@@ -27,9 +26,9 @@
       <a class="white-link nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
       {% endif %}
       
-      <form action="{{ url_for('app_library.search') }}" method="get" class="nav-search-form">
-	<input type="text" name="k" placeholder="Search an App..." class="searchbox black">
-        <input type="submit" value="Search" class="searchbutton">
+      <form action="{{ url_for('app_library.search') }}" method="get" class="flex margin-left-auto gap-5">
+	<input type="text" name="k" placeholder="Search an App..." class="no-top-margin black">
+        <input type="submit" value="Search" class="no-top-margin">
       </form>
     </div>
     <hr>
@@ -38,10 +37,10 @@
     {% with errors = get_flashed_messages(category_filter=["error"]) %}
     {% if errors %}
         {% for msg in errors %}
-            <div class="container error-container">
-                <h3 class="container-header">Error!</h3>
-                <hr>
-                <p class="container-description">{{ msg }}</p>
+            <div class="container red">
+                <h3 class="container-header red">Error!</h3>
+                <hr class="red-border">
+                <p class="container-description red">{{ msg }}</p>
             </div>
         {% endfor %}
     {% endif %}
@@ -50,10 +49,10 @@
     {% with errors = get_flashed_messages(category_filter=["success"]) %}
     {% if errors %}
         {% for msg in errors %}
-            <div class="container success-container">
-                <h3 class="container-header">Success!</h3>
-                <hr class="breakline">
-                <p class="container-description">{{ msg }}</p>
+            <div class="container green">
+                <h3 class="container-header green">Success!</h3>
+                <hr class="green-border">
+                <p class="container-description green">{{ msg }}</p>
             </div>
         {% endfor %}
     {% endif %}

@@ -2,41 +2,37 @@
 
 {% block title %}Sign Up{% endblock %}
 
-{% block header %}
-<link rel="stylesheet" href="/static/css/signup.css">
-{% endblock %}
-
 {% block body %}
-<div class="container black signup-container">
+<div class="container black auto-margin" style="width:40%;">
     <h2 class="container-header">Sign Up</h2>
     <hr class="breakline">
     
     <form class="signup-form" action="{{ url_for('auth.signup') }}" method="post">
         <div class="form-input-container">
             <label for="username">Username</label><br>
-            <input type="text" name="username" class="textbox signup-textbox" required><br>
+            <input type="text" name="username" class="textbox margin-top-5 wide-textbox" required><br>
         </div>
         
         <div class="form-input-container">
             <label for="email">Email</label><br>
-            <input type="email" name="email" class="textbox signup-textbox" required><br>
+            <input type="email" name="email" class="textbox margin-top-5 wide-textbox" required><br>
         </div>
         
         <div class="form-input-container">
             <label for="password">Password</label><br>
-            <input type="password" name="password" class="textbox signup-textbox" required><br>
+            <input type="password" name="password" class="textbox margin-top-5 wide-textbox" required><br>
         </div>
         
         <div class="form-input-container">
             <label for="password-confirm">Password Confirm</label><br>
-            <input type="password" name="password-confirm" class="textbox signup-textbox" required><br>
+            <input type="password" name="password-confirm" class="textbox margin-top-5 wide-textbox" required><br>
         </div>
         
         <div class="form-input-container">
-            <input type="submit" value="Submit" class="button signup-submit">
+            <input type="submit" value="Submit" class="button inline">
         </div>
         
-        <h5 class="signup-text">Or if you have an account, <a class="link" href="/login">Log In</a></h5>
+        <h5 class="margin-top-10 no-bottom-margin grey">Or if you have an account, <a class="link" href="/login">Log In</a></h5>
     </form>
 </div>
 {% endblock %}

@@ -152,6 +152,26 @@ th {
     background-color: var(--black);
 }
 
+.grey {
+    color: var(--grey)
+}
+
+.green {
+    color: var(--green)
+}
+
+.green-border {
+    border-color: var(--green)
+}
+
+.red {
+    color: var(--red)
+}
+
+.red-border {
+    border-color: var(--red)
+}
+
 .form-input-container {
     margin-top: 10px;
 }
@@ -162,4 +182,124 @@ th {
     padding-top: 3px;
     padding-left: 5px;
     padding-right: 5px;
+}
+
+.wide-textbox {
+    width: 300px;
+}
+
+.logo {
+    font-family: Assurant Standard;
+    letter-spacing: 2px;
+    font-size: 38px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    height: 38px;
+}
+
+.grid-column-start-1 {
+    grid-column-start: 1;
+}
+
+.side-options-grid {
+    display: grid;
+    grid-template-columns: auto 150px;
+    column-gap: 10px;
+}
+
+.side-options {
+    grid-column-start: 2;
+    grid-row-start: 2;
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+    width: 100%;
+}
+
+.grid-column-span-2 {
+    grid-column: 1 / span 2;
+}
+
+.flex {
+    display: flex;
+}
+
+.gap-5 {
+    gap: 5px;
+}
+
+.gap-15 {
+    gap: 15px;
+}
+
+.align-flex-end {
+    align-items: flex-end;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.inline {
+    display: inline;
+}
+
+.margin-left-auto {
+    margin-left: auto;
+}
+
+.margin-right-8 {
+    margin-right: 8px;
+}
+
+.margin-bottom-3 {
+    margin-bottom: 3px;
+}
+
+.margin-bottom-10 {
+    margin-bottom: 10px;
+}
+
+.margin-top-3 {
+    margin-top: 3px;
+}
+
+.margin-top-5 {
+    margin-top: 5px;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.no-bottom-margin {
+    margin-bottom: 0;
+}
+
+.no-top-margin {
+    margin-top: 0;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.auto-margin {
+    margin: auto;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.auto-width {
+    width: auto;
+}
+
+.no-list-style-type {
+    list-style-type: none;
+}
+
+.vertical-resize {
+    resize: vertical;
 }

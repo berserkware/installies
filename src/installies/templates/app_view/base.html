@@ -3,37 +3,36 @@
 {% block title %}{% block app_page_title %}{% endblock %}{{ app.name }}{% endblock %}
 
 {% block header %}
-<link rel="stylesheet" href="/static/css/app_view.css">
 {% block extra_headers %}
 {% endblock %}
 {% endblock %}
 
 {% block body %}
-<div class="container app-view-container">
-  <div class="app-nav">
-    <h2 class="app-name container-header">{{ app.name }}</h2>
-    <div class="app-nav-links">
-      <a class="white-link app-nav-link" href="{{ url_for("app_manager.app_view", slug=app.slug) }}">Infomation</a>
-      <a class="white-link app-nav-link" href="{{ url_for("app_manager.app_scripts", slug=app.slug) }}">Scripts</a>
+<div class="side-options-grid container" style="width:85%;">
+  <div class="grid-column-span-2">
+    <h2 class="margin-bottom-3 container-header">{{ app.name }}</h2>
+    <div class="inline">
+      <a class="margin-right-8 white-link" href="{{ url_for("app_manager.app_view", slug=app.slug) }}">Infomation</a>
+      <a class="margin-right-8 white-link" href="{{ url_for("app_manager.app_scripts", slug=app.slug) }}">Scripts</a>
     </div>
     <hr>
   </div>
   
-  <div class="content">
+  <div class="grid-column-start-1 auto-width">
   {% block content %}
   {% endblock %}
   </div>
 
-  <div class="app-option-container">
+  <div class="side-options">
     <h3 class="app-option-header container-header">App Options</h3>
-    <hr>
+    <hr class="margin-bottom-3">
     
-    <ul class="app-option-list">
+    <ul class="no-margin no-padding no-list-style-type">
       {% if app.author == g.user %}
-      <li class="app-option"><a href="{{ url_for("app_manager.app_edit", slug=app.slug) }}">Edit</a></li>
-      <li class="app-option"><a href="{{ url_for("app_manager.app_delete", slug=app.slug) }}">Delete</a></li>
-      <li class="app-option"><a href="{{ url_for("app_manager.add_script", slug=app.slug) }}">Add Script</a></li>
-      <li class="app-option"><a href="{{ url_for("app_manager.change_visibility", slug=app.slug) }}">Change Visibility</a></li>
+      <li><a href="{{ url_for("app_manager.app_edit", slug=app.slug) }}">Edit</a></li>
+      <li><a href="{{ url_for("app_manager.app_delete", slug=app.slug) }}">Delete</a></li>
+      <li><a href="{{ url_for("app_manager.add_script", slug=app.slug) }}">Add Script</a></li>
+      <li><a href="{{ url_for("app_manager.change_visibility", slug=app.slug) }}">Change Visibility</a></li>
       {% endif %}
     <ul>
   </div>
