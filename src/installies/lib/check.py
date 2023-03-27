@@ -2,6 +2,7 @@ import string
 import typing as t
 
 from peewee import DoesNotExist
+from installies.lib.validate import ValidationError
 
 class MakeCheckerFromKwargsWrapper:
     """
@@ -36,7 +37,7 @@ class EmptyChecker:
         :param data: The data to check.
         """
         if data is None or data.strip() == '' or data == []:
-            raise ValueError(
+            raise ValidationError(
                 '{} cannot be empty.'
             )
 
@@ -62,12 +63,12 @@ class LengthChecker:
         :param data: The data to check.
         """
         if self.max_len is not None and len(data) > self.max_len:
-            raise ValueError(
+            raise ValidationError(
                 '{} ' + f'must not contain more than {self.max_len} characters.'
             )
 
         if self.min_len is not None and len(data) < self.min_len:
-            raise ValueError(
+            raise ValidationError(
                 '{} ' + f'must contain at least {self.min_len} characters.'
             )
 
@@ -117,7 +118,7 @@ class AllowedCharactersChecker:
         """
         for char in data:
             if char not in self.allowed_characters:
-                raise ValueError(
+                raise ValidationError(
                     '{} ' + f'cannot contain character "{char}".'
                 )
 
@@ -142,7 +143,7 @@ class DisallowedCharactersChecker:
         """
         for char in data:
             if char in self.allowed_characters:
-                raise ValueError(
+                raise ValidationError(
                     '{}' + f'cannot contain character "{char}".'
                 )
 
@@ -183,7 +184,7 @@ class ExistsInDatabaseChecker:
         except DoesNotExist:
             return
 
-        raise ValueError(
+        raise ValidationError(
             '{} already exists.'
         )
 
@@ -209,4 +210,4 @@ class NotInContainerChecker:
         :param data: The data string to check.
         """
         if data not in self.container:
-            raise ValueError('{} ' + f'must be in {self.container_name}.')
+            raise ValidationError('{} ' + f'must be in {self.container_name}.')

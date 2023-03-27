@@ -1,3 +1,9 @@
+class ValidationError(Exception):
+    """
+    This is an exception to be used by checker classes to be raised when data is not clean.
+
+    The message of the exception should be suitable to return to the user.
+    """
 
 class Validator:
     """
@@ -6,7 +12,7 @@ class Validator:
     Validation is done using checker classes that you can add to the
     ``checkers`` list attribute. The checkers should have a ``check`` method
     that should take a string, which is the data to check. The checkers should
-    raise a ``ValueError`` if the data is not valid. The ValueError should
+    raise a ``ValidationError`` if the data is not valid. The ValidationError should
     contain a message suitable for returning to the user. The message
     should contain curly braces to be formatted with the name of the
     data. The name of the data should be put in the ``data_name``
@@ -31,9 +37,9 @@ class Validator:
         """
         try:
             checker.check(data, **kwargs)
-        except ValueError as e:
+        except ValidationError as e:
             new_message = str(e).format(cls.data_name)
-            raise ValueError(new_message)
+            raise ValidationError(new_message)
 
     @classmethod
     def validate_many(cls, data: list, **kwargs):

@@ -15,6 +15,7 @@ from flask import (
 from installies.apps.app_manager.upload import (
     get_distros_from_string,
 )
+from installies.lib.validate import ValidationError
 from installies.apps.app_manager.validate import (
     AppNameValidator,
     AppDescriptionValidator,
@@ -46,9 +47,9 @@ def create_app():
         try:
             AppNameValidator.validate(app_name)
             AppDescriptionValidator.validate(app_description)
-        except ValueError as e:
+        except ValidationError as e:
             flash(str(e), 'error')
-            return redirect(url_for('app_manager.createapp'), 303)
+            return redirect(url_for('app_manager.create_app'), 303)
 
         # cleans the app name and description,
         # to make sure there is no malicious stuff
@@ -143,7 +144,7 @@ def app_edit(slug):
 
         try:
             AppDescriptionValidator.validate(app_description)
-        except ValueError as e:
+        except ValidationError as e:
             flash(str(e), 'error')
             return redirect(url_for('app_manager.app_edit', slug=app.slug), 303)
 
@@ -189,7 +190,7 @@ def change_visibility(slug):
 
         try:
             AppVisibilityValidator.validate(visibility)
-        except ValueError as e:
+        except ValidationError as e:
             flash(str(e), 'error')
             return redirect(url_for('app_manager.change_visibility', slug=app.slug), 303)
 
@@ -250,7 +251,7 @@ def add_script(slug):
             ScriptActionValidator.validate(script_action)
             ScriptDistroValidator.validate_many(supported_distros)
             ScriptContentValidator.validate(script_content)
-        except ValueError as e:
+        except ValidationError as e:
             flash(str(e), 'error')
             return redirect('app_manager.add_script', slug=app.slug)
 
@@ -322,7 +323,7 @@ def edit_script(slug, script_id):
             ScriptActionValidator.validate(script_action)
             ScriptDistroValidator.validate_many(supported_distros)
             ScriptContentValidator.validate(script_content)
-        except ValueError as e:
+        except ValidationError as e:
             flash(str(e), 'error')
             return redirect(url_for('app_manager.add_script', slug=app.slug), 303)
 
@@ -341,5 +342,3 @@ def edit_script(slug, script_id):
         script=script,
         possible_script_actions=supported_script_actions,
     )
-
-

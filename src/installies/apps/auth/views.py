@@ -1,6 +1,7 @@
 import bleach
 
 from flask import Blueprint, render_template, redirect, abort, request, g, flash
+from installies.lib.validate import ValidationError
 from installies.apps.auth.validate import (
     PasswordValidator,
     UsernameValidator,
@@ -33,7 +34,7 @@ def signup():
             EmailValidator.validate(email)
             PasswordValidator.validate(password)
             PasswordConfirmValidator.validate(password_confirm)
-        except ValueError as e:
+        except ValidationError as e:
             flash(str(e), 'error')
             return render_template('signup.html')
 
