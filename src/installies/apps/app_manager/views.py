@@ -29,16 +29,14 @@ from installies.config import (
     supported_visibility_options,
 )
 from installies.apps.app_manager.models import App, Script
+from installies.apps.auth.decorators import authenticated_required
 from peewee import JOIN
 
 app_manager = Blueprint('app_manager', __name__)
 
 @app_manager.route('/create-app', methods=['GET', 'POST'])
+@authenticated_required()
 def create_app():
-    # Makes sure user is authenticated
-    if g.is_authed is False:
-        return redirect('/login')
-
     if request.method == 'POST':
         app_name = request.form.get('app-name', '').strip()
         app_description = request.form.get('app-desc', '').strip()
@@ -82,11 +80,8 @@ def app_view(slug):
 
 
 @app_manager.route('/apps/<slug>/delete', methods=['GET', 'POST'])
+@authenticated_required()
 def app_delete(slug):
-
-    if g.is_authed is False:
-        return redirect('/login')
-    
     app = (
         App
         .select()
@@ -115,11 +110,8 @@ def app_delete(slug):
 
 
 @app_manager.route('/apps/<slug>/edit', methods=['GET', 'POST'])
-def app_edit(slug):
-
-    if g.is_authed is False:
-        return redirect('/login')
-    
+@authenticated_required()
+def app_edit(slug):    
     app = (
         App
         .select()
@@ -161,11 +153,8 @@ def app_edit(slug):
 
 
 @app_manager.route('/apps/<slug>/change-visibility', methods=['GET', 'POST'])
+@authenticated_required()
 def change_visibility(slug):
-
-    if g.is_authed is False:
-        return redirect('/login')
-
     app = (
         App
         .select()
@@ -215,11 +204,8 @@ def app_scripts(slug):
     return render_template('app_view/scripts.html')
 
 @app_manager.route('/apps/<slug>/add-script', methods=['get', 'post'])
+@authenticated_required()
 def add_script(slug):
-
-    if g.is_authed is False:
-        return redirect('/login')
-
     app = (
         App
         .select()
@@ -273,11 +259,8 @@ def add_script(slug):
 
 
 @app_manager.route('/apps/<slug>/scripts/<int:script_id>/delete')
+@authenticated_required()
 def delete_script(slug, script_id):
-
-    if g.is_authed is False:
-        return redirect('/login')
-    
     app = App.get(App.slug == slug)
     script = Script.select().where(Script.id == script_id).get()
 
@@ -297,11 +280,8 @@ def delete_script(slug, script_id):
 
 
 @app_manager.route('/apps/<slug>/scripts/<int:script_id>/edit', methods=['GET', 'POST'])
+@authenticated_required()
 def edit_script(slug, script_id):
-
-    if g.is_authed is False:
-        return redirect('/login')
-    
     app = App.get(App.slug == slug)
     script = Script.select().where(Script.id == script_id).get()
 

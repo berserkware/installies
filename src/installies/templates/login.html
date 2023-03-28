@@ -7,7 +7,7 @@
     <h2 class="container-header">Log In</h2>
     <hr class="breakline">
     
-    <form class="login-form" action="{{ url_for('auth.login') }}" method="post">
+    <form class="login-form" action="{{ url_for('auth.login') }}{% if 'referer' in request.args.keys() %}?referer={{ request.args['referer'] }}{% endif %}" method="post">
         <div class="form-input-container">
             <label for="username" >Username</label><br>
             <input type="text" name="username" id="username" class="textbox margin-top-5 wide-textbox" required><br>

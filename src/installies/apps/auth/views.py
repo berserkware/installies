@@ -9,6 +9,10 @@ from installies.apps.auth.validate import (
     PasswordConfirmValidator,
 )
 from installies.apps.auth.models import User
+from installies.apps.auth.decorators import (
+    unauthenticated_required,
+    authenticated_required,
+)
 from peewee import *
 from datetime import date
 import calendar
@@ -17,11 +21,8 @@ auth = Blueprint('auth', __name__)
 
 
 @auth.route('/signup', methods=['GET', 'POST'])
+@unauthenticated_required()
 def signup():
-    # Checks if user is authenticated
-    if g.is_authed:
-        return redirect('/')
-
     if request.method == 'POST':
         # Gets the form data
         username = request.form.get('username').strip()
@@ -57,11 +58,8 @@ def signup():
 
 
 @auth.route('/login', methods=['GET', 'POST'])
+@unauthenticated_required()
 def login():
-    # Checks that user is authenticated
-    if g.is_authed:
-        return redirect('/')
-
     if request.method == 'POST':
         # Gets the POST data
         username = request.form.get('username')
@@ -89,6 +87,13 @@ def login():
             return render_template('login.html')
 
         res = redirect('/')
+        
+        # if a referer is sent in the params, redirect to there instead
+        referer = request.args.get('referer')
+        if referer is not None:
+            referer = bleach.clean(referer)
+            res = redirect(referer)
+        
         res.set_cookie('user-token', user.token)
         flash('You are now logged in.', 'success')
         return res
@@ -97,6 +102,7 @@ def login():
 
 
 @auth.route('/logout', methods=['GET', 'POST'])
+@authenticated_required()
 def logout():
     res = redirect('/')
     res.set_cookie('user-token', 'deleted', '/', '-1')
