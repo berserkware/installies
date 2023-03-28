@@ -29,6 +29,7 @@ from installies.config import (
     supported_visibility_options,
 )
 from installies.apps.app_manager.models import App, Script
+from installies.apps.app_manager.decorators import get_app_from_arg, get_script_from_arg
 from installies.apps.auth.decorators import authenticated_required
 from peewee import JOIN
 
@@ -63,40 +64,18 @@ def create_app():
 
 
 @app_manager.route('/apps/<slug>', methods=['GET', 'POST'])
-def app_view(slug):
-    app = (
-        App
-        .select()
-        .join(Script, JOIN.LEFT_OUTER)
-        .where(App.slug == slug)
-    )
-
-    if app.exists() is False:
-        abort(404)
-
-    app = app.get()
-
+@get_app_from_arg()
+def app_view(app):
     return render_template('app_view/info.html', app=app)
 
 
 @app_manager.route('/apps/<slug>/delete', methods=['GET', 'POST'])
 @authenticated_required()
-def app_delete(slug):
-    app = (
-        App
-        .select()
-        .join(Script, JOIN.LEFT_OUTER)
-        .where(App.slug == slug)
-    )
-
-    if app.exists() is False:
-        abort(404)
-    
-    app = app.get()
-
-    if app.author != g.user:
+@get_app_from_arg()
+def app_delete(app):
+    if app.submitter != g.user:
         flash(
-            'You cannot delete an app you have not authored.',
+            'You cannot delete an app that you are not the submitter of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -111,22 +90,11 @@ def app_delete(slug):
 
 @app_manager.route('/apps/<slug>/edit', methods=['GET', 'POST'])
 @authenticated_required()
-def app_edit(slug):    
-    app = (
-        App
-        .select()
-        .join(Script, JOIN.LEFT_OUTER)
-        .where(App.slug == slug)
-    )
-
-    if app.exists() is False:
-        abort(404)
-    
-    app = app.get()
-
-    if app.author != g.user:
+@get_app_from_arg()
+def app_edit(app):    
+    if app.submitter != g.user:
         flash(
-            'You cannot edit an app you have not authored.',
+            'You cannot edit an app that you are not the submitter of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -154,22 +122,11 @@ def app_edit(slug):
 
 @app_manager.route('/apps/<slug>/change-visibility', methods=['GET', 'POST'])
 @authenticated_required()
-def change_visibility(slug):
-    app = (
-        App
-        .select()
-        .join(Script, JOIN.LEFT_OUTER)
-        .where(App.slug == slug)
-    )
-
-    if app.exists() is False:
-        abort(404)
-    
-    app = app.get()
-
-    if app.author != g.user:
+@get_app_from_arg()
+def change_visibility(app):
+    if app.submitter != g.user:
         flash(
-            'You cannot edit an app you have not authored.',
+            'You cannot edit an app that you are not the submitter of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -200,27 +157,17 @@ def change_visibility(slug):
     )
 
 @app_manager.route('/apps/<slug>/scripts')
-def app_scripts(slug):
+@get_app_from_arg()
+def app_scripts(app):
     return render_template('app_view/scripts.html')
 
 @app_manager.route('/apps/<slug>/add-script', methods=['get', 'post'])
 @authenticated_required()
-def add_script(slug):
-    app = (
-        App
-        .select()
-        .join(Script, JOIN.LEFT_OUTER)
-        .where(App.slug == slug)
-    )
-
-    if app.exists() is False:
-        abort(404)
-
-    app = app.get()
-
-    if app.author != g.user:
+@get_app_from_arg()
+def add_script(app):
+    if app.submitter != g.user:
         flash(
-            'You cannot add a script to an app you have not authored.',
+            'You cannot add a script to an app that you are not the submitter of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -260,13 +207,12 @@ def add_script(slug):
 
 @app_manager.route('/apps/<slug>/scripts/<int:script_id>/delete')
 @authenticated_required()
-def delete_script(slug, script_id):
-    app = App.get(App.slug == slug)
-    script = Script.select().where(Script.id == script_id).get()
-
-    if app.author != g.user:
+@get_app_from_arg()
+@get_script_from_arg()
+def delete_script(app, script):
+    if app.submitter != g.user:
         flash(
-            'You cannot delete a script of an app you have not authored.',
+            'You cannot delete a script of an app that you are not the submitter of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -281,13 +227,12 @@ def delete_script(slug, script_id):
 
 @app_manager.route('/apps/<slug>/scripts/<int:script_id>/edit', methods=['GET', 'POST'])
 @authenticated_required()
-def edit_script(slug, script_id):
-    app = App.get(App.slug == slug)
-    script = Script.select().where(Script.id == script_id).get()
-
-    if app.author != g.user:
+@get_app_from_arg()
+@get_script_from_arg()
+def edit_script(app, script):
+    if app.submitter != g.user:
         flash(
-            'You cannot edit a script of an app you have not authored.',
+            'You cannot edit a script of an app that you are not the submitter of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
