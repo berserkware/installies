@@ -18,6 +18,7 @@ import json
 import os
 import string
 import random
+import bleach
 
 class AppNotFound(Exception):
     """An exception to raise when an app cannot be found."""
@@ -63,10 +64,15 @@ class App(BaseModel):
         """
         Create a App object, and adds it to the database.
 
+        The data is also cleaned.
+
         :param name: The name of the app.
         :param description: The app's description.
         :param submitter: The app's submitter.
         """
+        name = bleach.clean(name)
+        description = bleach.clean(description)
+        
         slug = make_slug(name)
 
         return super().create(
@@ -119,6 +125,8 @@ class App(BaseModel):
         :param description: The new description for the app.
         """
 
+        description = bleach.clean(description)
+        
         self.description = description
 
         self.last_modified = datetime.today()

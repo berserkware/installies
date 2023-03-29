@@ -49,11 +49,6 @@ def create_app():
             flash(str(e), 'error')
             return redirect(url_for('app_manager.create_app'), 303)
 
-        # cleans the app name and description,
-        # to make sure there is no malicious stuff
-        app_name = bleach.clean(app_name)
-        app_description = bleach.clean(app_description)
-
         app = App.create(app_name, app_description, g.user)
 
         flash('App successfully created.', 'success')
@@ -110,8 +105,6 @@ def app_edit(slug):
             flash(str(e), 'error')
             return redirect(url_for('app_manager.app_edit', slug=app.slug), 303)
 
-        app_description = bleach.clean(app_description)
-
         app.edit(
             description=app_description
         )
@@ -143,6 +136,7 @@ def change_visibility(slug):
             flash(str(e), 'error')
             return redirect(url_for('app_manager.change_visibility', slug=app.slug), 303)
 
+        # if app has no scripts, dont allow to make public
         if visibility != 'private' and len(app.scripts) == 0:
             flash('App must have at least one script to be made public', 'error')
             return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
