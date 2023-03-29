@@ -29,7 +29,6 @@ from installies.config import (
     supported_visibility_options,
 )
 from installies.apps.app_manager.models import App, Script
-from installies.apps.app_manager.decorators import get_app_from_arg, get_script_from_arg
 from installies.apps.auth.decorators import authenticated_required
 from peewee import JOIN
 
@@ -64,15 +63,17 @@ def create_app():
 
 
 @app_manager.route('/apps/<slug>', methods=['GET', 'POST'])
-@get_app_from_arg()
-def app_view(app):
+def app_view(slug):
+    app = App.get_by_slug(slug)
+    
     return render_template('app_view/info.html', app=app)
 
 
 @app_manager.route('/apps/<slug>/delete', methods=['GET', 'POST'])
 @authenticated_required()
-@get_app_from_arg()
-def app_delete(app):
+def app_delete(slug):
+    app = App.get_by_id(slug)
+    
     if app.submitter != g.user:
         flash(
             'You cannot delete an app that you are not the submitter of.',
@@ -90,8 +91,9 @@ def app_delete(app):
 
 @app_manager.route('/apps/<slug>/edit', methods=['GET', 'POST'])
 @authenticated_required()
-@get_app_from_arg()
-def app_edit(app):    
+def app_edit(slug):
+    app = App.get_by_slug(slug)
+    
     if app.submitter != g.user:
         flash(
             'You cannot edit an app that you are not the submitter of.',
@@ -122,8 +124,9 @@ def app_edit(app):
 
 @app_manager.route('/apps/<slug>/change-visibility', methods=['GET', 'POST'])
 @authenticated_required()
-@get_app_from_arg()
-def change_visibility(app):
+def change_visibility(slug):
+    app = App.get_by_slug(slug)
+    
     if app.submitter != g.user:
         flash(
             'You cannot edit an app that you are not the submitter of.',
@@ -157,14 +160,16 @@ def change_visibility(app):
     )
 
 @app_manager.route('/apps/<slug>/scripts')
-@get_app_from_arg()
-def app_scripts(app):
+def app_scripts(slug):
+    app = App.get_by_slug(slug)
+    
     return render_template('app_view/scripts.html')
 
 @app_manager.route('/apps/<slug>/add-script', methods=['get', 'post'])
 @authenticated_required()
-@get_app_from_arg()
-def add_script(app):
+def add_script(slug):
+    app = App.get_by_slug()
+    
     if app.submitter != g.user:
         flash(
             'You cannot add a script to an app that you are not the submitter of.',
@@ -207,9 +212,10 @@ def add_script(app):
 
 @app_manager.route('/apps/<slug>/scripts/<int:script_id>/delete')
 @authenticated_required()
-@get_app_from_arg()
-@get_script_from_arg()
-def delete_script(app, script):
+def delete_script(slug, script_id):
+    app = App.get_by_slug(slug)
+    script = Script.get_by_id(script_id)
+    
     if app.submitter != g.user:
         flash(
             'You cannot delete a script of an app that you are not the submitter of.',
@@ -227,9 +233,10 @@ def delete_script(app, script):
 
 @app_manager.route('/apps/<slug>/scripts/<int:script_id>/edit', methods=['GET', 'POST'])
 @authenticated_required()
-@get_app_from_arg()
-@get_script_from_arg()
-def edit_script(app, script):
+def edit_script(slug, script_id):
+    app = App.get_by_slug(slug)
+    script = Script.get_by_id(script_id)
+    
     if app.submitter != g.user:
         flash(
             'You cannot edit a script of an app that you are not the submitter of.',

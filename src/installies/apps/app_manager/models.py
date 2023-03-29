@@ -5,6 +5,7 @@ from peewee import (
     BooleanField,
     TextField,
     ForeignKeyField,
+    JOIN,
 )
 from installies.database.models import BaseModel
 from installies.apps.auth.models import User
@@ -18,6 +19,12 @@ import os
 import string
 import random
 
+class AppNotFound(Exception):
+    """An exception to raise when an app cannot be found."""
+
+class ScriptNotFound(Exception):
+    """An exception to raise when an app cannot be found."""
+    
 class App(BaseModel):
     """A class for storing app data."""
 
@@ -30,7 +37,29 @@ class App(BaseModel):
     visibility = CharField(255, default='private')
 
     @classmethod
-    def create(self, name: str, description: str, submitter: User):
+    def get_by_slug(cls, slug: str):
+        """
+        Gets an app by its slug.
+
+        An AppNotFound error is raised if it cannot be found.
+
+        :param slug: The slug to get the app by.
+        """
+
+        app = (
+            App
+            .select()
+            .join(Script, JOIN.LEFT_OUTER)
+            .where(App.slug == slug)
+        )
+
+        if app.exists() is False:
+            raise AppNotFound
+
+        return app.get()
+    
+    @classmethod
+    def create(cls, name: str, description: str, submitter: User):
         """
         Create a App object, and adds it to the database.
 
@@ -112,6 +141,27 @@ class Script(BaseModel):
     supported_distros = CharField(255)
     filepath = CharField(255)
     app = ForeignKeyField(App, backref='scripts')
+
+    @classmethod
+    def get_by_id(cls, id: int):
+        """
+        Gets a script by its id.
+
+        A ScriptNotFound error will be raised if it cannot be found.
+
+        :param id: The id to get the script from.
+        """
+
+        script = (
+            Script
+            .select()
+            .where(Script.id == id)
+        )
+
+        if script.exists() is False:
+            raise ScriptNotFound
+
+        return script.get()
 
     def serialize(self, include_content=True):
         """Turn the Script into a json string."""
