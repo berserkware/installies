@@ -67,7 +67,7 @@ def app_view(slug):
 @app_manager.route('/apps/<slug>/delete', methods=['GET', 'POST'])
 @authenticated_required()
 def app_delete(slug):
-    app = App.get_by_id(slug)
+    app = App.get_by_slug(slug)
     
     if app.submitter != g.user:
         flash(
@@ -162,7 +162,7 @@ def app_scripts(slug):
 @app_manager.route('/apps/<slug>/add-script', methods=['get', 'post'])
 @authenticated_required()
 def add_script(slug):
-    app = App.get_by_slug()
+    app = App.get_by_slug(slug)
     
     if app.submitter != g.user:
         flash(
@@ -185,8 +185,8 @@ def add_script(slug):
             ScriptContentValidator.validate(script_content)
         except ValidationError as e:
             flash(str(e), 'error')
-            return redirect('app_manager.add_script', slug=app.slug)
-
+            return redirect(url_for('app_manager.add_script', slug=app.slug))
+        
         Script.create(
             action=script_action,
             supported_distros=supported_distros,

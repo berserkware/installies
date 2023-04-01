@@ -7,7 +7,7 @@ from installies.lib.check import (
     ExistsInDatabaseChecker,
     NotInContainerChecker,
 )
-from installies.apps.app_manager.models import App
+from installies.apps.app_manager.models import App, Distro
 from installies.lib.url import make_slug
 from installies.config import (
     supported_script_actions,
@@ -79,7 +79,7 @@ class ScriptDistroValidator(Validator):
 
     checkers = [
         NotInContainerChecker(
-            container=supported_distros,
+            container=Distro.get_all_distro_slugs,
             container_name='the supported linux distributions'
         )
     ]

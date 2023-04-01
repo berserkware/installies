@@ -146,7 +146,6 @@ class Script(BaseModel):
     """A model for storing data about scripts."""
 
     action = CharField(255)
-    supported_distros = CharField(255)
     filepath = CharField(255)
     app = ForeignKeyField(App, backref='scripts')
 
@@ -171,19 +170,6 @@ class Script(BaseModel):
 
         return script.get()
 
-    def serialize(self, include_content=True):
-        """Turn the Script into a json string."""
-        data = {}
-
-        data['action'] = self.action
-        data['supported_distros'] = self.supported_distros_list
-
-        if include_content:
-            with self.open_content() as f:
-                data['content'] = f.read()
-
-        return data
-
     def open_content(self, mode='r'):
         """
         Get the content of the script.
@@ -191,11 +177,6 @@ class Script(BaseModel):
         :param mode: The mode to opne the content in.
         """
         return open(self.filepath, mode)
-
-    @property
-    def supported_distros_list(self):
-        """Gets the distros the script supports in a list."""
-        return json.loads(self.supported_distros)
 
     @classmethod
     def create_script_file(cls, app_dir: str, script_content: str):
@@ -247,15 +228,13 @@ class Script(BaseModel):
 
         script_path = cls.create_script_file(app_dir, content)
 
-        # serializes the distros with json
-        supported_distros = json.dumps(supported_distros)
-
         created_script = super().create(
             action=action,
-            supported_distros=supported_distros,
             filepath=script_path,
             app=app
         )
+
+        SupportedDistro.create_from_list(supported_distros, created_script)
 
         app.last_modified = datetime.today()
         app.save()
@@ -272,6 +251,11 @@ class Script(BaseModel):
         """
 
         self.action = action
+
+        # deletes and replaces the supported distros.
+        SupportedDistro.delete().where(SupportedDistro.script == self).execute()
+        SupportedDistro.create_from_list(supported_distros, self)
+        
         self.supported_distros = json.dumps(supported_distros)
         with self.open_content('w') as f:
             f.write(content)
@@ -280,3 +264,69 @@ class Script(BaseModel):
         self.app.save()
 
         self.save()
+
+    def delete_instance(self):
+        """Deletes the script and its related SupportedDistro objects."""
+
+        SupportedDistro.delete().where(SupportedDistro.script == self).execute()
+        
+        return super().delete_instance()
+
+    def get_all_supported_distro_slugs(self) -> list:
+        """
+        Gets all the slugs of the Distro objects of the SupportedDistros in a list.
+        """
+
+        distros = []
+
+        for supported_distro in self.supported_distros:
+            distros.append(supported_distro.distro.slug)
+
+        return distros
+
+
+class Distro(BaseModel):
+    """A model for storing data about a linux distribution."""
+
+    name = CharField(255)
+    slug = CharField(255)
+    based_on = ForeignKeyField('self', null=True, backref='derivitives')
+
+    @staticmethod
+    def get_all_distro_slugs() -> list:
+        """
+        Gets a list of slugs of all the possible distros.
+        """
+
+        slugs = []
+        
+        for distro in Distro.select():
+            slugs.append(distro.slug)
+        
+        return slugs
+
+class SupportedDistro(BaseModel):
+    """A model for storing a supported distro of a script."""
+
+    script = ForeignKeyField(Script, backref='supported_distros')
+    distro = ForeignKeyField(Distro, backref='used_by')
+
+    @classmethod
+    def create_from_list(cls, distro_slugs: list, script: Script):
+        """
+        Creates mutliple supported distros from a list of distro slugs.
+
+        A list of the created SupportedDistro objects are returned.
+        
+        :param distro_slugs: A list of distro slugs to get the Distro objects from.
+        :param script: The Script to make the SupportedDistro objects for.
+        """
+
+        supported_distros = []
+
+        for distro in distro_slugs:
+            distro = Distro.get(Distro.slug == distro)
+            supported_distro = SupportedDistro.create(script=script, distro=distro)
+            supported_distros.append(supported_distro)
+
+        return supported_distros

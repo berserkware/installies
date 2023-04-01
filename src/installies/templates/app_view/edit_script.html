@@ -19,15 +19,13 @@
 
     <div class="form-input-container">
       <label for="script-supported-distros">Supported Distros</label><br>
-      <input type="text" name="script-supported-distros" id="script-supported-distros" class="textbox" placeholder="distro1, distro2, distro3.." style="width:50%;" value="{{ ", ".join(script.supported_distros_list) }}" required>
+      <input type="text" name="script-supported-distros" id="script-supported-distros" class="textbox" placeholder="distro1, distro2, distro3.." style="width:50%;" value="{{ ", ".join(script.get_all_supported_distro_slugs()) }}" required>
     </div>
 
     <div class="form-input-container">
       <label for="script-content">Script Content</label><br>
       <textarea name="script-content" id="script-content" class="vertical-resize" cols="60" rows="20" style="width:80%" required>
-      {% with f = script.open_content() %}
-{{ f.read() }}
-      {% endwith %}
+      {% with f = script.open_content() %}{{ f.read() }}{% endwith %}
       </textarea>
     </div>
 

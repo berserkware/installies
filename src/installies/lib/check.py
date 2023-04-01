@@ -4,27 +4,6 @@ import typing as t
 from peewee import DoesNotExist
 from installies.lib.validate import ValidationError
 
-class MakeCheckerFromKwargsWrapper:
-    """
-    A wrapper for checker classes that initializes the checker from kwargs when the check method is called.
-
-    :param checker: The checker to check with.
-    """
-
-    def __init__(self, checker: t.Callable):
-        self.checker = checker
-
-    def check(self, data: str, **kwargs):
-        """
-        Creates the checker object, then runs the check method on it.
-
-        :param data: The data to check.
-        """
-
-        checker = self.checker(**kwargs)
-        checker.check(data)
-
-
 class EmptyChecker:
     """A checker class that checks if a string is empty."""
 
@@ -193,7 +172,8 @@ class NotInContainerChecker:
     """
     A checker that checks that a string is in a container.
 
-    :param container: The container to check that a string is in.
+    :param container: The container to check that a string is in. The container can
+        also be a callable to get a container.
     :param container_name: The name of the container the data needs to be in.
     """
 
@@ -209,5 +189,10 @@ class NotInContainerChecker:
 
         :param data: The data string to check.
         """
-        if data not in self.container:
+        
+        container = self.container
+        if callable(self.container):
+            container = self.container()
+        
+        if data not in container:
             raise ValidationError('{} ' + f'must be in {self.container_name}.')
