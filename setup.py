@@ -12,7 +12,8 @@ setup(
         'installies.apps.api',
         'installies.apps.app_library',
         'installies.apps.app_manager',
-        'installies.apps.auth'
+        'installies.apps.auth',
+        'installies.apps.admin'
         ],
     package_dir={'': 'src'},
     include_package_data=True,

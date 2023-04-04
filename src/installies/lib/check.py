@@ -183,7 +183,7 @@ class NotInContainerChecker:
 
     def check(self, data: str, **kwargs):
         """
-        Check that a data string exists in the database.
+        Check that a data string exists in the the container.
 
         A ValueError is raised if the string is not in the container.
 
@@ -196,3 +196,34 @@ class NotInContainerChecker:
         
         if data not in container:
             raise ValidationError('{} ' + f'must be in {self.container_name}.')
+
+
+class InContainerChecker:
+    """
+    A checker that checks that a string is not in a container.
+
+    :param container: The container to check that a string is not in. The container can
+        also be a callable to get a container.
+    :param container_name: The name of the container the data cannot be in.
+    """
+
+    def __init__(self, container, container_name: str):
+        self.container = container
+        self.container_name = container_name
+
+    def check(self, data: str, **kwargs):
+        """
+        Check that a data string does not exist in the container.
+
+        A ValueError is raised if the string is in the container.
+
+        :param data: The data string to check.
+        """
+        
+        container = self.container
+        if callable(self.container):
+            container = self.container()
+        
+        if data in container:
+            raise ValidationError('{} ' + f'must not be in {self.container_name}.')
+
