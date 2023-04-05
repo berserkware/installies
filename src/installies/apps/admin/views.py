@@ -10,8 +10,8 @@ admin = Blueprint('admin', __name__)
 @admin.route('/admin')
 @authenticated_required()
 @admin_required()
-def admin_stats():
-    return render_template('admin/statistics.html')
+def admin_options():
+    return render_template('admin/options.html')
 
 @admin.route('/admin/add-distro', methods=['get', 'post'])
 @authenticated_required()
@@ -42,7 +42,7 @@ def add_distro():
         distro = Distro.create(name=name, slug=slug, based_on=based_on_distro)
 
         flash('Distro successfully created.', 'success')
-        return redirect(url_for('admin.admin_stats'))
+        return redirect(url_for('admin.admin_options'))
         
     return render_template(
         'admin/add_distro.html',

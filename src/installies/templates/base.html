@@ -27,8 +27,8 @@
       {% endif %}
       
       <form action="{{ url_for('app_library.search') }}" method="get" class="flex margin-left-auto gap-5">
-	<input type="text" name="k" placeholder="Search an App..." class="no-top-margin black">
-        <input type="submit" value="Search" class="no-top-margin">
+	<input type="text" name="k" placeholder="Search an App..." class="no-top-margin no-bottom-margin black">
+        <input type="submit" value="Search" class="no-top-margin no-bottom-margin">
       </form>
     </div>
     <hr>
@@ -38,8 +38,7 @@
     {% if errors %}
         {% for msg in errors %}
             <div class="container red">
-                <h3 class="container-header red">Error!</h3>
-                <hr class="red-border">
+                <h3 class="red">Error!</h3>
                 <p class="container-description red">{{ msg }}</p>
             </div>
         {% endfor %}
@@ -50,8 +49,7 @@
     {% if errors %}
         {% for msg in errors %}
             <div class="container green">
-                <h3 class="container-header green">Success!</h3>
-                <hr class="green-border">
+                <h3 class="green">Success!</h3>
                 <p class="container-description green">{{ msg }}</p>
             </div>
         {% endfor %}

@@ -3,24 +3,11 @@
 {% block title %}Admin{% endblock %}
 
 {% block body %}
-<div class="side-options-grid container" style="width:85%;">
-  <div class="grid-column-span-2">
-    <h2 class="margin-bottom-3 container-header">Admin</h2>
-    <hr>
-  </div>
+<div class="container" style="width:50%;">
+  <h2 class="container-header">Admin Options</h2>
+  <hr>
   
-  <div class="grid-column-start-1 auto-width">
   {% block content %}
   {% endblock %}
-  </div>
-
-  <div class="side-options">
-    <h3 class="app-option-header container-header">Admin Options</h3>
-    <hr class="margin-bottom-3">
-    
-    <ul class="no-margin no-padding no-list-style-type">
-      <li><a href="{{ url_for('admin.add_distro') }}">Add Distro</a></li>
-    <ul>
-  </div>
 </div>
 {% endblock %}

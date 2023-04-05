@@ -4,8 +4,7 @@
 
 {% block content %}
 <div class="container black auto-width" style="width:auto">
-  <h2 class="container-header">Edit Script</h2>
-  <hr class="breakline">
+  <h2>Edit Script</h2>
 
   <form action="{{ url_for('app_manager.edit_script', slug=app.slug, script_id=script.id) }}" method="post">
     <div class="form-input-container">

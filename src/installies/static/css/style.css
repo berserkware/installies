@@ -48,6 +48,15 @@ body {
 
 h1, h2, h3 {
     font-family: Inter Bold;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--grey);
+}
+
+h4, h5, h6 {
+    margin-bottom: 0px;
+    margin-top: 0px;
 }
 
 p {
@@ -89,6 +98,7 @@ input, textarea, select {
     padding-top: 2px;
     padding-bottom: 2px;
     margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 input:focus, textarea:focus, select:focus {
@@ -136,7 +146,6 @@ th {
 }
 
 .container {
-    width: 70%;
     margin: auto;
     text-align: left;
     padding: 10px;
@@ -146,6 +155,7 @@ th {
     text-align: left;
     margin: auto;
     margin-bottom: 0;
+    padding: 0;
 }
 
 .black  {
@@ -153,22 +163,16 @@ th {
 }
 
 .grey {
-    color: var(--grey)
+    color: var(--grey);
 }
 
 .green {
-    color: var(--green)
-}
-
-.green-border {
-    border-color: var(--green)
+    color: var(--green);
+    border-color: var(--green);
 }
 
 .red {
-    color: var(--red)
-}
-
-.red-border {
+    color: var(--red);
     border-color: var(--red)
 }
 
@@ -195,6 +199,11 @@ th {
     margin-top: 0px;
     margin-bottom: 0px;
     height: 38px;
+    border-bottom: none;
+}
+
+.link-container a{
+    margin-right: 8px;
 }
 
 .grid-column-start-1 {
@@ -203,7 +212,7 @@ th {
 
 .side-options-grid {
     display: grid;
-    grid-template-columns: auto 150px;
+    grid-template-columns: auto 175px;
     column-gap: 10px;
 }
 
@@ -246,30 +255,6 @@ th {
 
 .margin-left-auto {
     margin-left: auto;
-}
-
-.margin-right-8 {
-    margin-right: 8px;
-}
-
-.margin-bottom-3 {
-    margin-bottom: 3px;
-}
-
-.margin-bottom-10 {
-    margin-bottom: 10px;
-}
-
-.margin-top-3 {
-    margin-top: 3px;
-}
-
-.margin-top-5 {
-    margin-top: 5px;
-}
-
-.margin-top-10 {
-    margin-top: 10px;
 }
 
 .no-bottom-margin {
