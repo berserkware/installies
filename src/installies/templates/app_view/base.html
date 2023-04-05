@@ -14,20 +14,16 @@
   </div>
   
   <div class="grid-column-start-1 auto-width">
+    <div class="black container link-container">
+      <a class="white-link" href="{{ url_for("app_manager.app_view", slug=app.slug) }}">Infomation</a>
+      <a class="white-link" href="{{ url_for("app_manager.app_scripts", slug=app.slug) }}">Scripts</a>
+    </div>
+  
   {% block content %}
   {% endblock %}
   </div>
 
   <div class="side-options">
-    <h3>App Navigation</h3>
-    
-    <ul class="no-margin no-padding no-list-style-type">
-      <li><a href="{{ url_for("app_manager.app_view", slug=app.slug) }}">Infomation</a></li>
-      <li><a href="{{ url_for("app_manager.app_scripts", slug=app.slug) }}">Scripts</a></li>
-    </ul>
-
-    <br>
-    
     <h3>App Options</h3>
     <ul class="no-margin no-padding no-list-style-type">
       {% if app.submitter == g.user %}

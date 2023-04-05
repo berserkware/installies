@@ -147,6 +147,7 @@ th {
 
 .container {
     margin: auto;
+    margin-bottom: 10px;
     text-align: left;
     padding: 10px;
 }
