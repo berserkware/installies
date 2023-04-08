@@ -38,7 +38,7 @@ body {
     margin-top: 0;
     margin-left: 0;
     margin-right: 0;
-    width: 60%;
+    max-width: 1150px;
     margin: auto;
     background-color: var(--dark-grey);
     color: white;

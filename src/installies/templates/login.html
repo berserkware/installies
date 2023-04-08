@@ -3,7 +3,7 @@
 {% block title %}Log In{% endblock %}
 
 {% block body %}
-<div class="container black auto-margin" style="width:40%;">
+<div class="container black auto-margin" style="width:450px;">
     <h2>Log In</h2>
 
     <form action="{{ url_for('auth.login') }}{% if 'referer' in request.args.keys() %}?referer={{ request.args['referer'] }}{% endif %}" method="post">
