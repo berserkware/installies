@@ -1,4 +1,5 @@
 from peewee import Query
+from installies.apps.app_manager.models import Distro, SupportedDistro
 
 import typing as t
 
@@ -148,3 +149,35 @@ class SearchInAttributes(Modifier):
             query = query.where(attr.contains(search_query))
 
         return query
+
+
+class BySupportedDistro(Modifier):
+    """
+    A modifier class for getting by supported distros.
+
+    This only works on App and Script object. This is becuase the SupportedDistro object only
+    contains backrefs to App and Script. It looks in the 'supports' kwarg for the distro.
+    """
+
+    def modify(self, query: Query, **kwargs):
+        """
+        Modifies the query to only contain objects that support a specific distro.
+
+        If the 'supports' kwarg is not present or contains a unsupported distro, the unmodified query is
+        returned.
+        """
+
+        # gets the supported distros of the object to get.
+        supports = kwargs.get('supports')
+
+        #gets the supported Distro object
+        distro = Distro.select().where(Distro.slug == supports)
+
+        if distro.exists() is False:
+            return query
+
+        distro = distro.get()
+
+        query = query.join(SupportedDistro).join(Distro)
+
+        return query.filter(Distro.id == distro.id)

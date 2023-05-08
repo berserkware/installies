@@ -1,6 +1,6 @@
 from installies.apps.app_manager.models import App, Script, SupportedDistro, Distro
 from installies.database.group import Group
-from installies.database.modifiers import SortBy, ByColumn, SearchInAttributes
+from installies.database.modifiers import SortBy, ByColumn, SearchInAttributes, BySupportedDistro
 from datetime import datetime
 
 class AppGroup(Group):
@@ -46,34 +46,9 @@ class AppGroup(Group):
             ],
             default_attribute = 'slug',
         ),
+        BySupportedDistro()
     ]
     model = App
-
-    @classmethod
-    def get(cls, **kwargs):
-        """
-        A modified version of the default get method.
-
-        It add supported for getting apps by their supported distros.
-        """
-
-        query = super().get(**kwargs)
-
-        # gets the supported distros of the app to get
-        supports = kwargs.get('supports')
-
-        #gets the supported Distro object
-        distro = Distro.select().where(Distro.slug == supports)
-
-        if distro.exists() is False:
-            return query
-
-        distro = distro.get()
-
-        query = query.join(SupportedDistro).join(Distro)
-
-        return query.filter(Distro.id == distro.id)
-
 
 class ScriptGroup(Group):
     """
@@ -94,5 +69,6 @@ class ScriptGroup(Group):
             kwarg_name = 'action',
             attribute = 'action',
         ),
+        BySupportedDistro()
     ]
     model = Script
