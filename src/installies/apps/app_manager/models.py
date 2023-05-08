@@ -94,16 +94,6 @@ class App(BaseModel):
 
         return data
 
-    @property
-    def works_on(self):
-        """All the distros that the app works on in a list."""
-        works_on = []
-
-        for script in self.scripts:
-            works_on.extend(script.works_on_list)
-
-        return works_on
-
     def create_or_get_folder(self, apps_dir: str=apps_path):
         """
         Create a folder for the app if it does not exist.
@@ -271,18 +261,6 @@ class Script(BaseModel):
         SupportedDistro.delete().where(SupportedDistro.script == self).execute()
         
         return super().delete_instance()
-
-    def get_all_supported_distro_slugs(self) -> list:
-        """
-        Gets all the slugs of the Distro objects of the SupportedDistros in a list.
-        """
-
-        distros = []
-
-        for supported_distro in self.supported_distros:
-            distros.append(supported_distro.distro.slug)
-
-        return distros
 
 
 class Distro(BaseModel):
