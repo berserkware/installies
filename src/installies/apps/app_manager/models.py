@@ -287,6 +287,7 @@ class SupportedDistro(BaseModel):
     """A model for storing a supported distro of a script."""
 
     script = ForeignKeyField(Script, backref='supported_distros')
+    app = ForeignKeyField(App, backref='supported_distros')
     distro = ForeignKeyField(Distro, backref='used_by')
 
     @classmethod
@@ -304,7 +305,11 @@ class SupportedDistro(BaseModel):
 
         for distro in distro_slugs:
             distro = Distro.get(Distro.slug == distro)
-            supported_distro = SupportedDistro.create(script=script, distro=distro)
+            supported_distro = SupportedDistro.create(
+                script=script,
+                distro=distro,
+                app=script.app,
+            )
             supported_distros.append(supported_distro)
 
         return supported_distros

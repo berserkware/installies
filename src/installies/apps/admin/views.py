@@ -31,13 +31,15 @@ def add_distro():
             flash(str(e), 'error')
             return redirect(url_for('admin.add_distro'))
 
-        # checks that there is a distro that exists with the based on slug
-        based_on_distro = Distro.select().where(Distro.slug == based_on)
-        if based_on_distro.exists() is False:
-            flash(f'Could not find distro to be based with the slug "{based_on}"', 'error')
-            return redirect(url_for('admin.add_distro'))
+        based_on_distro = None
+        if based_on is not None and based_on != '':
+            # checks that there is a distro that exists with the based on slug
+            based_on_distro = Distro.select().where(Distro.slug == based_on)
+            if based_on_distro.exists() is False:
+                flash(f'Could not find distro to be based with the slug "{based_on}"', 'error')
+                return redirect(url_for('admin.add_distro'))
 
-        based_on_distro = based_on_distro.get()
+            based_on_distro = based_on_distro.get()
 
         distro = Distro.create(name=name, slug=slug, based_on=based_on_distro)
 
