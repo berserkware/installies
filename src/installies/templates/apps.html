@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Apps{% endblock %}
+
+{% block body %}
+<div class="container black" style="width: 80%">
+  <h2>Refine Apps</h2>
+  
+  <form action="{{ url_for('app_library.apps') }}" method="get">
+    <fieldset>
+      <div>
+	<label for="search-in">Search In:</label>
+	<select name="search-in" id="search-in">
+	  <option value="name" {% if request.args.get('search-in') == 'name' %}selected=""{% endif %}>Name</option>
+	  <option value="description" {% if request.args.get('search-in') == 'description' %}selected=""{% endif %}>Description</option>
+	  <option value="name, description" {% if request.args.get('search-in') == 'name, description' %}selected=""{% endif %}>Name and Description</option>
+	</select>
+      </div>
+      <div>
+	<label for="query">Query:</label>
+	<input type="text" name="q" id="query" value="{{ request.args.get('q') }}">
+      </div>
+      <div>
+	<label for="sort-by">Sort By:</label>
+	<select name="sort-by" id="sort-by">
+	  <option value="name" {% if request.args.get('sort-by') == 'name' %}selected=""{% endif %}>Name</option>
+	  <option value="description" {% if request.args.get('sort-by') == 'description' %}selected=""{% endif %}>Description</option>
+	  <option value="creation_date" {% if request.args.get('sort-by') == 'creation_date' %}selected=""{% endif %}>Creation Date</option>
+	  <option value="last_modified" {% if request.args.get('sort-by') == 'last_modified' %}selected=""{% endif %}>Last Modified</option>
+	  <option value="submitter" {% if request.args.get('sort-by') == 'submitter' %}selected=""{% endif %}>Submitter</option>
+	</select>
+      </div>
+      <div>
+	<label for="order-by">Order By:</label>
+	<select name="order-by" id="order-by">
+	  <option value="asc" {% if request.args.get('order-by') == 'asc' %}selected=""{% endif %}>Ascending</option>
+	  <option value="desc" {% if request.args.get('order-by') == 'desc' %}selected=""{% endif %}>Descending</option>
+	</select>
+      </div>
+      <div>
+	<input type="submit" value="Go" class="button">
+      </div>
+    </fieldset>
+  </form>
+</div>
+
+<div class="container" style="width: 80%">
+  <h2>Apps</h2>
+
+  {% for app in apps %}
+  <div class="container black">
+    <h3><a class="white-link" href="{{ url_for('app_manager.app_view', slug=app.slug) }}">{{ app.name }}</a></h3>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

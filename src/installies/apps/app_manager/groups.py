@@ -12,14 +12,19 @@ class AppGroup(Group):
         SortBy(
             model=App,
             allowed_attributes = [
-                'slug',
+                'name',
                 'description',
                 'creation_date',
                 'last_modified',
                 'submitter',
             ],
-            default_attribute = 'slug',
+            default_attribute = 'name',
             default_order = 'asc',
+        ),
+        ByColumn(
+            model = App,
+            kwarg_name = 'name',
+            attribute = 'name',
         ),
         ByColumn(
             model = App,
@@ -41,10 +46,10 @@ class AppGroup(Group):
         SearchInAttributes(
             model = App,
             allowed_attributes = [
-                'slug',
+                'name',
                 'description'
             ],
-            default_attribute = 'slug',
+            default_attribute = 'name',
         ),
         BySupportedDistro()
     ]

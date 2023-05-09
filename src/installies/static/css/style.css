@@ -138,6 +138,16 @@ th {
     font-family: Inter Bold;
 }
 
+fieldset {
+    border: 0;
+    padding-bottom: 0;
+}
+
+fieldset div {
+    display: inline-block;
+    margin-right: 5px;
+}
+
 .value-cell {
     font-family: Inter Regular;
     padding-left: 20px;

@@ -44,8 +44,8 @@ class SortBy(Modifier):
         not in the kwargs, then the objects are sorted descending.
         """
 
-        sort_by = kwargs.get('sort_by', self.default_attribute)
-        order_by = kwargs.get('order_by', self.default_order)
+        sort_by = kwargs.get('sort-by', self.default_attribute)
+        order_by = kwargs.get('order-by', self.default_order)
 
         if sort_by not in self.allowed_attributes:
             return query
@@ -129,7 +129,7 @@ class SearchInAttributes(Modifier):
         """
 
         search_query = kwargs.get('q')
-        search_in = kwargs.get('search_in', self.default_attribute)
+        search_in = kwargs.get('search-in', self.default_attribute)
 
         if search_query is None:
             return query
