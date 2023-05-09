@@ -22,11 +22,11 @@ class Group:
         if cls.model is None:
             return []
 
-        objects = cls.model.select()
+        query = cls.model.select()
 
         for modifier in cls.modifiers:
-            objects = modifier.modify(objects, **kwargs)
+            query = modifier.modify(query, **kwargs)
 
-        return objects
+        return query
 
         
