@@ -61,6 +61,9 @@ def create_app():
 @app_manager.route('/apps/<slug>', methods=['GET', 'POST'])
 def app_view(slug):
     app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
     
     return render_template('app_view/info.html', app=app)
 
