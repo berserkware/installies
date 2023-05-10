@@ -18,7 +18,11 @@
       </div>
       <div>
 	<label for="query">Query:</label>
-	<input type="text" name="q" id="query" value="{{ request.args.get('q') }}">
+	<input type="text" name="q" id="query" value="{{ request.args.get('q', '') }}">
+      </div>
+      <div>
+	<label for="supports">Supports:</label>
+	<input type="text" name="supports" id="supports" value="{{ request.args.get('supports', '') }}">
       </div>
       <div>
 	<label for="sort-by">Sort By:</label>

@@ -3,24 +3,24 @@
 {% block content %}
 <table>
   <tr>
-    <th>Original Submitter:</th>
-    <th class="value-cell"><a class="link" href="{{ url_for("auth.profile", username=app.submitter.username) }}">{{ app.submitter.username }}</a></th>
+    <th class="bold">Original Submitter:</th>
+    <th><a class="link" href="{{ url_for("auth.profile", username=app.submitter.username) }}">{{ app.submitter.username }}</a></th>
   </tr>
   <tr>
-    <th>Creation Date:</th>
-    <th class="value-cell">{{ app.creation_date.day }}-{{ app.creation_date.month }}-{{ app.creation_date.year }} {{ app.creation_date.hour }}:{{ app.creation_date.minute }} (UTC)</th>
+    <th class="bold">Creation Date:</th>
+    <th>{{ app.creation_date.day }}-{{ app.creation_date.month }}-{{ app.creation_date.year }} {{ app.creation_date.hour }}:{{ app.creation_date.minute }} (UTC)</th>
   </tr>
   <tr>
-    <th>Last Modified:</th>
-    <th class="value-cell">{{ app.last_modified.day }}-{{ app.last_modified.month }}-{{ app.last_modified.year }} {{ app.last_modified.hour }}:{{ app.last_modified.minute }} (UTC)</th>
+    <th class="bold">Last Modified:</th>
+    <th>{{ app.last_modified.day }}-{{ app.last_modified.month }}-{{ app.last_modified.year }} {{ app.last_modified.hour }}:{{ app.last_modified.minute }} (UTC)</th>
   </tr>
   <tr>
-    <th>Visibility:</th>
-    <th class="value-cell">{{ app.visibility.capitalize() }}</th>
+    <th class="bold">Visibility:</th>
+    <th>{{ app.visibility.capitalize() }}</th>
   </tr>
   <tr>
-    <th>Description:</th>
-    <th class="value-cell">{{ app.description }}</th>
+    <th class="bold">Description:</th>
+    <th>{{ app.description }}</th>
   </tr>
 </table>
 {% endblock content %}

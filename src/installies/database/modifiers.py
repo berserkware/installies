@@ -89,7 +89,7 @@ class ByColumn(Modifier):
 
         attr_value = kwargs.get(self.kwarg_name)
 
-        if attr_value is None:
+        if attr_value is None or attr_value == '':
             return query
         
         if self.converter is not None:

@@ -24,6 +24,7 @@ from installies.apps.app_manager.validate import (
     ScriptDistroValidator,
     ScriptContentValidator
 )
+from installies.apps.app_manager.groups import ScriptGroup
 from installies.config import (
     supported_script_actions,
     supported_visibility_options,
@@ -156,8 +157,19 @@ def change_visibility(slug):
 @app_manager.route('/apps/<slug>/scripts')
 def app_scripts(slug):
     app = App.get_by_slug(slug)
+
+    scripts = ScriptGroup.get(**request.args).where(Script.app == app)
     
-    return render_template('app_view/scripts.html')
+    return render_template(
+        'app_view/scripts.html',
+        app=app,
+        scripts=scripts,
+        supported_script_actions=supported_script_actions,
+    )
+
+@app_manager.route('/apps/<slug>/scripts/<int:script_id>')
+def script_view(slug, script_id):
+    pass
 
 @app_manager.route('/apps/<slug>/add-script', methods=['get', 'post'])
 @authenticated_required()

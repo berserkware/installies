@@ -1,0 +1,63 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}Scripts - {% endblock %}
+
+{% block content %}
+<div class="container black">
+  <h2>Refine Scripts</h2>
+  
+  <form action="{{ url_for('app_manager.app_scripts', slug=app.slug) }}" method="get">
+    <fieldset>
+      <div>
+	<label for="supports">Supports:</label>
+	<input type="text" name="supports" id="supports" value="{{ request.args.get('supports', '') }}">
+      </div>
+      <div>
+	<label for="sort-by">Sort By:</label>
+	<select name="sort-by" id="sort-by">
+	  <option value="last_modified" {% if request.args.get('sort-by') == 'last_modified' %}selected=""{% endif %}>Last Modified</option>
+	  <option value="action" {% if request.args.get('sort-by') == 'action' %}selected=""{% endif %}>Action</option>
+	</select>
+      </div>
+      <div>
+	<label for="order-by">Order By:</label>
+	<select name="order-by" id="order-by">
+	  <option value="asc" {% if request.args.get('order-by') == 'asc' %}selected=""{% endif %}>Ascending</option>
+	  <option value="desc" {% if request.args.get('order-by') == 'desc' %}selected=""{% endif %}>Descending</option>
+	</select>
+      </div>
+      <div>
+	<label for="action">Action:</label>
+	<select name="action" id="action">
+	  <option value="">Any</option>
+	  {% for action in supported_script_actions %}
+	  <option value="{{ action }}" {% if request.args.get('action') == action %}selected=""{% endif %}>{{ action.capitalize() }}</option>
+	  {% endfor %}
+	</select>
+      </div>
+      <div>
+	<input type="submit" value="Go" class="button">
+      </div>
+    </fieldset>
+  </form>
+</div>
+
+<div class="container black">
+  <table>
+    <tr>
+      <th class="bold">Options</th>
+      <th class="bold">Action</th>
+      <th class="bold">Supports</th>
+      <th class="bold">Last Modified</th>
+    </tr>
+    {% for script in scripts %}
+    <tr>
+      <th>[<a href="{{ url_for('app_manager.script_view', slug=app.slug, script_id=script.id) }}">View</a>] [<a href="{{ url_for('app_manager.edit_script', slug=app.slug, script_id=script.id) }}">Edit</a>] [<a href="{{ url_for('app_manager.delete_script', slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
+      <th>{{ script.action }}</th>
+      <th>{{ ', '.join(script.get_all_supported_distro_slugs()) }}</th>
+      <th>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</th>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

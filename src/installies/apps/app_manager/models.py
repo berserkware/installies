@@ -136,9 +136,10 @@ class Script(BaseModel):
     """A model for storing data about scripts."""
 
     action = CharField(255)
+    last_modified = DateTimeField(default=datetime.now)
     filepath = CharField(255)
     app = ForeignKeyField(App, backref='scripts')
-
+    
     @classmethod
     def get_by_id(cls, id: int):
         """
@@ -241,6 +242,7 @@ class Script(BaseModel):
         """
 
         self.action = action
+        self.last_modified = datetime.today()
 
         # deletes and replaces the supported distros.
         SupportedDistro.delete().where(SupportedDistro.script == self).execute()
@@ -261,6 +263,18 @@ class Script(BaseModel):
         SupportedDistro.delete().where(SupportedDistro.script == self).execute()
         
         return super().delete_instance()
+
+    def get_all_supported_distro_slugs(self) -> list:
+        """
+        Gets all the slugs of the Distro objects of the SupportedDistros in a list.
+        """
+
+        distros = []
+
+        for supported_distro in self.supported_distros:
+            distros.append(supported_distro.distro.slug)
+
+        return distros
 
 
 class Distro(BaseModel):

@@ -64,15 +64,22 @@ class ScriptGroup(Group):
         SortBy(
             model = Script,
             allowed_attributes = [
-                'action'
+                'action',
+                'last_modified'
             ],
-            default_attribute = 'action',
+            default_attribute = 'last_modified',
             default_order = 'asc',
         ),
         ByColumn(
             model = Script,
             kwarg_name = 'action',
             attribute = 'action',
+        ),
+        ByColumn(
+            model = Script,
+            kwarg_name = 'last_modified',
+            attribute = 'last_modified',
+            converter = datetime.fromisoformat,
         ),
         BySupportedDistro()
     ]
