@@ -1,6 +1,12 @@
 from installies.apps.app_manager.models import App, Script, SupportedDistro, Distro
 from installies.database.group import Group
-from installies.database.modifiers import SortBy, ByColumn, SearchInAttributes, BySupportedDistro
+from installies.database.modifiers import (
+    SortBy,
+    ByColumn,
+    SearchInAttributes,
+    BySupportedDistro,
+    Paginate,
+)
 from datetime import datetime
 
 class AppGroup(Group):
@@ -10,7 +16,7 @@ class AppGroup(Group):
 
     modifiers = [
         SortBy(
-            model=App,
+            model = App,
             allowed_attributes = [
                 'name',
                 'description',
@@ -51,7 +57,11 @@ class AppGroup(Group):
             ],
             default_attribute = 'name',
         ),
-        BySupportedDistro()
+        BySupportedDistro(),
+        Paginate(
+            default_per_page = 10,
+            max_per_page = 50,
+        )
     ]
     model = App
 
@@ -81,6 +91,10 @@ class ScriptGroup(Group):
             attribute = 'last_modified',
             converter = datetime.fromisoformat,
         ),
-        BySupportedDistro()
+        BySupportedDistro(),
+        Paginate(
+            default_per_page = 10,
+            max_per_page = 50,
+        )
     ]
     model = Script

@@ -126,3 +126,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*

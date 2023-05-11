@@ -200,3 +200,37 @@ class BySupportedDistro(Modifier):
             query = query.intersect(new_query)
         
         return query
+
+
+class Paginate(Modifier):
+    """
+    A modifier class for paginating groups of objects.
+
+    :param default_per_page: The default amount of objects per page.
+    :param max_per_page: The maximium objects per page.
+    """
+
+    def __init__(self, default_per_page: int, max_per_page: int):
+        self.default_per_page = default_per_page
+        self.max_per_page = max_per_page
+
+    def modify(self, query: Query, **kwargs):
+        """
+        Modifies the query to only show object on the page.
+
+        It if the 'page' kwarg is not present, then it defualts to the first. If the 'per-page'
+        kwarg is not present, then it defaults to the default amount.
+        """
+        try:
+            page = int(kwargs.get('page', 1))
+        except ValueError:
+            page = 1
+        try:
+            per_page = int(kwargs.get('per-page', self.default_per_page))
+        except ValueError:
+            per_page = self.default_per_page
+
+        if per_page > self.max_per_page:
+            per_page = max_per_page
+
+        return query.paginate(page, per_page)
