@@ -52,9 +52,7 @@
   <h2>Apps</h2>
 
   {% for app in apps %}
-  <div class="container black">
-    <h3><a class="white-link" href="{{ url_for('app_manager.app_view', slug=app.slug) }}">{{ app.name }}</a></h3>
-  </div>
+  {% include "app_card.html" %}
   {% endfor %}
 </div>
 {% endblock %}
