@@ -83,14 +83,15 @@ class App(BaseModel):
         )
 
     def serialize(self):
-        """Turn the App into a json string."""
+        """Turn the App into a json serializable dict."""
         data = {}
 
         data['name'] = self.name
         data['slug'] = self.slug
         data['description'] = self.description
-        data['creation_date'] = self.creation_date
-        data['author_username'] = self.author.username
+        data['creation_date'] = str(self.creation_date)
+        data['last_modified'] = str(self.last_modified)
+        data['submitter'] = self.submitter.username
 
         return data
 
@@ -275,6 +276,17 @@ class Script(BaseModel):
             distros.append(supported_distro.distro.slug)
 
         return distros
+
+
+    def serialize(self):
+        """Turns the Script into a json serializable dict."""
+        data = {}
+
+        data['action'] = self.action
+        data['supported_distros'] = self.get_all_supported_distro_slugs()
+        data['last_modified'] = str(self.last_modified)
+
+        return data
 
 
 class Distro(BaseModel):
