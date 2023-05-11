@@ -2,6 +2,13 @@
 
 {% block app_page_title %}Edit Script for {% endblock %}
 
+{% block header %}
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
+<script src="/static/js/codemirror/mode/shell/shell.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container black auto-width" style="width:auto">
   <h2>Edit Script</h2>
@@ -23,9 +30,15 @@
 
     <div class="form-input-container">
       <label for="script-content">Script Content</label><br>
-      <textarea name="script-content" id="script-content" class="vertical-resize" cols="60" rows="20" style="width:80%" required>
-      {% with f = script.open_content() %}{{ f.read() }}{% endwith %}
-      </textarea>
+      <textarea name="script-content" id="script-content">
+      {% with f = script.open_content() %}{{ f.read() }}{% endwith %}</textarea>
+      <script>
+	mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
+	    lineNumbers: true,
+	    mode: "shell",
+	    theme: "monokai",
+	});
+      </script>
     </div>
 
     <div class="form-input-container">

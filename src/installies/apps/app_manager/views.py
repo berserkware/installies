@@ -72,6 +72,9 @@ def app_view(slug):
 @authenticated_required()
 def app_delete(slug):
     app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
     
     if app.submitter != g.user:
         flash(
@@ -92,6 +95,9 @@ def app_delete(slug):
 @authenticated_required()
 def app_edit(slug):
     app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
     
     if app.submitter != g.user:
         flash(
@@ -123,6 +129,9 @@ def app_edit(slug):
 @authenticated_required()
 def change_visibility(slug):
     app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
     
     if app.submitter != g.user:
         flash(
@@ -161,6 +170,9 @@ def change_visibility(slug):
 def app_scripts(slug):
     app = App.get_by_slug(slug)
 
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
+
     scripts = ScriptGroup.get(**request.args).where(Script.app == app)
     
     return render_template(
@@ -172,12 +184,26 @@ def app_scripts(slug):
 
 @app_manager.route('/apps/<slug>/scripts/<int:script_id>')
 def script_view(slug, script_id):
-    pass
+    app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
+
+    script = Script.get_by_id(script_id)
+
+    return render_template(
+        'app_view/script_info.html',
+        app=app,
+        script=script,
+    )
 
 @app_manager.route('/apps/<slug>/add-script', methods=['get', 'post'])
 @authenticated_required()
 def add_script(slug):
     app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
     
     if app.submitter != g.user:
         flash(
@@ -223,6 +249,10 @@ def add_script(slug):
 @authenticated_required()
 def delete_script(slug, script_id):
     app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
+    
     script = Script.get_by_id(script_id)
     
     if app.submitter != g.user:
@@ -244,6 +274,10 @@ def delete_script(slug, script_id):
 @authenticated_required()
 def edit_script(slug, script_id):
     app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
+    
     script = Script.get_by_id(script_id)
     
     if app.submitter != g.user:

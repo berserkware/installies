@@ -2,6 +2,13 @@
 
 {% block app_page_title %}Add Script to {% endblock %}
 
+{% block header %}
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
+<script src="/static/js/codemirror/mode/shell/shell.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container black auto-width">
   <h2>Add a Script</h2>
@@ -23,7 +30,14 @@
 
     <div class="form-input-container">
       <label for="script-content">Script Content</label><br>
-      <textarea name="script-content" id="script-content" class="vertical-resize" cols="60" rows="20" style="width:80%;" required></textarea>
+      <textarea name="script-content" id="script-content"></textarea>
+      <script>
+	mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
+	    lineNumbers: true,
+	    mode: "shell",
+	    theme: "monokai",
+	});
+      </script>
     </div>
 
     <div class="form-input-container">

@@ -1,0 +1,46 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}Edit Script for {% endblock %}
+
+{% block header %}
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
+<script src="/static/js/codemirror/mode/shell/shell.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container black auto-width" style="width:auto">
+  <h2>Script Info</h2>
+
+  <table>
+    {% if g.user == app.submitter %}
+    <th class="bold">Options</th>
+    <th>[<a href="{{ url_for('app_manager.edit_script', slug=app.slug, script_id=script.id) }}">Edit</a>] [<a href="{{ url_for('app_manager.delete_script', slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
+    {% endif %}
+    <tr>
+      <th class="bold">Action</th>
+      <th>{{ script.action.capitalize() }}</th>
+    </tr>
+    <tr>
+      <th class="bold">Supported Distros</th>
+      <th>{{ ", ".join(script.get_all_supported_distro_slugs()) }}</th>
+    </tr>
+    <tr>
+      <th class="bold">Last Modified:</th>
+      <th>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</th>
+    </tr>
+  </table>
+  <p>Content</p>
+  <textarea name="script-content" id="script-content">
+    {% with f = script.open_content() %}{{ f.read() }}{% endwith %}</textarea>
+  <script>
+    mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
+	lineNumbers: true,
+	mode: "shell",
+	theme: "monokai",
+	readOnly: true,
+    });
+  </script>
+</div>
+{% endblock %}
