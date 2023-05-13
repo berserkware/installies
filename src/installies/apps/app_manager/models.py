@@ -285,6 +285,8 @@ class Script(BaseModel):
         data['action'] = self.action
         data['supported_distros'] = self.get_all_supported_distro_slugs()
         data['last_modified'] = str(self.last_modified)
+        with self.open_content() as c:
+            data['content'] = c.read()
 
         return data
 
