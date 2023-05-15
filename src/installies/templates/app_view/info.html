@@ -10,7 +10,7 @@
      <th class="bold">Maintainers:</th>
      <th>
        {% for maintainer in app.maintainers %}
-       <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if g.user == app.submitter %} [<a href="{{ url_for("app_manager.add_maintainer", slug=app.slug, username=maintainer.user.username) }}">Remove</a>]{% endif %}{% if loop.index != app.maintainers|length - 1 %}, {% endif %}
+       <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if g.user == app.submitter %} [<a href="{{ url_for("app_manager.remove_maintainer", slug=app.slug, username=maintainer.user.username) }}">Remove</a>]{% endif %}{% if loop.index != app.maintainers|length %}, {% endif %}
        {% endfor %}
      </th>
   </tr>
