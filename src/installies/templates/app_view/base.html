@@ -25,6 +25,7 @@
       <li><a href="{{ url_for("app_manager.app_edit", slug=app.slug) }}">Edit</a></li>
       <li><a href="{{ url_for("app_manager.app_delete", slug=app.slug) }}">Delete</a></li>
       <li><a href="{{ url_for("app_manager.add_script", slug=app.slug) }}">Add Script</a></li>
+      <li><a href="{{ url_for("app_manager.add_maintainer", slug=app.slug) }}">Add Maintainer</a></li>
       <li><a href="{{ url_for("app_manager.change_visibility", slug=app.slug) }}">Change Visibility</a></li>
       {% endif %}
     </ul>

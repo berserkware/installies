@@ -1,0 +1,13 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}Remove Maintainer of {% endblock %}
+
+{% block content %}
+<div class="container black" style="width:auto">
+  <h2>Remove {{ user.username }} from Maintainers?</h2>
+  
+  <form action="{{ url_for('app_manager.remove_maintainer', slug=app.slug, username=user.username) }}" method="post">
+    <input type="submit" value="Remove" class="button">
+  </form>
+</div>
+{% endblock %}

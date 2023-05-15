@@ -29,7 +29,8 @@ from installies.config import (
     supported_script_actions,
     supported_visibility_options,
 )
-from installies.apps.app_manager.models import App, Script
+from installies.apps.app_manager.models import App, Script, Maintainer
+from installies.apps.auth.models import User
 from installies.apps.auth.decorators import authenticated_required
 from peewee import JOIN
 
@@ -165,6 +166,78 @@ def change_visibility(slug):
         app=app,
         visibility_options=supported_visibility_options,
     )
+
+@app_manager.route('/apps/<slug>/add-maintainer', methods=['GET', 'POST'])
+def add_maintainer(slug):
+    app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
+
+    if app.submitter != g.user:
+        flash(
+            'You cannot add a maintainer to an app that you are not the submitter of.',
+            'error'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
+
+    if request.method == 'POST':
+        username = request.form.get('username').strip()
+
+        user = User.select().where(User.username == username)
+
+        if user.exists() is False:
+            flash(f'{user.username} does not exist.', 'error')
+            return redirect(url_for('app_manager.add_maintainer', slug=app.slug), 303)
+
+        user = user.get()
+
+        if Maintainer.select().where(Maintainer.user == user).exists():
+            flash(f'{user.username} is already a maintainer.', 'error')
+            return redirect(url_for('app_manager.add_maintainer', slug=app.slug), 303)
+
+        maintainer = Maintainer.create(user=user, app=app)
+
+        flash(f'{user.username} successfully added as a maintainer.', 'success')
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
+
+    return render_template('app_view/add_maintainer.html', app=app)
+
+@app_manager.route('/apps/<slug>/maintainer/<username>/remove', methods=['GET', 'POST'])
+def remove_maintainer(slug, username):
+    app = App.get_by_slug(slug)
+
+    if app.visibility == 'private' and app.submitter != g.user:
+        abort(404)
+
+    if app.submitter != g.user:
+        flash(
+            'You cannot remove a maintainer from an app that you are not the submitter of.',
+            'error'
+        )
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
+
+    user = User.select().where(User.username == username)
+
+    if user.exists() is False:
+        abort(404)
+
+    user = user.get()
+
+    maintainer = Maintainer.select().where(Maintainer.user == user)
+
+    if maintainer.exists() is False:
+        abort(404)
+
+    maintainer = maintainer.get()
+    
+    if request.method == 'POST':
+        maintainer.delete_instance()
+
+        flash(f'Maintainer successfully removed.', 'success')
+        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
+
+    return render_template('app_view/remove_maintainer.html', user=user, app=app)
 
 @app_manager.route('/apps/<slug>/scripts')
 def app_scripts(slug):

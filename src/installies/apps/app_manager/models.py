@@ -341,3 +341,10 @@ class SupportedDistro(BaseModel):
             supported_distros.append(supported_distro)
 
         return supported_distros
+
+
+class Maintainer(BaseModel):
+    """A model for storing maintainer infomation."""
+
+    user = ForeignKeyField(User, backref='maintains')
+    app = ForeignKeyField(App, backref='maintainers')

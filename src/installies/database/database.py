@@ -1,18 +1,18 @@
 from installies.config import database
-from installies.apps.app_manager.models import App, Script, Distro, SupportedDistro
+from installies.apps.app_manager.models import App, Script, Distro, SupportedDistro, Maintainer
 from installies.apps.auth.models import User
 
 
 def create_database():
     """Create tables in database."""
     with database:
-        database.create_tables([User, App, Script, Distro, SupportedDistro])
+        database.create_tables([User, App, Script, Distro, SupportedDistro, Maintainer])
 
 
 def drop_database():
     """Drop tables in database."""
     with database:
-        database.drop_tables([User, App, Script, Distro, SupportedDistro])
+        database.drop_tables([User, App, Script, Distro, SupportedDistro, Maintainer])
 
 
 def recreate_database():
