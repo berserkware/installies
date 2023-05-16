@@ -75,12 +75,17 @@ class App(BaseModel):
         
         slug = make_slug(name)
 
-        return super().create(
+        app = super().create(
             name=name,
             slug=slug,
             description=description,
             submitter=submitter,
         )
+
+        # adds the user as a maintainer
+        Maintainer.create(app=app, user=submitter)
+        
+        return app
 
     def serialize(self):
         """Turn the App into a json serializable dict."""
@@ -131,6 +136,25 @@ class App(BaseModel):
             script.delete_instance()
 
         super().delete_instance()
+
+    def can_user_edit(self, user: User):
+        """
+        Check if the given user is allowed to edit the app.
+        """
+
+        if user.admin is True:
+            return True
+
+        maintainer = (
+            Maintainer.select()
+            .where(Maintainer.user == user)
+            .where(Maintainer.app == self)
+        )
+
+        if maintainer.exists() is True:
+            return True
+
+        return False
 
 
 class Script(BaseModel):

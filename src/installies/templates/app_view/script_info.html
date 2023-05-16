@@ -14,7 +14,7 @@
   <h2>Script Info</h2>
 
   <table>
-    {% if g.user == app.submitter %}
+    {% if app.can_user_edit(g.user) %}
     <th class="bold">Options</th>
     <th>[<a href="{{ url_for('app_manager.edit_script', slug=app.slug, script_id=script.id) }}">Edit</a>] [<a href="{{ url_for('app_manager.delete_script', slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
     {% endif %}

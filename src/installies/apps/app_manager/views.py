@@ -63,7 +63,7 @@ def create_app():
 def app_view(slug):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
     
     return render_template('app_view/info.html', app=app)
@@ -74,12 +74,12 @@ def app_view(slug):
 def app_delete(slug):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
     
-    if app.submitter != g.user:
+    if app.can_user_edit(g.user) is False:
         flash(
-            'You cannot delete an app that you are not the submitter of.',
+            'You cannot delete an app that you are not a maintainer of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -97,12 +97,12 @@ def app_delete(slug):
 def app_edit(slug):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
     
-    if app.submitter != g.user:
+    if app.can_user_edit(g.user) is False:
         flash(
-            'You cannot edit an app that you are not the submitter of.',
+            'You cannot edit an app that you are not a maintainer of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -131,12 +131,12 @@ def app_edit(slug):
 def change_visibility(slug):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
     
-    if app.submitter != g.user:
+    if app.can_user_edit(g.user) is False:
         flash(
-            'You cannot edit an app that you are not the submitter of.',
+            'You cannot edit an app that you are not a maintainer of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -171,12 +171,12 @@ def change_visibility(slug):
 def add_maintainer(slug):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
 
-    if app.submitter != g.user:
+    if app.can_user_edit(g.user) is False:
         flash(
-            'You cannot add a maintainer to an app that you are not the submitter of.',
+            'You cannot add a maintainer to an app that you are not a maintainer of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -191,8 +191,11 @@ def add_maintainer(slug):
             return redirect(url_for('app_manager.add_maintainer', slug=app.slug), 303)
 
         user = user.get()
-
-        if Maintainer.select().where(Maintainer.user == user).exists():
+        
+        if (Maintainer.select()
+            .where(Maintainer.user == user)
+            .where(Maintainer.app == app)
+            .exists()):
             flash(f'{user.username} is already a maintainer.', 'error')
             return redirect(url_for('app_manager.add_maintainer', slug=app.slug), 303)
 
@@ -207,12 +210,12 @@ def add_maintainer(slug):
 def remove_maintainer(slug, username):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
 
-    if app.submitter != g.user:
+    if app.can_user_edit(g.user) is False:
         flash(
-            'You cannot remove a maintainer from an app that you are not the submitter of.',
+            'You cannot remove a maintainer from an app that you are not a maintainer of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -224,7 +227,12 @@ def remove_maintainer(slug, username):
 
     user = user.get()
 
-    maintainer = Maintainer.select().where(Maintainer.user == user)
+    maintainer = (
+        Maintainer
+        .select()
+        .where(Maintainer.user == user)
+        .where(Maintainer.app == app)
+    )
 
     if maintainer.exists() is False:
         abort(404)
@@ -232,6 +240,10 @@ def remove_maintainer(slug, username):
     maintainer = maintainer.get()
     
     if request.method == 'POST':
+        if len(app.maintainers) == 1:
+            flash(f'You cannot remove the last maintainer.', 'error')
+            return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
+        
         maintainer.delete_instance()
 
         flash(f'Maintainer successfully removed.', 'success')
@@ -243,7 +255,7 @@ def remove_maintainer(slug, username):
 def app_scripts(slug):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
 
     scripts = ScriptGroup.get(**request.args).where(Script.app == app)
@@ -259,7 +271,7 @@ def app_scripts(slug):
 def script_view(slug, script_id):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
 
     script = Script.get_by_id(script_id)
@@ -275,12 +287,12 @@ def script_view(slug, script_id):
 def add_script(slug):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
     
-    if app.submitter != g.user:
+    if app.can_user_edit(g.user) is False:
         flash(
-            'You cannot add a script to an app that you are not the submitter of.',
+            'You cannot add a script to an app that you are not a maintainer of.',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -323,14 +335,14 @@ def add_script(slug):
 def delete_script(slug, script_id):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
     
     script = Script.get_by_id(script_id)
     
-    if app.submitter != g.user:
+    if app.submitter != app.can_user_edit(g.user) is False:
         flash(
-            'You cannot delete a script of an app that you are not the submitter of.',
+            'You cannot delete a script of an app that you are not a maintainer of..',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -348,14 +360,14 @@ def delete_script(slug, script_id):
 def edit_script(slug, script_id):
     app = App.get_by_slug(slug)
 
-    if app.visibility == 'private' and app.submitter != g.user:
+    if app.visibility == 'private' and app.can_user_edit(g.user) is False:
         abort(404)
     
     script = Script.get_by_id(script_id)
     
-    if app.submitter != g.user:
+    if app.can_user_edit(g.user) is False:
         flash(
-            'You cannot edit a script of an app that you are not the submitter of.',
+            'You cannot edit a script of an app that you are not a maintainer of',
             'error'
         )
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
