@@ -51,6 +51,9 @@
 </div>
 
 <div class="container black">
+  {% if scripts|length == 0 %}
+  <p class="no-margin">No Scripts Found</p>
+  {% else %}
   <table>
     <tr>
       {% if g.user == app.submitter %}
@@ -71,5 +74,6 @@
     </tr>
     {% endfor %}
   </table>
+  {% endif %}
 </div>
 {% endblock %}

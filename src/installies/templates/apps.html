@@ -58,9 +58,12 @@
 
 <div class="container" style="width: 80%">
   <h2>Apps</h2>
-
+  {% if apps|length == 0 %}
+  <p class="no-margin">No Apps Found</p>
+  {% else %}
   {% for app in apps %}
   {% include "app_card.html" %}
   {% endfor %}
+  {% endif %}
 </div>
 {% endblock %}
