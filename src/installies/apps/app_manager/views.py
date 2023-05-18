@@ -32,6 +32,12 @@ from installies.config import (
 from installies.apps.app_manager.models import App, Script, Maintainer
 from installies.apps.auth.models import User
 from installies.apps.auth.decorators import authenticated_required
+from installies.apps.app_manager.form import (
+    CreateAppForm,
+    EditAppForm,
+    ChangeAppVisibilityForm,
+    ModifyScriptForm,
+)
 from peewee import JOIN
 
 app_manager = Blueprint('app_manager', __name__)
@@ -40,18 +46,13 @@ app_manager = Blueprint('app_manager', __name__)
 @authenticated_required()
 def create_app():
     if request.method == 'POST':
-        app_name = request.form.get('app-name', '').strip()
-        app_description = request.form.get('app-desc', '').strip()
+        form = CreateAppForm(request.form)
 
-        # returns error to user if app name is not clean
-        try:
-            AppNameValidator.validate(app_name)
-            AppDescriptionValidator.validate(app_description)
-        except ValidationError as e:
-            flash(str(e), 'error')
+        if form.is_valid() is False:
+            flash(form.error, 'error')
             return redirect(url_for('app_manager.create_app'), 303)
-
-        app = App.create(app_name, app_description, g.user)
+        
+        app = App.create(form.data['app-name'], form.data['app-desc'], g.user)
 
         flash('App successfully created.', 'success')
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -108,16 +109,14 @@ def app_edit(slug):
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
-        app_description = request.form.get('app-desc', '').strip()
+        form = EditAppForm(request.form)
 
-        try:
-            AppDescriptionValidator.validate(app_description)
-        except ValidationError as e:
-            flash(str(e), 'error')
+        if form.is_valid() is False:
+            flash(form.error, 'error')
             return redirect(url_for('app_manager.app_edit', slug=app.slug), 303)
 
         app.edit(
-            description=app_description
+            description=form.data['app-desc']
         )
 
         flash('App succesfully edited.', 'success')
@@ -142,23 +141,21 @@ def change_visibility(slug):
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
-        visibility = request.form.get('visibility').strip()
+        form = ChangeAppVisibilityForm(request.form)
 
-        try:
-            AppVisibilityValidator.validate(visibility)
-        except ValidationError as e:
-            flash(str(e), 'error')
+        if form.is_valid() is False:
+            flash(form.error, 'error')
             return redirect(url_for('app_manager.change_visibility', slug=app.slug), 303)
 
         # if app has no scripts, dont allow to make public
-        if visibility != 'private' and len(app.scripts) == 0:
+        if form.data['visibility'] != 'private' and len(app.scripts) == 0:
             flash('App must have at least one script to be made public', 'error')
             return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
-        app.visibility = visibility
+        app.visibility = form.data['visibility']
         app.save()
 
-        flash(f'App visibility successfully changed to {visibility}.', 'success')
+        flash(f'App visibility successfully changed to {form.data["visibility"]}.', 'success')
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     return render_template(
@@ -187,7 +184,7 @@ def add_maintainer(slug):
         user = User.select().where(User.username == username)
 
         if user.exists() is False:
-            flash(f'{user.username} does not exist.', 'error')
+            flash(f'{username} does not exist.', 'error')
             return redirect(url_for('app_manager.add_maintainer', slug=app.slug), 303)
 
         user = user.get()
@@ -298,25 +295,16 @@ def add_script(slug):
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
+        form = ModifyScriptForm(request.form)
 
-        script_action = request.form.get('script-action')
-        # gets the comma seported list of distros sent by the user
-        supported_distros = request.form.get('script-supported-distros', '')
-        supported_distros = get_distros_from_string(supported_distros)
-        script_content = request.form.get('script-content')
-
-        try:
-            ScriptActionValidator.validate(script_action)
-            ScriptDistroValidator.validate_many(supported_distros)
-            ScriptContentValidator.validate(script_content)
-        except ValidationError as e:
-            flash(str(e), 'error')
+        if form.is_valid() is False:
+            flash(form.error, 'error')
             return redirect(url_for('app_manager.add_script', slug=app.slug))
         
         Script.create(
-            action=script_action,
-            supported_distros=supported_distros,
-            content=script_content,
+            action=form.data['script-action'],
+            supported_distros=form.data['script-supported-distros'],
+            content=form.data['script-content'],
             app=app
         )
 
@@ -373,24 +361,16 @@ def edit_script(slug, script_id):
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
-        script_action = request.form.get('script-action')
-        # gets the comma seported list of distros sent by the user
-        supported_distros = request.form.get('script-supported-distros', '')
-        supported_distros = get_distros_from_string(supported_distros)
-        script_content = request.form.get('script-content')
+        form = ModifyScriptForm(request.form)
 
-        try:
-            ScriptActionValidator.validate(script_action)
-            ScriptDistroValidator.validate_many(supported_distros)
-            ScriptContentValidator.validate(script_content)
-        except ValidationError as e:
-            flash(str(e), 'error')
+        if form.is_valid() is False:
+            flash(form.error, 'error')
             return redirect(url_for('app_manager.add_script', slug=app.slug), 303)
 
         script.edit(
-            action=script_action,
-            supported_distros=supported_distros,
-            content=script_content,
+            action=form.data['script-action'],
+            supported_distros=form.data['script-supported-distro'],
+            content=form.data['script-content'],
         )
 
         flash('Script successfully edited.', 'success')
