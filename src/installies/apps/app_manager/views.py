@@ -36,7 +36,8 @@ from installies.apps.app_manager.form import (
     CreateAppForm,
     EditAppForm,
     ChangeAppVisibilityForm,
-    ModifyScriptForm,
+    AddScriptForm,
+    EditScriptForm,
 )
 from peewee import JOIN
 
@@ -52,7 +53,7 @@ def create_app():
             flash(form.error, 'error')
             return redirect(url_for('app_manager.create_app'), 303)
         
-        app = App.create(form.data['app-name'], form.data['app-desc'], g.user)
+        app = form.save()
 
         flash('App successfully created.', 'success')
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -115,9 +116,7 @@ def app_edit(slug):
             flash(form.error, 'error')
             return redirect(url_for('app_manager.app_edit', slug=app.slug), 303)
 
-        app.edit(
-            description=form.data['app-desc']
-        )
+        form.save()
 
         flash('App succesfully edited.', 'success')
         return redirect(url_for('app_manager.app_view', slug=slug), 303)
@@ -152,8 +151,7 @@ def change_visibility(slug):
             flash('App must have at least one script to be made public', 'error')
             return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
-        app.visibility = form.data['visibility']
-        app.save()
+        form.save()
 
         flash(f'App visibility successfully changed to {form.data["visibility"]}.', 'success')
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -295,18 +293,13 @@ def add_script(slug):
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
-        form = ModifyScriptForm(request.form)
+        form = AddScriptForm(request.form)
 
         if form.is_valid() is False:
             flash(form.error, 'error')
             return redirect(url_for('app_manager.add_script', slug=app.slug))
         
-        Script.create(
-            action=form.data['script-action'],
-            supported_distros=form.data['script-supported-distros'],
-            content=form.data['script-content'],
-            app=app
-        )
+        form.save(app=app)
 
         flash('Script successfully created.', 'success')
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
@@ -361,17 +354,13 @@ def edit_script(slug, script_id):
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
     if request.method == 'POST':
-        form = ModifyScriptForm(request.form)
+        form = EditScriptForm(request.form)
 
         if form.is_valid() is False:
             flash(form.error, 'error')
             return redirect(url_for('app_manager.add_script', slug=app.slug), 303)
 
-        script.edit(
-            action=form.data['script-action'],
-            supported_distros=form.data['script-supported-distro'],
-            content=form.data['script-content'],
-        )
+        form.save(script=script)
 
         flash('Script successfully edited.', 'success')
         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)

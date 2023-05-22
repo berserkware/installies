@@ -1,3 +1,4 @@
+from flask import g
 from installies.lib.form import Form, FormInput
 from installies.apps.app_manager.validate import (
     AppNameValidator,
@@ -8,6 +9,7 @@ from installies.apps.app_manager.validate import (
     ScriptContentValidator,
 )
 from installies.apps.app_manager.upload import get_distros_from_string
+from installies.apps.app_manager.models import App, Script
 
 class CreateAppForm(Form):
     """
@@ -18,6 +20,15 @@ class CreateAppForm(Form):
         FormInput('app-name', AppNameValidator, default=''),
         FormInput('app-desc', AppDescriptionValidator, default='')
     ]
+    model = App
+
+    def save(self):
+        """Creates the app."""
+        return App.create(
+            name=self.data['app-name'],
+            description=self.data['app-desc'],
+            submitter=g.user,
+        )
 
 
 class EditAppForm(Form):
@@ -28,6 +39,13 @@ class EditAppForm(Form):
     inputs = [
         FormInput('app-desc', AppDescriptionValidator, default='')
     ]
+    model = App
+
+    def save(self):
+        """Edits the app."""
+        return App.edit(
+            description=self.data['app-desc']
+        )
 
 
 class ChangeAppVisibilityForm(Form):
@@ -38,6 +56,13 @@ class ChangeAppVisibilityForm(Form):
     inputs = [
         FormInput('visibility', AppVisibilityValidator)
     ]
+    model = App
+
+    def save(self, app: App):
+        """Changes the app visibility."""
+        app.visibility = self.data['visibility']
+        app.save()
+        return app
 
 
 class ModifyScriptForm(Form):
@@ -55,3 +80,27 @@ class ModifyScriptForm(Form):
         ),
         FormInput('script-content', ScriptContentValidator)
     ]
+    model = Script
+
+
+class AddScriptForm(ModifyScriptForm):
+    """A form for adding scripts."""
+
+    def save(self, app: App):
+        return Script.create(
+            action=self.data['script-action'],
+            supported_distros=self.data['script-supported-distros'],
+            content=self.data['script-content'],
+            app=app
+        )
+
+
+class EditScriptForm(ModifyScriptForm):
+    """A form for editing scripts."""
+
+    def save(self, script: Script):
+        return script.edit(
+            action=self.data['script-action'],
+            supported_distros=self.data['script-supported-distros'],
+            content=self.data['script-content'],
+        )
