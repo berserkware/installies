@@ -46,12 +46,15 @@ class Form:
 
     To add inputs to the form you can use the `inputs` attributes. To validate the data you
     can use the is_valid method. If the form is not valid, the error will be put in the error
-    attribute.
+    attribute. You can also add a model to the form that is created with the ``save`` method.
+    By default the ``save`` method calls the model's create method with the arguments being the
+    form data.
 
     :param form_data: A dictionary with all the form data from the user.
     """
 
     inputs = []
+    model = None
 
     def __init__(self, form_data: dict):
         self.raw_form_data = form_data
@@ -81,3 +84,8 @@ class Form:
                 return False
 
         return True
+
+    def save(self):
+        """Creates the model in the ``model`` attribute."""
+        if self.model is not None:
+            return self.model.create(**self.data)
