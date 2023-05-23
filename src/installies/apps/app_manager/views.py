@@ -39,27 +39,55 @@ from installies.apps.app_manager.form import (
     AddScriptForm,
     EditScriptForm,
 )
+from installies.lib.view import View, FormView, AuthenticationRequiredMixin
 from peewee import JOIN
+
+
+class AppMixin:
+    """
+    A mixin for getting apps by url params.
+
+    It gets the app slug from the app_slug kwarg.
+    """
+
+    public_only = False
+    
+    def on_request(self, **kwargs):
+        app_slug = kwargs.get('app_slug')
+
+        if app_slug is None:
+            abort(404)
+
+        app = App.select().where(App.slug == app_slug)
+
+        if app.exists() is False:
+            abort(404)
+
+        app = app.get()
+        
+        if self.public_only and app.visibility != 'public':
+            abort(404)
+
+        kwargs['app'] = app
+        
+        return super().on_request(**kwargs)
+
+
+class CreateAppFormView(AuthenticationRequiredMixin, FormView):
+    """A view for creating an app."""
+
+    template_path = 'create_app.html'
+    form_class = CreateAppForm
+
+    def form_valid(self, form, **kwargs):
+         app = form.save()
+
+         flash('App successfully created.', 'success')
+         return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
 app_manager = Blueprint('app_manager', __name__)
 
-@app_manager.route('/create-app', methods=['GET', 'POST'])
-@authenticated_required()
-def create_app():
-    if request.method == 'POST':
-        form = CreateAppForm(request.form)
-
-        if form.is_valid() is False:
-            flash(form.error, 'error')
-            return redirect(url_for('app_manager.create_app'), 303)
-        
-        app = form.save()
-
-        flash('App successfully created.', 'success')
-        return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
-
-    return render_template('create_app.html')
-
+app_manager.add_url_rule('/create-app', 'create_app', view_func=CreateAppFormView.as_view(), methods=['GET', 'POST'])
 
 @app_manager.route('/apps/<slug>', methods=['GET', 'POST'])
 def app_view(slug):

@@ -1,4 +1,4 @@
-from flask import request, abort, render_template
+from flask import request, abort, render_template, g
 
 class View:
     """
@@ -64,6 +64,12 @@ class DetailMixin:
     def get_object(self, **kwargs):
         """Gets the model to put in the template."""
         return self.model.get()
+
+    def get_name(self):
+        """Gets the name of the model."""
+        if self.model_name is None:
+            return self.model.__name__.lower()
+        return self.model_name
     
 class DetailView(DetailMixin, TemplateMixin, View):
     """A view for giving data about a model to the user."""
@@ -127,9 +133,19 @@ class FormView(FormMixin, TemplateMixin, View):
         return render_template(self.template_path, **context)
 
     def post(self, **kwargs):
-        form = self.form_class.get(request.form)
+        form = self.form_class(request.form)
 
         if form.is_valid():
             return self.form_valid(form, **kwargs)
         else:
             return self.form_invalid(form, **kwargs)
+
+
+class AuthenticationRequiredMixin:
+    """A mixin for only allowing authenticated user."""
+
+    def on_request(self, **kwargs):
+        if g.is_authed == False:
+            return redirect(f'/login?referer={request.path}')
+
+        return super().on_request(**kwargs)
