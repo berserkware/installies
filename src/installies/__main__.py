@@ -5,6 +5,10 @@ from installies.apps.auth.views import auth
 from installies.apps.admin.views import admin
 from installies.config import database
 from installies.apps.auth.models import User
+from installies.config import (
+    supported_script_actions,
+    supported_visibility_options,
+)
 from flask import Flask, request, g, render_template
 from peewee import *
 
@@ -17,6 +21,9 @@ app.secret_key = '(j*&J6HtfJ$&hg&^__gEj'
 @app.before_request
 def before_request():
     database.connect()
+
+    g.supported_script_actions = supported_script_actions
+    g.supported_visibility_options = supported_visibility_options
     
     token = request.cookies.get('user-token')
 

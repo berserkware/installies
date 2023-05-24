@@ -143,10 +143,6 @@ class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
     public_only = True
     maintainer_only = True
 
-    def get_context_data(self, **kwargs):
-        kwargs['visibility_options'] = supported_visibility_options
-        return kwargs
-
     def form_valid(self, form, **kwargs):
         app = kwargs['app']
         # if app has no scripts, dont allow to make public
@@ -241,10 +237,6 @@ class ScriptListView(AppMixin, ListView):
     template_path = 'app_view/scripts.html'
     public_only = True
     group_name = 'scripts'
-
-    def get_context_data(self, **kwargs):
-        kwargs['visibility_options'] = supported_visibility_options
-        return kwargs
 
     def get_group(self, **kwargs):
         return ScriptGroup.get(**request.args).where(Script.app == kwargs['app'])

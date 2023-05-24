@@ -10,7 +10,7 @@
     
     <div class="form-input-container">
       <select name="visibility" id="visibility" required>
-	{% for visibility_option in visibility_options %}
+	{% for visibility_option in g.supported_visibility_options %}
 	  <option value="{{ visibility_option }}" {% if visibility_option == app.visibility %}selected="selected"{% endif %}>{{ visibility_option.capitalize() }}</option>
 	{% endfor %}
       </select>

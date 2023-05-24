@@ -17,7 +17,7 @@
     <div class="form-input-container">
       <label for="script-action">Script Action</label><br>
       <select name="script-action" id="script-action" required>
-	{% for action in possible_script_actions %}
+	{% for action in g.supported_script_actions %}
 	  <option value="{{ action }}">{{ action.capitalize() }}</option>
 	{% endfor %}
       </select>
