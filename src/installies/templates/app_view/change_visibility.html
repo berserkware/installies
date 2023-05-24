@@ -6,7 +6,7 @@
 <div class="container black" style="width: auto;">
   <h2>Change Visibility</h2>
 
-  <form class="change-visibility-form" action="{{ url_for('app_manager.change_visibility', slug=app.slug) }}" method="post">
+  <form class="change-visibility-form" action="{{ url_for('app_manager.change_visibility', app_slug=app.slug) }}" method="post">
     
     <div class="form-input-container">
       <select name="visibility" id="visibility" required>

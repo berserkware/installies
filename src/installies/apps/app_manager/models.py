@@ -141,6 +141,8 @@ class App(BaseModel):
         """
         Check if the given user is allowed to edit the app.
         """
+        if user is None:
+            return False
 
         if user.admin is True:
             return True

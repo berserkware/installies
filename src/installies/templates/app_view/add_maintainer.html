@@ -10,7 +10,7 @@
     you 100% trust.
   </p>
 
-  <form action="{{ url_for('app_manager.add_maintainer', slug=app.slug) }}" method="post">
+  <form action="{{ url_for('app_manager.add_maintainer', app_slug=app.slug) }}" method="post">
     <div class="form-input-container">
       <label for="username" >Username</label><br>
       <input type="text" name="username" id="username" class="textbox" required><br>

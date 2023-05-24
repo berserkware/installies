@@ -6,7 +6,7 @@
 <div class="container black">
   <h2>Refine Scripts</h2>
   
-  <form action="{{ url_for('app_manager.app_scripts', slug=app.slug) }}" method="get">
+  <form action="{{ url_for('app_manager.app_scripts', app_slug=app.slug) }}" method="get">
     <fieldset>
       <div>
 	<label for="supports">Supports:</label>
@@ -66,7 +66,7 @@
     {% for script in scripts %}
     <tr>
       {% if app.can_user_edit(g.user) %}
-      <th>[<a href="{{ url_for('app_manager.script_view', slug=app.slug, script_id=script.id) }}">View</a>] [<a href="{{ url_for('app_manager.edit_script', slug=app.slug, script_id=script.id) }}">Edit</a>] [<a href="{{ url_for('app_manager.delete_script', slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
+      <th>[<a href="{{ url_for('app_manager.script_view', app_slug=app.slug, script_id=script.id) }}">View</a>] [<a href="{{ url_for('app_manager.edit_script', app_slug=app.slug, script_id=script.id) }}">Edit</a>] [<a href="{{ url_for('app_manager.delete_script', app_slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
       {% endif %}
       <th>{{ script.action }}</th>
       <th>{{ ', '.join(script.get_all_supported_distro_slugs()) }}</th>

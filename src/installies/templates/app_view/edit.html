@@ -6,7 +6,7 @@
 <div class="container black" style="width:auto">
     <h2>Edit App</h2>
     
-    <form action="{{ url_for('app_manager.app_edit', slug=app.slug) }}" method="post">
+    <form action="{{ url_for('app_manager.app_edit', app_slug=app.slug) }}" method="post">
         <div class="form-input-container">
             <label for="app-desc" >Description</label><br>
             <textarea name="app-desc" id="app-desc" class="textbox" cols="30" rows="6">{{ app.description }}</textarea>
