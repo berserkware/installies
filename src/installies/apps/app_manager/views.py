@@ -310,4 +310,4 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
         script = kwargs['script']
         script.delete_instance()
         flash('Script successfully deleted.', 'success')
-        return redirect(url_for('app_mananger.app_view', app_slug=kwargs['app'].slug), 303)
+        return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)
