@@ -278,7 +278,6 @@ class Script(BaseModel):
         SupportedDistro.delete().where(SupportedDistro.script == self).execute()
         SupportedDistro.create_from_list(supported_distros, self)
         
-        self.supported_distros = json.dumps(supported_distros)
         with self.open_content('w') as f:
             f.write(content)
 
@@ -294,7 +293,7 @@ class Script(BaseModel):
         
         return super().delete_instance()
 
-    def get_all_supported_distro_slugs(self) -> list:
+    def get_all_supported_distro_names(self) -> list:
         """
         Gets all the slugs of the Distro objects of the SupportedDistros in a list.
         """
@@ -302,7 +301,7 @@ class Script(BaseModel):
         distros = []
 
         for supported_distro in self.supported_distros:
-            distros.append(supported_distro.distro.slug)
+            distros.append(supported_distro.name)
 
         return distros
 
@@ -312,7 +311,7 @@ class Script(BaseModel):
         data = {}
 
         data['action'] = self.action
-        data['supported_distros'] = self.get_all_supported_distro_slugs()
+        data['supported_distros'] = self.get_all_supported_distro_names()
         data['last_modified'] = str(self.last_modified)
         with self.open_content() as c:
             data['content'] = c.read()
@@ -345,26 +344,25 @@ class SupportedDistro(BaseModel):
 
     script = ForeignKeyField(Script, backref='supported_distros')
     app = ForeignKeyField(App, backref='supported_distros')
-    distro = ForeignKeyField(Distro, backref='used_by')
+    name = CharField(255)
 
     @classmethod
-    def create_from_list(cls, distro_slugs: list, script: Script):
+    def create_from_list(cls, distros: list, script: Script):
         """
         Creates mutliple supported distros from a list of distro slugs.
 
         A list of the created SupportedDistro objects are returned.
         
-        :param distro_slugs: A list of distro slugs to get the Distro objects from.
+        :param distro_slugs: A list of distro names.
         :param script: The Script to make the SupportedDistro objects for.
         """
 
         supported_distros = []
 
-        for distro in distro_slugs:
-            distro = Distro.get(Distro.slug == distro)
+        for distro in distros:
             supported_distro = SupportedDistro.create(
                 script=script,
-                distro=distro,
+                name=distro,
                 app=script.app,
             )
             supported_distros.append(supported_distro)

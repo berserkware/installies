@@ -156,8 +156,7 @@ class BySupportedDistro(Modifier):
     A modifier class for getting by supported distros.
 
     This only works on App and Script object. This is becuase the SupportedDistro object only
-    contains backrefs to App and Script. It looks in the 'supports' kwarg for the distro. The 'supports'
-    kwarg can contain multiple distros seporated by commas.
+    contains backrefs to App and Script. It looks in the 'supports' kwarg for the distro. The 'supports' kwarg can contain multiple distros seporated by commas.
     """
 
     def modify(self, query: Query, **kwargs):
@@ -171,29 +170,22 @@ class BySupportedDistro(Modifier):
         # gets the supported distros of the object to get.
         supports = kwargs.get('supports')
 
-        if supports is None:
+        if supports is None or supports == '':
             return query
         
-        supported_distro_name_list = supports.split(',')
         supported_distro_list = []
-
-        for distro in supported_distro_name_list:
-            distro = Distro.select().where(Distro.slug == distro.strip())
-
-            if distro.exists() is False:
-                continue
-
-            supported_distro_list.append(distro.get())
+        for distro_name in supports.split(','):
+            supported_distro_list.append(distro_name.strip())
 
         if supported_distro_list == []:
             return query
 
-        query = query.join(SupportedDistro).join(Distro)
+        query = query.join(SupportedDistro)
 
         # defines query to be intersected
         querys = []
         for distro in supported_distro_list:
-            querys.append(query.where(Distro.id == distro.id))
+            querys.append(query.where(SupportedDistro.name == distro))
 
         #intersects all the query
         for new_query in querys:

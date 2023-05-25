@@ -1,9 +1,3 @@
-from installies.apps.app_manager.models import App
-from installies.apps.auth.models import User
-from installies.lib.url import make_slug
-from datetime import date
-from peewee import *
-
 def get_distros_from_string(distros: str):
     """
     Get a list of distros from a comma separated list.

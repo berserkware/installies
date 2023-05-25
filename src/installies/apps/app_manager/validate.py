@@ -78,10 +78,11 @@ class ScriptDistroValidator(Validator):
     """A class for validating script distros submitted by the user."""
 
     checkers = [
-        NotInContainerChecker(
-            container=Distro.get_all_distro_slugs,
-            container_name='the supported linux distributions'
-        )
+        EmptyChecker(),
+        LengthChecker(max_len=255),
+        AllowedCharactersChecker(
+            allow_extra=['-', '_', '!']
+        ),
     ]
 
     data_name = 'Script distro'

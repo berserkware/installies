@@ -142,6 +142,7 @@ class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
     template_path = 'app_view/change_visibility.html'
     public_only = True
     maintainer_only = True
+    form_class = ChangeAppVisibilityForm
 
     def form_valid(self, form, **kwargs):
         app = kwargs['app']
@@ -150,7 +151,7 @@ class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
             flash('App must have at least one script to be made public', 'error')
             return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
 
-        form.save()
+        form.save(app=app)
 
         flash(f'App visibility successfully changed to {form.data["visibility"]}.', 'success')
         return redirect(url_for('app_manager.app_view', app_slug=app.slug), 303)
