@@ -1,5 +1,6 @@
 from peewee import Query
 from installies.apps.app_manager.models import Distro, SupportedDistro
+from functools import reduce
 
 import typing as t
 
@@ -108,7 +109,7 @@ class SearchInAttributes(Modifier):
     A modifier class for searching in attributes.
 
     The user can choose what attributes to search in with a comman separated list
-    in the 'search_in' kwargs. The search string goes in the 'q' kwargs.
+    in the 'search_in' kwargs. The search keywords go in the 'k' kwarg.
 
     :param model: The model to search in.
     :param allowed_attributes: The attributes the user can search in.
@@ -128,10 +129,10 @@ class SearchInAttributes(Modifier):
         usable attributes are found in the search_in kwarg, the default attribute is used.
         """
 
-        search_query = kwargs.get('q')
+        keywords = kwargs.get('k')
         search_in = kwargs.get('search-in', self.default_attribute)
 
-        if search_query is None:
+        if keywords is None:
             return query
 
         search_in_attribute_names = search_in.split(',')
@@ -145,8 +146,13 @@ class SearchInAttributes(Modifier):
         if search_in_attributes == []:
             search_in_attributes = [getattr(self.model, self.default_attribute)]
 
-        for attr in search_in_attributes:
-            query = query.where(attr.contains(search_query))
+
+            
+        keywords = keywords.split()
+        for keyword in keywords:
+            query = query.where(
+                reduce(lambda a, b: a | b, [(getattr(self.model, attr.strip()) ** f'%{keyword}%') for attr in search_in_attribute_names])
+            )
 
         return query
 
