@@ -1,3 +1,5 @@
+peewee
+flask
 bleach
 bcrypt
-mysql-connector-python
+pymysql

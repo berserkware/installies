@@ -170,7 +170,7 @@ class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
         user = User.select().where(User.username == username)
 
         if user.exists() is False:
-            flash(f'{username} does not exist.', 'error')
+            flash(f'{username} is not a user.', 'error')
             return self.get(**kwargs)
 
         user = user.get()

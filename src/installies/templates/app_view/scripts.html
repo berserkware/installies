@@ -66,7 +66,7 @@
     {% for script in scripts %}
     <tr>
       {% if app.can_user_edit(g.user) %}
-      <th>[<a href="{{ url_for('app_manager.script_view', app_slug=app.slug, script_id=script.id) }}">View</a>] [<a href="{{ url_for('app_manager.edit_script', app_slug=app.slug, script_id=script.id) }}">Edit</a>] [<a href="{{ url_for('app_manager.delete_script', app_slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
+      <th>[<a href="{{ url_for('app_manager.script_view', app_slug=app.slug, script_id=script.id) }}">View</a>] [<a href="{{ url_for('app_manager.edit_script', app_slug=app.slug, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
       {% endif %}
       <th>{{ script.action }}</th>
       <th>{{ ', '.join(script.get_all_supported_distro_names()) }}</th>
