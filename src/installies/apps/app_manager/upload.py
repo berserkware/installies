@@ -1,16 +1,33 @@
-def get_distros_from_string(distros: str):
+def get_distros_from_string(distro_string: str):
     """
-    Get a list of distros from a comma separated list.
+    Gets a dictonary of supported distros and their architechtures.
 
-    :param distros: A comma separated list of distros.
+    The distro string should be formatted as "distroname:arch1:arch2, distro2:arch1:arch2".
+
+    :param distro_string: A comma separated list of distros.
     """
-    # puts the supported distros into a list
-    script_supported_distros = distros.split(',')
+    strings = distro_string.split(',')
 
-    # strips the distros of spaces
-    striped_distros = []
-    for distro in script_supported_distros:
-        if distro != '':
-            striped_distros.append(distro.strip())
+    distros = {}
+    for string in strings:
+        split_string = string.split(':')
+        distro_name = split_string[0]
 
-    return striped_distros
+        # adds to `distros` dict continues loop if there are no architechtures
+        if len(split_string) <= 1:
+            distros[distro_name] = []
+            continue
+
+        architechtures = []
+        for i, value in enumerate(split_string):
+            # skips the first element
+            if i == 0:
+                continue;
+
+            architechtures.append(value)
+
+        distros[distro_name] = architechtures
+
+    return distros
+            
+        
