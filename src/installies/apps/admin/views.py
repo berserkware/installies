@@ -4,7 +4,7 @@ from installies.apps.admin.decorators import admin_required
 from installies.apps.app_manager.models import Distro
 from installies.lib.validate import ValidationError
 from installies.apps.admin.validate import DistroSlugValidator, DistroNameValidatior
-from installies.lib.view import FormView, AuthenticationRequiredMixin
+from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView
 from installies.apps.admin.form import CreateDistroForm
 
 admin = Blueprint('admin', __name__)
@@ -20,6 +20,12 @@ class AdminRequiredMixin:
         return super().on_request(**kwargs)
 
 
+class AdminOptions(AuthenticationRequiredMixin, AdminRequiredMixin, TemplateView):
+    """A view for displaying admin options."""
+
+    template_path = 'admin/options.html'
+
+    
 class AddDistroView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
     """A view for adding distros."""
 
@@ -45,10 +51,5 @@ class AddDistroView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
         return redirect(url_for('admin.admin_options'))
 
 
+admin.add_url_rule('/admin', 'admin_options', AdminOptions.as_view())    
 admin.add_url_rule('/admin/add-distro', 'add_distro', AddDistroView.as_view(), methods=['get', 'post'])
-    
-@admin.route('/admin')
-@authenticated_required()
-@admin_required()
-def admin_options():
-    return render_template('admin/options.html')
