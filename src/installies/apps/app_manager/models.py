@@ -370,6 +370,19 @@ class SupportedDistro(BaseModel):
         return supported_distros
 
 
+class Architechture(BaseModel):
+    """A model for storing infomation about a cpu architechture."""
+
+    name = CharField(255)
+
+
+class AlternativeArchitechtureName(BaseModel):
+    """A model for storing alternative names for architechtures."""
+
+    name = CharField(255)
+    architechture = ForeignKeyField(Architechture, backref='alternative_names')
+    
+
 class Maintainer(BaseModel):
     """A model for storing maintainer infomation."""
 
