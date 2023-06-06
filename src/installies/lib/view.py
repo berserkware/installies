@@ -1,4 +1,4 @@
-from flask import request, abort, render_template, g, redirect
+from flask import request, abort, render_template, g, redirect, flash
 
 class View:
     """

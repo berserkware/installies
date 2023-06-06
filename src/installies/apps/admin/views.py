@@ -1,38 +1,36 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, g
 from installies.apps.auth.decorators import authenticated_required
 from installies.apps.admin.decorators import admin_required
 from installies.apps.app_manager.models import Distro
 from installies.lib.validate import ValidationError
 from installies.apps.admin.validate import DistroSlugValidator, DistroNameValidatior
+from installies.lib.view import FormView, AuthenticationRequiredMixin
+from installies.apps.admin.form import CreateDistroForm
 
 admin = Blueprint('admin', __name__)
 
-@admin.route('/admin')
-@authenticated_required()
-@admin_required()
-def admin_options():
-    return render_template('admin/options.html')
+class AdminRequiredMixin:
+    """A mixin for only allowing access to admins."""
 
-@admin.route('/admin/add-distro', methods=['get', 'post'])
-@authenticated_required()
-@admin_required()
-def add_distro():
-    supported_distros = Distro.get_all_distro_slugs()
+    def on_request(self, **kwargs):
+        if g.user.admin is False:
+            flash('You must be admin to access this page.', 'error')
+            return redirect('/')
 
-    if request.method == 'POST':
-        name = request.form.get('distro-name')
-        slug = request.form.get('distro-slug')
-        based_on = request.form.get('distro-based-on')
+        return super().on_request(**kwargs)
 
-        try:
-            DistroNameValidatior.validate(name)
-            DistroSlugValidator.validate(slug)
-        except ValidationError as e:
-            flash(str(e), 'error')
-            return redirect(url_for('admin.add_distro'))
 
+class AddDistroView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
+    """A view for adding distros."""
+
+    template_path = 'admin/add_distro.html'
+    form_class = CreateDistroForm
+
+    def form_valid(self, form, **kwargs):
+        based_on = form.data['distro-based-on']
         based_on_distro = None
         if based_on is not None and based_on != '':
+            
             # checks that there is a distro that exists with the based on slug
             based_on_distro = Distro.select().where(Distro.slug == based_on)
             if based_on_distro.exists() is False:
@@ -41,12 +39,16 @@ def add_distro():
 
             based_on_distro = based_on_distro.get()
 
-        distro = Distro.create(name=name, slug=slug, based_on=based_on_distro)
+        distro = form.save(based_on=based_on_distro)
 
         flash('Distro successfully created.', 'success')
         return redirect(url_for('admin.admin_options'))
-        
-    return render_template(
-        'admin/add_distro.html',
-        supported_distros=supported_distros
-    )
+
+
+admin.add_url_rule('/admin/add-distro', 'add_distro', AddDistroView.as_view(), methods=['get', 'post'])
+    
+@admin.route('/admin')
+@authenticated_required()
+@admin_required()
+def admin_options():
+    return render_template('admin/options.html')

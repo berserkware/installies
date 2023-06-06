@@ -9,6 +9,7 @@ from installies.config import (
     supported_script_actions,
     supported_visibility_options,
 )
+from installies.apps.app_manager.models import Distro
 from flask import Flask, request, g, render_template
 from peewee import *
 
@@ -24,6 +25,7 @@ def before_request():
 
     g.supported_script_actions = supported_script_actions
     g.supported_visibility_options = supported_visibility_options
+    g.supported_distros = Distro.get_all_distro_slugs()
     
     token = request.cookies.get('user-token')
 
