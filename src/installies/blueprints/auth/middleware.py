@@ -1,4 +1,4 @@
-from installies.apps.auth.models import User
+from installies.blueprints.auth.models import User
 from peewee import DoesNotExist
 from waffleweb.response import TemplateResponse
 

@@ -1,11 +1,11 @@
 from installies.lib.form import Form, FormInput
-from installies.apps.admin.validate import (
+from installies.blueprints.admin.validate import (
     DistroSlugValidator,
     DistroNameValidatior,
     ArchitechtureNameValidator,
 )
-from installies.apps.app_manager.models import Distro, Architechture, AlternativeArchitechtureName
-from installies.apps.admin.converter import get_other_architechture_names_from_string
+from installies.blueprints.app_manager.models import Distro, Architechture, AlternativeArchitechtureName
+from installies.blueprints.admin.converter import get_other_architechture_names_from_string
 
 class CreateDistroForm(Form):
     """A form for creating distros"""

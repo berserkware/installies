@@ -8,7 +8,7 @@ from peewee import (
     JOIN,
 )
 from installies.database.models import BaseModel
-from installies.apps.auth.models import User
+from installies.blueprints.auth.models import User
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id

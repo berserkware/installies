@@ -1,5 +1,5 @@
 from peewee import Query
-from installies.apps.app_manager.models import Distro, SupportedDistro
+from installies.blueprints.app_manager.models import Distro, SupportedDistro
 from functools import reduce
 
 import typing as t

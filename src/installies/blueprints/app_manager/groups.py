@@ -1,6 +1,12 @@
-from installies.apps.app_manager.models import App, Script
+from installies.blueprints.app_manager.models import App, Script, SupportedDistro, Distro
 from installies.database.group import Group
-from installies.database.modifiers import SortBy, ByColumn, SearchInAttributes, InAttribute
+from installies.database.modifiers import (
+    SortBy,
+    ByColumn,
+    SearchInAttributes,
+    BySupportedDistro,
+    Paginate,
+)
 from datetime import datetime
 
 class AppGroup(Group):
@@ -10,18 +16,21 @@ class AppGroup(Group):
 
     modifiers = [
         SortBy(
-            model=App,
+            model = App,
             allowed_attributes = [
-                'slug',
+                'name',
                 'description',
                 'creation_date',
                 'last_modified',
                 'submitter',
             ],
-            default_attribute = [
-                'slug'
-            ],
+            default_attribute = 'name',
             default_order = 'asc',
+        ),
+        ByColumn(
+            model = App,
+            kwarg_name = 'name',
+            attribute = 'name',
         ),
         ByColumn(
             model = App,
@@ -43,19 +52,18 @@ class AppGroup(Group):
         SearchInAttributes(
             model = App,
             allowed_attributes = [
-                'slug',
+                'name',
                 'description'
             ],
-            default_attribute = 'slug',
+            default_attribute = 'name',
         ),
-        InAttribute(
-            model = App,
-            kwarg_name = 'supported_distro',
-            attribute = 'supported_distros',
-        ),
+        BySupportedDistro(),
+        Paginate(
+            default_per_page = 10,
+            max_per_page = 50,
+        )
     ]
     model = App
-
 
 class ScriptGroup(Group):
     """
@@ -66,9 +74,10 @@ class ScriptGroup(Group):
         SortBy(
             model = Script,
             allowed_attributes = [
-                'action'
+                'action',
+                'last_modified'
             ],
-            default_attribute = 'action',
+            default_attribute = 'last_modified',
             default_order = 'asc',
         ),
         ByColumn(
@@ -76,10 +85,16 @@ class ScriptGroup(Group):
             kwarg_name = 'action',
             attribute = 'action',
         ),
-        InAttribute(
+        ByColumn(
             model = Script,
-            kwarg_name = 'supported_distro',
-            attribute = 'supported_distros',
+            kwarg_name = 'last_modified',
+            attribute = 'last_modified',
+            converter = datetime.fromisoformat,
         ),
+        BySupportedDistro(),
+        Paginate(
+            default_per_page = 10,
+            max_per_page = 50,
+        )
     ]
     model = Script

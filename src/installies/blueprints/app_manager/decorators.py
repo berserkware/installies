@@ -1,4 +1,4 @@
-from installies.apps.app_manager.models import App, Script
+from installies.blueprints.app_manager.models import App, Script
 from functools import wraps
 from flask import abort
 from peewee import JOIN

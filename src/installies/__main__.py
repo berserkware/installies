@@ -1,15 +1,15 @@
-from installies.apps.api.views import api
-from installies.apps.app_library.views import app_library
-from installies.apps.app_manager.blueprint import app_manager
-from installies.apps.auth.views import auth
-from installies.apps.admin.views import admin
+from installies.blueprints.api.views import api
+from installies.blueprints.app_library.views import app_library
+from installies.blueprints.app_manager.blueprint import app_manager
+from installies.blueprints.auth.views import auth
+from installies.blueprints.admin.views import admin
 from installies.config import database
-from installies.apps.auth.models import User
+from installies.blueprints.auth.models import User
 from installies.config import (
     supported_script_actions,
     supported_visibility_options,
 )
-from installies.apps.app_manager.models import Distro, Architechture
+from installies.blueprints.app_manager.models import Distro, Architechture
 from flask import Flask, request, g, render_template
 from peewee import *
 

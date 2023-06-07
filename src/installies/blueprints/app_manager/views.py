@@ -12,11 +12,11 @@ from flask import (
     flash,
     url_for
 )
-from installies.apps.app_manager.upload import (
+from installies.blueprints.app_manager.upload import (
     get_distros_from_string,
 )
 from installies.lib.validate import ValidationError
-from installies.apps.app_manager.validate import (
+from installies.blueprints.app_manager.validate import (
     AppNameValidator,
     AppDescriptionValidator,
     AppVisibilityValidator,
@@ -24,15 +24,15 @@ from installies.apps.app_manager.validate import (
     ScriptDistroValidator,
     ScriptContentValidator
 )
-from installies.apps.app_manager.groups import ScriptGroup
+from installies.blueprints.app_manager.groups import ScriptGroup
 from installies.config import (
     supported_script_actions,
     supported_visibility_options,
 )
-from installies.apps.app_manager.models import App, Script, Maintainer
-from installies.apps.auth.models import User
-from installies.apps.auth.decorators import authenticated_required
-from installies.apps.app_manager.form import (
+from installies.blueprints.app_manager.models import App, Script, Maintainer
+from installies.blueprints.auth.models import User
+from installies.blueprints.auth.decorators import authenticated_required
+from installies.blueprints.app_manager.form import (
     CreateAppForm,
     EditAppForm,
     ChangeAppVisibilityForm,

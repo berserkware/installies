@@ -2,14 +2,14 @@ import bleach
 
 from flask import Blueprint, render_template, redirect, abort, request, g, flash
 from installies.lib.validate import ValidationError
-from installies.apps.auth.validate import (
+from installies.blueprints.auth.validate import (
     PasswordValidator,
     UsernameValidator,
     EmailValidator,
     PasswordConfirmValidator,
 )
-from installies.apps.auth.models import User
-from installies.apps.auth.decorators import (
+from installies.blueprints.auth.models import User
+from installies.blueprints.auth.decorators import (
     unauthenticated_required,
     authenticated_required,
 )

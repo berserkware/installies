@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g
-from installies.apps.auth.decorators import authenticated_required
-from installies.apps.admin.decorators import admin_required
-from installies.apps.app_manager.models import Distro
+from installies.blueprints.auth.decorators import authenticated_required
+from installies.blueprints.admin.decorators import admin_required
+from installies.blueprints.app_manager.models import Distro
 from installies.lib.validate import ValidationError
-from installies.apps.admin.validate import DistroSlugValidator, DistroNameValidatior
+from installies.blueprints.admin.validate import DistroSlugValidator, DistroNameValidatior
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView
-from installies.apps.admin.form import CreateDistroForm, CreateArchitechtureForm
+from installies.blueprints.admin.form import CreateDistroForm, CreateArchitechtureForm
 
 admin = Blueprint('admin', __name__)
 

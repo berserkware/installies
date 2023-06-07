@@ -1,5 +1,5 @@
 from flask import Blueprint
-from installies.apps.app_manager.views import (
+from installies.blueprints.app_manager.views import (
     CreateAppFormView,
     AppDetailView,
     AppDeleteView,

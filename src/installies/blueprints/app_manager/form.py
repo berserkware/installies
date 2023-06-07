@@ -1,6 +1,6 @@
 from flask import g
 from installies.lib.form import Form, FormInput
-from installies.apps.app_manager.validate import (
+from installies.blueprints.app_manager.validate import (
     AppNameValidator,
     AppDescriptionValidator,
     AppVisibilityValidator,
@@ -8,8 +8,8 @@ from installies.apps.app_manager.validate import (
     ScriptDistroValidator,
     ScriptContentValidator,
 )
-from installies.apps.app_manager.upload import get_distros_from_string
-from installies.apps.app_manager.models import App, Script
+from installies.blueprints.app_manager.upload import get_distros_from_string
+from installies.blueprints.app_manager.models import App, Script
 
 class CreateAppForm(Form):
     """

@@ -9,11 +9,11 @@ setup(
         'installies.static',
         'installies.templates',
         'installies.lib',
-        'installies.apps.api',
-        'installies.apps.app_library',
-        'installies.apps.app_manager',
-        'installies.apps.auth',
-        'installies.apps.admin'
+        'installies.blueprints.api',
+        'installies.blueprints.app_library',
+        'installies.blueprints.app_manager',
+        'installies.blueprints.auth',
+        'installies.blueprints.admin'
         ],
     package_dir={'': 'src'},
     include_package_data=True,
