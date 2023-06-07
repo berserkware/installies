@@ -36,6 +36,9 @@ class FormInput:
         """
         if self.validator is None:
             return True
+
+        if type(data) == list or type(data) == tuple:
+            return self.validator.validate_many(data)
         
         return self.validator.validate(data)
 

@@ -374,6 +374,15 @@ class Architechture(BaseModel):
     """A model for storing infomation about a cpu architechture."""
 
     name = CharField(255)
+    
+    @classmethod
+    def get_all_architechture_names(cls):
+        """Gets a list of all the architechture names."""
+        names = []
+        for architechture in cls.select():
+            names.append(architechture.name)
+
+        return names
 
 
 class AlternativeArchitechtureName(BaseModel):

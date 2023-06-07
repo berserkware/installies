@@ -5,7 +5,7 @@ from installies.apps.app_manager.models import Distro
 from installies.lib.validate import ValidationError
 from installies.apps.admin.validate import DistroSlugValidator, DistroNameValidatior
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView
-from installies.apps.admin.form import CreateDistroForm
+from installies.apps.admin.form import CreateDistroForm, CreateArchitechtureForm
 
 admin = Blueprint('admin', __name__)
 
@@ -51,5 +51,19 @@ class AddDistroView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
         return redirect(url_for('admin.admin_options'))
 
 
+class AddArchitechtureView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
+    """A view for adding architechture."""
+
+    template_path = 'admin/add_architechture.html'
+    form_class = CreateArchitechtureForm
+
+    def form_valid(self, form, **kwarg):
+        form.save()         
+
+        flash('Architechture successfully created.', 'success')
+        return redirect(url_for('admin.admin_options'))
+        
+    
 admin.add_url_rule('/admin', 'admin_options', AdminOptions.as_view())    
 admin.add_url_rule('/admin/add-distro', 'add_distro', AddDistroView.as_view(), methods=['get', 'post'])
+admin.add_url_rule('/admin/add-architechture', 'add_architechture', AddArchitechtureView.as_view(), methods=['get', 'post'])

@@ -27,3 +27,18 @@ class DistroNameValidatior(Validator):
     ]
 
     data_name = 'Distro name'
+
+
+class ArchitechtureNameValidator(Validator):
+    """A class for validating new architechture names."""
+
+    checkers = [
+        EmptyChecker(),
+        AllowedCharactersChecker(
+            allow_spaces=False,
+            allow_uppercase=False,
+            allow_extra=['-', '_']
+        ),
+    ]
+
+    data_name = 'Architechture name'
