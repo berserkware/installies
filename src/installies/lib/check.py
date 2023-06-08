@@ -1,5 +1,6 @@
 import string
 import typing as t
+import re
 
 from peewee import DoesNotExist
 from installies.lib.validate import ValidationError
@@ -230,3 +231,12 @@ class InContainerChecker:
         if data in container:
             raise ValidationError('{} ' + f'must not be in {self.container_name}.')
 
+
+class EmailChecker:
+    """
+    A checker that checks that the inputed data is an email.
+    """
+
+    def check(self, data: str, **kwargs):
+        if not re.match('[^@]+@[^@]+\.[^@]+', data):
+            raise ValidationError(f'{data} is not a valid email address.')

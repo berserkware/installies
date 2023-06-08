@@ -4,6 +4,7 @@ from installies.lib.check import (
     LengthChecker,
     AllowedCharactersChecker,
     ExistsInDatabaseChecker,
+    EmailChecker,
 )
 from installies.blueprints.auth.models import User
 
@@ -28,6 +29,7 @@ class EmailValidator(Validator):
 
     checkers = [
         EmptyChecker(),
+        EmailChecker(),
         ExistsInDatabaseChecker(User, 'email'),
     ]
 
