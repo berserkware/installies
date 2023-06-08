@@ -15,7 +15,10 @@ class EmptyChecker:
 
         :param data: The data to check.
         """
-        if data is None or data.strip() == '' or data == []:
+        if type(data) == str:
+            data = data.strip()
+        
+        if data is None or data == '' or data == [] or data == {}:
             raise ValidationError(
                 '{} cannot be empty.'
             )
