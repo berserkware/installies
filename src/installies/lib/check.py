@@ -240,3 +240,27 @@ class EmailChecker:
     def check(self, data: str, **kwargs):
         if not re.match('[^@]+@[^@]+\.[^@]+', data):
             raise ValidationError(f'{data} is not a valid email address.')
+
+
+class DictionaryChecker:
+    """
+    A checker to check the key and values of dictionarys.
+
+    :param key_validator: A validator to check the keys.
+    :param value_validator: A validator to check the value.
+    """
+
+    def __init__(self, key_validator, value_validator):
+        self.key_validator = key_validator
+        self.value_validator = value_validator
+
+    def check(self, data: dict, **kwargs):
+        for key in data.keys():
+            self.key_validator.validate(key)
+
+        for value in data.values():
+            if type(value) == list or type(value) == tuple:
+                self.value_validator.validate_many(value)
+            else:
+                self.value_validator.validate(value)
+        
