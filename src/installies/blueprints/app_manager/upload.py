@@ -2,7 +2,7 @@ def get_distros_from_string(distro_string: str):
     """
     Gets a dictonary of supported distros and their architechtures.
 
-    The distro string should be formatted as "distroname:arch1:arch2, distro2:arch1:arch2".
+    The distro string should be formatted as "distro1:arch1:arch2, distro2:arch1:arch2".
 
     :param distro_string: A comma separated list of distros.
     """
