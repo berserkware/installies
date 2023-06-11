@@ -7,6 +7,7 @@ from installies.blueprints.app_manager.validate import (
     ScriptActionValidator,
     ScriptDistroValidator,
     ScriptContentValidator,
+    ScriptDistroDictionaryValidator,
 )
 from installies.blueprints.app_manager.upload import get_distros_from_string
 from installies.blueprints.app_manager.models import App, Script
@@ -74,7 +75,7 @@ class ModifyScriptForm(Form):
         FormInput('script-action', ScriptActionValidator, default=''),
         FormInput(
             'script-supported-distros',
-            ScriptDistroValidator,
+            ScriptDistroDictionaryValidator,
             get_distros_from_string,
             '',
         ),

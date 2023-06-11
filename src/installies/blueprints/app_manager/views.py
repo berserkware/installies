@@ -205,7 +205,7 @@ class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
 
         kwargs['user'] = user
 
-        return self.on_request(**kwargs)
+        return super().on_request(**kwargs)
     
     def post(self, **kwargs):
         app = kwargs['app']

@@ -6,6 +6,7 @@ from installies.lib.check import (
     DisallowedCharactersChecker,
     ExistsInDatabaseChecker,
     NotInContainerChecker,
+    DictionaryChecker,
 )
 from installies.blueprints.app_manager.models import App, Distro
 from installies.lib.url import make_slug
@@ -81,11 +82,41 @@ class ScriptDistroValidator(Validator):
         EmptyChecker(),
         LengthChecker(max_len=255),
         AllowedCharactersChecker(
-            allow_extra=['-', '_', '!']
+            allow_spaces=False,
+            allow_uppercase=False,
+            allow_extra=['-', '_', '!'],
         ),
     ]
 
     data_name = 'Script distro'
+
+
+class ScriptArchitechtureValidator(Validator):
+    """A class for validating script architechtures submiited by users."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=255),
+        AllowedCharactersChecker(
+            allow_spaces=False,
+            allow_uppercase=False,
+            allow_extra=['-', '_'],
+        ),
+    ]
+
+    data_name = 'Script architechture'
+
+
+class ScriptDistroDictionaryValidator(Validator):
+    """A class for validating the dictionarys containing the distros and their architechtures."""
+
+    checkers = [
+        EmptyChecker(),
+        DictionaryChecker(
+            key_validator=ScriptDistroValidator,
+            value_validator=ScriptArchitechtureValidator,
+        ),
+    ]
     
 
 class ScriptContentValidator(Validator):

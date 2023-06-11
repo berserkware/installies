@@ -10,7 +10,7 @@ class DistroSlugValidator(Validator):
         AllowedCharactersChecker(
             allow_spaces=False,
             allow_uppercase=False,
-            allow_extra=['-']
+            allow_extra=['-', '_', '!']
         ),
         InContainerChecker(container=Distro.get_all_distro_slugs, container_name='supported distros'),
     ]

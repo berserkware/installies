@@ -11,7 +11,7 @@ def get_distros_from_string(distro_string: str):
     distros = {}
     for string in strings:
         split_string = string.split(':')
-        distro_name = split_string[0]
+        distro_name = split_string[0].strip()
 
         # adds to `distros` dict continues loop if there are no architechtures
         if len(split_string) <= 1:
