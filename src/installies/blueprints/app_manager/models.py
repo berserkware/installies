@@ -301,7 +301,7 @@ class Script(BaseModel):
         distros = []
 
         for supported_distro in self.supported_distros:
-            distros.append(supported_distro.name)
+            distros.append(supported_distro.distro_name)
 
         return distros
 
@@ -344,28 +344,44 @@ class SupportedDistro(BaseModel):
 
     script = ForeignKeyField(Script, backref='supported_distros')
     app = ForeignKeyField(App, backref='supported_distros')
-    name = CharField(255)
+    distro_name = CharField(255)
+    architechture_name = CharField(255)
 
     @classmethod
-    def create_from_list(cls, distros: list, script: Script):
+    def create_from_list(cls, distros: dict, script: Script):
         """
         Creates mutliple supported distros from a list of distro slugs.
 
         A list of the created SupportedDistro objects are returned.
         
-        :param distro_slugs: A list of distro names.
+        :param distros: A dictionary of the distros and their architechtures.
         :param script: The Script to make the SupportedDistro objects for.
         """
 
         supported_distros = []
 
-        for distro in distros:
-            supported_distro = SupportedDistro.create(
-                script=script,
-                name=distro,
-                app=script.app,
-            )
-            supported_distros.append(supported_distro)
+        for distro in distros.keys():
+            architechtures = distros[distro]
+            if architechtures == []:
+                architechtures = ['amd64']
+
+            for architechture in architechtures:
+                alternate_name = (AlternativeArchitechtureName
+                                  .select()
+                                  .where(AlternativeArchitechtureName.name == architechture)
+                                  )
+                
+                if alternate_name.exists():
+                    # gets the main name of the architechutre
+                    architechture = alternate_name.get().architechture.name
+
+                supported_distro = SupportedDistro.create(
+                    script=script,
+                    app=script.app,
+                    distro_name=distro,
+                    architechture_name=architechture,
+                )
+                supported_distros.append(supported_distro)
 
         return supported_distros
 
