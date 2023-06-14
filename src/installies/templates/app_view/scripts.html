@@ -56,7 +56,7 @@
   {% else %}
   <table class="max-width">
     <tr class="underline">
-      {% if g.user == app.submitter %}
+      {% if app.can_user_edit(g.user) %}
       <th class="bold">Options</th>
       {% endif %}
       <th class="bold">Action</th>
@@ -65,9 +65,7 @@
     </tr>
     {% for script in scripts %}
     <tr class="underline">
-      {% if app.can_user_edit(g.user) %}
-      <th>[<a href="{{ url_for('app_manager.script_view', app_slug=app.slug, script_id=script.id) }}">View</a>] [<a href="{{ url_for('app_manager.edit_script', app_slug=app.slug, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
-      {% endif %}
+      <th>[<a href="{{ url_for('app_manager.script_view', app_slug=app.slug, script_id=script.id) }}">View</a>] {% if app.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_slug=app.slug, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_slug=app.slug, script_id=script.id) }}">Delete</a>]{% endif %}</th>
       <th>{{ script.action }}</th>
       <th>
 	<table>
