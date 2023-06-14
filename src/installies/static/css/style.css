@@ -148,10 +148,18 @@ fieldset div {
     font-family: Inter Bold;
 }
 
+table {
+    border-collapse: collapse;
+}
+
 th {
     padding-right: 20px;
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+.underline {
+    border-bottom: 1px solid var(--grey);
 }
 
 .container {
@@ -288,8 +296,17 @@ th {
     padding: 0;
 }
 
+.no-height-padding {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 .auto-width {
     width: auto;
+}
+
+.max-width {
+    width: 100%;
 }
 
 .no-list-style-type {

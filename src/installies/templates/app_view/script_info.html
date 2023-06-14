@@ -1,6 +1,6 @@
 {% extends "app_view/base.html" %}
 
-{% block app_page_title %}Edit Script for {% endblock %}
+{% block app_page_title %}Script Info for {% endblock %}
 
 {% block header %}
 <script src="/static/js/codemirror/lib/codemirror.js"></script>
@@ -15,21 +15,27 @@
 
   <table>
     {% if app.can_user_edit(g.user) %}
-    <th class="bold">Options</th>
+    <th class="bold">Options:</th>
     <th>[<a href="{{ url_for('app_manager.edit_script', app_slug=app.slug, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
     {% endif %}
     <tr>
-      <th class="bold">Action</th>
+      <th class="bold">Action:</th>
       <th>{{ script.action.capitalize() }}</th>
-    </tr>
-    <tr>
-      <th class="bold">Supported Distros</th>
-      <th>{{ ", ".join(script.get_all_supported_distro_names()) }}</th>
     </tr>
     <tr>
       <th class="bold">Last Modified:</th>
       <th>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</th>
     </tr>
+  </table>
+  <p>Supported Distros</p>
+  <table>
+    {% set distros = script.get_all_supported_distros() %}
+    {% for architechture in distros %}
+    <tr>
+      <th class="no-height-padding">{{ architechture }}:</th>
+      <th class="no-height-padding">{{ ', '.join(distros[architechture]) }}</th>
+    </tr>
+    {% endfor %}
   </table>
   <p>Content</p>
   <textarea name="script-content" id="script-content">

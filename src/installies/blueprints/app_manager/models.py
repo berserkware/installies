@@ -293,16 +293,21 @@ class Script(BaseModel):
         
         return super().delete_instance()
 
-    def get_all_supported_distro_names(self) -> list:
+    def get_all_supported_distros(self) -> dict:
         """
-        Gets all the slugs of the Distro objects of the SupportedDistros in a list.
+        Gets all the script's supported distros, and puts them in a dictionary.
+
+        The keys are the distro's architechture, and the values are lists of distro names.
         """
 
-        distros = []
+        distros = {}
 
-        for supported_distro in self.supported_distros:
-            distros.append(supported_distro.distro_name)
+        for distro in self.supported_distros:
+            if distro.architechture_name not in distros.keys():
+                distros[distro.architechture_name] = []
 
+            distros[distro.architechture_name].append(distro.distro_name)
+            
         return distros
 
 
