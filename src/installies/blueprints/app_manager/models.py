@@ -311,6 +311,27 @@ class Script(BaseModel):
         return distros
 
 
+    def get_supported_distro_string(self):
+        """
+        Gets the supported distro in the state the user entered it.
+
+        Example: "distro:arch:arch, distro:arch:arch".
+        """
+
+        distros = {}
+        for distro in self.supported_distros:
+            if distro.distro_name not in distros.keys():
+                distros[distro.distro_name] = []
+
+            distros[distro.distro_name].append(distro.architechture_name)
+
+        distro_strings = []
+        for distro in distros:
+            distro_strings.append(f'{distro}:{":".join(distros[distro])}')
+
+        return ', '.join(distro_strings)
+
+
     def serialize(self):
         """Turns the Script into a json serializable dict."""
         data = {}
