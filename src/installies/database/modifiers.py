@@ -179,19 +179,34 @@ class BySupportedDistro(Modifier):
         if supports is None or supports == '':
             return query
         
-        supported_distro_list = []
-        for distro_name in supports.split(','):
-            supported_distro_list.append(distro_name.strip())
+        supported_distros = {}
+        for distro in supports.split(','):
+            distro = distro.split(':')
+            distro_name = distro[0].strip()
+            if len(distro) > 1:
+                architechtures = distro[1:]
+            else:
+                supported_distros[distro_name] = ['amd64']
+                continue
 
-        if supported_distro_list == []:
+            supported_distros[distro_name] = (arch.strip() for arch in architechtures)
+
+        if supported_distros == {}:
             return query
 
         query = query.join(SupportedDistro)
 
         # defines query to be intersected
         querys = []
-        for distro in supported_distro_list:
-            querys.append(query.where(SupportedDistro.name == distro))
+        for distro in supported_distros.keys():
+            for arch in supported_distros[distro]:
+                querys.append(
+                    (
+                        query
+                        .where(SupportedDistro.distro_name == distro)
+                        .where(SupportedDistro.architechture_name == arch)
+                    )
+                )
 
         #intersects all the query
         for new_query in querys:
