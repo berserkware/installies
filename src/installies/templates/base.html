@@ -17,6 +17,7 @@
       </h1>
       
       <a class="white-link nav-link" href="{{ url_for('app_library.index') }}">Home</a>
+      <a class="white-link nav-link" href="{{ url_for('app_library.apps') }}">Apps</a>
       <a class="white-link nav-link" href="{{ url_for('app_manager.create_app') }}">Create an App</a>
       {% if g.is_authed == True %}
       <a class="white-link nav-link" href="{{ url_for('auth.profile', username=g.user.username) }}">Profile</a>
