@@ -18,8 +18,11 @@ setup(
     package_dir={'': 'src'},
     include_package_data=True,
     install_requires=[
+        'peewee',
+        'flask',
         'bleach',
         'bcrypt',
-        'mysql-connector-python'
+        'pymysql',
+        'python-dotenv',
     ],
 )
