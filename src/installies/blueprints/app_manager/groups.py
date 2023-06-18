@@ -3,6 +3,7 @@ from installies.database.group import Group
 from installies.database.modifiers import (
     SortBy,
     ByColumn,
+    SearchableAttribute,
     SearchInAttributes,
     BySupportedDistro,
     Paginate,
@@ -51,9 +52,9 @@ class AppGroup(Group):
         ),
         SearchInAttributes(
             model = App,
-            allowed_attributes = [
-                'name',
-                'description'
+            searchable_attributes = [
+                SearchableAttribute('name'),
+                SearchableAttribute('description')
             ],
             default_attribute = 'name',
         ),

@@ -104,6 +104,26 @@ class ByColumn(Modifier):
         return query.where(attribute == attr_value)
 
 
+class SearchableAttribute:
+    """
+    A searchable attribute for the SearchInAttributes Modifier.
+
+    :param name: The name of the attribute.
+    :param getter: A function
+    """
+
+    def __init__(self, name: str, getter: t.Callable=None):
+        self.name = name
+        self.getter = getter
+        
+    def contains(self, model, data: str):
+        """Check if the attribute contains the data."""
+        if self.getter is None:
+            return getattr(model, self.name).contains(data)
+
+        return self.getter(model, self.name, self.data)
+
+
 class SearchInAttributes(Modifier):
     """
     A modifier class for searching in attributes.
@@ -116,9 +136,9 @@ class SearchInAttributes(Modifier):
     :param default_attribute: The attribute to search in by default.
     """
 
-    def __init__(self, model, allowed_attributes, default_attribute):
+    def __init__(self, model, searchable_attributes, default_attribute):
         self.model = model
-        self.allowed_attributes = allowed_attributes
+        self.searchable_attributes = searchable_attributes
         self.default_attribute = default_attribute
 
     def modify(self, query: Query, **kwargs):
@@ -140,18 +160,16 @@ class SearchInAttributes(Modifier):
         
         for name in search_in_attribute_names:
             name = name.strip()
-            if name in self.allowed_attributes:
-                search_in_attributes.append(getattr(self.model, name))
+            search_in_attributes.extend([attr for attr in self.searchable_attributes if attr.name == name])
+            print(search_in_attributes)
 
         if search_in_attributes == []:
-            search_in_attributes = [getattr(self.model, self.default_attribute)]
-
-
+            search_in_attributes = [default_attribute]
             
         keywords = keywords.split()
         for keyword in keywords:
             query = query.where(
-                reduce(lambda a, b: a | b, [(getattr(self.model, attr.strip()) ** f'%{keyword}%') for attr in search_in_attribute_names])
+                reduce(lambda a, b: a | b, [attr.contains(self.model, keyword) for attr in search_in_attributes])
             )
 
         return query
