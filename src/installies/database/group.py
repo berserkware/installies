@@ -27,6 +27,6 @@ class Group:
         for modifier in cls.modifiers:
             query = modifier.modify(query, **kwargs)
 
-        return query
+        return query.distinct()
 
         

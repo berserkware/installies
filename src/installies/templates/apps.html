@@ -14,6 +14,7 @@
 	  <option value="name" {% if request.args.get('search-in') == 'name' %}selected=""{% endif %}>Name</option>
 	  <option value="description" {% if request.args.get('search-in') == 'description' %}selected=""{% endif %}>Description</option>
 	  <option value="name, description" {% if request.args.get('search-in') == 'name, description' %}selected=""{% endif %}>Name and Description</option>
+	  <option value="maintainers" {% if request.args.get('search-in') == 'maintainers' %}selected=""{% endif %}>Maintainers</option>
 	</select>
       </div>
       <div>

@@ -1,5 +1,5 @@
 from peewee import Query
-from installies.blueprints.app_manager.models import Distro, SupportedDistro
+from installies.blueprints.app_manager.models import Distro, SupportedDistro, Maintainer
 from functools import reduce
 
 import typing as t
@@ -21,6 +21,23 @@ class Modifier:
         return query
 
 
+class JoinModifier(Modifier):
+    """
+    A modifier to join models to the query.
+
+    :param models: The models to join.
+    """
+
+    def __init__(self, models: list):
+        self.models = models
+
+    def modify(self, query: Query, **kwargs):
+        for model in self.models:
+            query = query.join(model)
+
+        return query
+
+    
 class SortBy(Modifier):
     """
     A modifier class for sorting and ordering the SelectQuery by either ascending or descending.
@@ -108,20 +125,22 @@ class SearchableAttribute:
     """
     A searchable attribute for the SearchInAttributes Modifier.
 
+    The check_contains function should take a model, attribute name, and the search.
+    
     :param name: The name of the attribute.
-    :param getter: A function
+    :param check_contains: A function to check if the attribute contains the search.
     """
 
-    def __init__(self, name: str, getter: t.Callable=None):
+    def __init__(self, name: str, check_contains: t.Callable=None):
         self.name = name
-        self.getter = getter
+        self.check_contains = check_contains
         
     def contains(self, model, data: str):
         """Check if the attribute contains the data."""
-        if self.getter is None:
+        if self.check_contains is None:
             return getattr(model, self.name).contains(data)
 
-        return self.getter(model, self.name, self.data)
+        return self.check_contains(model, self.name, data)
 
 
 class SearchInAttributes(Modifier):
@@ -161,7 +180,6 @@ class SearchInAttributes(Modifier):
         for name in search_in_attribute_names:
             name = name.strip()
             search_in_attributes.extend([attr for attr in self.searchable_attributes if attr.name == name])
-            print(search_in_attributes)
 
         if search_in_attributes == []:
             search_in_attributes = [default_attribute]

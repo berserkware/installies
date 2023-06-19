@@ -1,6 +1,14 @@
-from installies.blueprints.app_manager.models import App, Script, SupportedDistro, Distro
+from installies.blueprints.app_manager.models import (
+    App,
+    Script,
+    SupportedDistro,
+    Distro,
+    Maintainer,
+    User
+)
 from installies.database.group import Group
 from installies.database.modifiers import (
+    JoinModifier,
     SortBy,
     ByColumn,
     SearchableAttribute,
@@ -16,6 +24,7 @@ class AppGroup(Group):
     """
 
     modifiers = [
+        JoinModifier(models=[User, Maintainer]),
         SortBy(
             model = App,
             allowed_attributes = [
@@ -54,7 +63,11 @@ class AppGroup(Group):
             model = App,
             searchable_attributes = [
                 SearchableAttribute('name'),
-                SearchableAttribute('description')
+                SearchableAttribute('description'),
+                SearchableAttribute(
+                    'maintainers',
+                    lambda model, name, data: Maintainer.user.username.contains(data),
+                ),
             ],
             default_attribute = 'name',
         ),
