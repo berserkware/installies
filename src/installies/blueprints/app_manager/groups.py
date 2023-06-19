@@ -68,6 +68,10 @@ class AppGroup(Group):
                     'maintainers',
                     lambda model, name, data: Maintainer.user.username.contains(data),
                 ),
+                SearchableAttribute(
+                    'submitter',
+                    lambda model, name, data: getattr(model, name).username.contains(data),
+                ),
             ],
             default_attribute = 'name',
         ),
