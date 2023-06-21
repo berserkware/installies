@@ -232,22 +232,10 @@ class BySupportedDistro(Modifier):
 
         query = query.join(SupportedDistro)
 
-        # defines query to be intersected
-        querys = []
         for distro in supported_distros.keys():
             for arch in supported_distros[distro]:
-                querys.append(
-                    (
-                        query
-                        .where(SupportedDistro.distro_name == distro)
-                        .where(SupportedDistro.architechture_name == arch)
-                    )
-                )
+                query = query.where(reduce(lambda a, b: a & b, [(SupportedDistro.distro_name == distro) & (SupportedDistro.architechture_name == arch)]))
 
-        #intersects all the query
-        for new_query in querys:
-            query = query.intersect(new_query)
-        
         return query
 
 
