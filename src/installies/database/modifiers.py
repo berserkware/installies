@@ -1,5 +1,5 @@
 from peewee import Query
-from installies.blueprints.app_manager.models import Distro, SupportedDistro, Maintainer
+from installies.blueprints.app_manager.models import Distro, SupportedDistro, Maintainer, App, Script
 from functools import reduce
 
 import typing as t
@@ -200,7 +200,7 @@ class BySupportedDistro(Modifier):
     This only works on App and Script object. This is becuase the SupportedDistro object only
     contains backrefs to App and Script. It looks in the 'supports' kwarg for the distro. The 'supports' kwarg can contain multiple distros seporated by commas.
     """
-
+    
     def modify(self, query: Query, **kwargs):
         """
         Modifies the query to only contain objects that support a specific distro.
@@ -222,7 +222,7 @@ class BySupportedDistro(Modifier):
             if len(distro) > 1:
                 architechtures = distro[1:]
             else:
-                supported_distros[distro_name] = ['amd64']
+                supported_distros[distro_name] = ['*']
                 continue
 
             supported_distros[distro_name] = (arch.strip() for arch in architechtures)
@@ -230,11 +230,16 @@ class BySupportedDistro(Modifier):
         if supported_distros == {}:
             return query
 
-        query = query.join(SupportedDistro)
+        query = query.switch(query.model).join(SupportedDistro)
 
         for distro in supported_distros.keys():
             for arch in supported_distros[distro]:
-                query = query.where(reduce(lambda a, b: a & b, [(SupportedDistro.distro_name == distro) & (SupportedDistro.architechture_name == arch)]))
+                query = query.where(
+                    reduce(
+                        lambda a, b: a & b,
+                        [(SupportedDistro.distro_name == distro) & (SupportedDistro.architechture_name == arch)]
+                    )
+                )
 
         return query
 
