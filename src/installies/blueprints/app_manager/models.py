@@ -389,7 +389,7 @@ class SupportedDistro(BaseModel):
         for distro in distros.keys():
             architechtures = distros[distro]
             if architechtures == []:
-                architechtures = ['amd64']
+                architechtures = ['*']
 
             for architechture in architechtures:
                 alternate_name = (AlternativeArchitechtureName

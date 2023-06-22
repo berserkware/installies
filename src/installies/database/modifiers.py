@@ -237,7 +237,7 @@ class BySupportedDistro(Modifier):
                 query = query.where(
                     reduce(
                         lambda a, b: a & b,
-                        [(SupportedDistro.distro_name == distro) & (SupportedDistro.architechture_name == arch)]
+                        [(((SupportedDistro.distro_name == distro) | (SupportedDistro.distro_name == '*')) if distro != '*' else True) & (((SupportedDistro.architechture_name == arch) | (SupportedDistro.architechture_name == '*')) if arch != '*' else True)]
                     )
                 )
 

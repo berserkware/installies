@@ -84,7 +84,7 @@ class ScriptDistroValidator(Validator):
         AllowedCharactersChecker(
             allow_spaces=False,
             allow_uppercase=False,
-            allow_extra=['-', '_', '!'],
+            allow_extra=['-', '_', '!', '*'],
         ),
     ]
 
@@ -100,7 +100,7 @@ class ScriptArchitechtureValidator(Validator):
         AllowedCharactersChecker(
             allow_spaces=False,
             allow_uppercase=False,
-            allow_extra=['-', '_'],
+            allow_extra=['-', '_', '*'],
         ),
     ]
 
