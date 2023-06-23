@@ -158,6 +158,19 @@ th {
     padding-bottom: 5px;
 }
 
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--blue);
+  cursor: pointer;
+  font-size: 1em
+}
+
+.link-button:hover {
+    text-decoration: underline;
+}
+
 .underline {
     border-bottom: 1px solid var(--grey);
 }
