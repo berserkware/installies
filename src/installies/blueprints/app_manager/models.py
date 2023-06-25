@@ -337,7 +337,7 @@ class Script(BaseModel):
         data = {}
 
         data['action'] = self.action
-        data['supported_distros'] = self.get_all_supported_distro_names()
+        data['supported_distros'] = self.get_all_supported_distros()
         data['last_modified'] = str(self.last_modified)
         with self.open_content() as c:
             data['content'] = c.read()
