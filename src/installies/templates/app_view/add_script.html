@@ -50,9 +50,8 @@
 	    }
 	    return result;
 	}
-	
-	addDistroButton = document.getElementById('add-distro-button')
-	addDistroButton.onclick = (e) => {
+
+	function addDistro(distros = '', archs = '') {
 	    const tablerow = document.createElement('tr')
 	    tablerow.classList.add("underline");
 	    tablerowId = 'distro-' + makeId();
@@ -75,6 +74,9 @@
 	    distroNamesInput.name = tablerowId + "-distros";
 	    distroNamesInput.id = tablerowId + "-distros";
 	    distroNamesInput.required = true;
+	    if (distros != '') {
+		distroNamesInput.value = distros
+	    }
 	    distroNames.appendChild(distroNamesInput);
 	    const distroArchs = document.createElement('th');
 	    const distroArchsInput = document.createElement('input');
@@ -82,6 +84,9 @@
 	    distroArchsInput.placeholder = "arch1, arch2, arch3";
 	    distroArchsInput.name = tablerowId + "-archs";
 	    distroArchsInput.id = tablerowId + "-archs";
+	    if (archs != '') {
+		distroArchsInput.value = archs
+	    }
 	    distroArchs.appendChild(distroArchsInput);
 	    tablerow.appendChild(action);
 	    tablerow.appendChild(distroNames);
@@ -89,6 +94,9 @@
 	    const table = document.getElementById("distro-table").firstElementChild;
 	    table.appendChild(tablerow);
 	}
+			     
+	addDistroButton = document.getElementById('add-distro-button')
+	addDistroButton.onclick = addDistro
 
 	form = document.getElementById('script-form')
 	form.onformdata = (e) => {
