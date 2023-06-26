@@ -1,6 +1,6 @@
 from flask import Blueprint, abort, request
 from installies.blueprints.app_manager.groups import AppGroup, ScriptGroup
-from installies.blueprints.app_manager.models import App, Script
+from installies.blueprints.app_manager.models import App, Script, AppNotFound
 from peewee import *
 
 import json
@@ -22,7 +22,12 @@ def apps():
 
 @api.route('/api/apps/<slug>/scripts')
 def scripts(slug):
-    app = App.get_by_slug(slug)
+    app = App.select().where(App.slug == slug)
+
+    if app.exists() is False:
+        abort(404)
+
+    app = app.get()
 
     if app.visibility == 'private' and app.submitter != g.user:
         abort(404)
