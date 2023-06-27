@@ -8,6 +8,8 @@ import os
 from pathlib import Path
 import subprocess
 
+__version__ = '0.1.0'
+
 class AppNotFoundError(Exception):
     """Raised when an app is not found."""
 
@@ -54,8 +56,8 @@ def create_script_file(app_name, script):
     os.system(f'chmod +x {path}')
     return path
 
-def do_subcommand(args):
-    """Does a subcommand like install, remove, or update"""
+def do_action(args):
+    """Does a action like install, remove, or update"""
     try:
         scripts = get_scripts(args.app_name)
     except AppNotFoundError:
@@ -86,6 +88,12 @@ def do_subcommand(args):
         if answer != 'Y':
             sys.exit()
 
+    if args.output_script:
+        print(':: Script Content Start')
+        print(script['content'])
+        print(':: Script Content End')
+        print('')
+            
     answer = input(':: Proceed with installation? [Y,n] ')
     if answer != 'Y':
         sys.exit()
@@ -107,17 +115,38 @@ if __name__ == '__main__':
     main_parser = argparse.ArgumentParser(
         prog='installies',
     )
+    main_parser.add_argument('-v', '--version', action='store_true', help="show version")
     subparsers = main_parser.add_subparsers(
         title="Commands"
     )
 
-    install_parser = subparsers.add_parser("install", help="Installs apps")
+    action_parser = argparse.ArgumentParser()
+    action_parser.add_argument(
+        '-o',
+        '--output-script',
+        action='store_true',
+        help="shows the script before exectuting"
+    )
+    
+    install_parser = subparsers.add_parser(
+        "install",
+        help="Installs apps",
+        parents=[action_parser],
+        add_help=False
+    )
     install_parser.add_argument('app_name')
     install_parser.set_defaults(action='install')
     
     args = main_parser.parse_args()
 
+    if args.version:
+        print(f'Installies CLI v{__version__}')
+
     try:
-        do_subcommand(args)
-    except AttributeError:
-        print('Nothing To Do.')
+        if hasattr(args, 'action'):
+            do_action(args)
+    except KeyboardInterrupt:
+        print('\nKeyboardInterrupt, Aborting.')
+        sys.exit()
+
+    print('Nothing To Do.')
