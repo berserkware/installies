@@ -4,6 +4,9 @@ import json
 import sys
 import platform
 import distro
+import os
+from pathlib import Path
+import subprocess
 
 class AppNotFoundError(Exception):
     """Raised when an app is not found."""
@@ -37,6 +40,60 @@ def get_matching_scripts(scripts, distro_id, architechture):
 
     return matching_scripts
 
+def create_script_file(app_name, script):
+    """Creates a file for a script, returns the path."""
+    path_to_app = Path(f'~/.cache/installies/{app_name}').expanduser()
+    if not os.path.exists(path_to_app):
+        print('adsf')
+        os.makedirs(path_to_app)
+
+    path = f'{path_to_app}/{script["action"]}.sh'
+    with open(path, 'w') as f:
+        f.write(script['content'])
+
+    os.system(f'chmod +x {path}')
+    return path
+
+def do_subcommand(args):
+    """Does a subcommand like install, remove, or update"""
+    try:
+        scripts = get_scripts(args.app_name)
+    except AppNotFoundError:
+        print(f"\033[31mError: No matching app found for {args.app_name}")
+        sys.exit()
+
+    distro_id = distro.id()
+    architechture = platform.machine()
+    if architechture == 'x86_64':
+        architechture = 'amd64'
+
+    try:
+        scripts = get_matching_scripts(scripts, distro_id, architechture)
+    except ScriptNotFoundError:
+        print(f"\033[31mError: No matching script found for {distro_id}: {architechture}")
+        sys.exit()
+
+    try:
+        script = get_script_for_action(scripts, args.action)
+    except ScriptNotFoundError:
+        print(f"\033[31mError: No {args.action} script found.")
+        sys.exit()
+
+    script_file_path = create_script_file(args.app_name, script)
+
+    if os.getuid() == 0:
+        answer = input('\033[38;5;214mWarning: You are running the script in sudo mode, do you want to continue? [Y,n] ')
+        if answer != 'Y':
+            sys.exit()
+
+    answer = input(':: Proceed with installation? [Y,n] ')
+    if answer != 'Y':
+        sys.exit()
+            
+    print(f'-- Executing {args.action} script. --')
+    subprocess.run([script_file_path], shell=True)
+
+
 def get_script_for_action(scripts, action):
     """Gets a script for a specific action."""
 
@@ -61,26 +118,6 @@ if __name__ == '__main__':
     args = main_parser.parse_args()
 
     try:
-        scripts = get_scripts(args.app_name)
-    except AppNotFoundError:
-        print(f"\033[31mError: No matching app found for {args.app_name}")
-        sys.exit()
-
-    distro_id = distro.id()
-    architechture = platform.machine()
-    if architechture == 'x86_64':
-        architechture = 'amd64'
-
-    try:
-        scripts = get_matching_scripts(scripts, distro_id, architechture)
-    except ScriptNotFoundError:
-        print(f"\033[31mError: No matching script found for {distro_id}: {architechture}")
-        sys.exit()
-
-    try:
-        script = get_script_for_action(scripts, args.action)
-    except ScriptNotFoundError:
-        print(f"\033[31mError: No {args.action} script found.")
-        sys.exit()
-
-    print(script)
+        do_subcommand(args)
+    except AttributeError:
+        print('Nothing To Do.')
