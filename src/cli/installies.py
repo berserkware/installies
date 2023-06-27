@@ -46,7 +46,6 @@ def create_script_file(app_name, script):
     """Creates a file for a script, returns the path."""
     path_to_app = Path(f'~/.cache/installies/{app_name}').expanduser()
     if not os.path.exists(path_to_app):
-        print('adsf')
         os.makedirs(path_to_app)
 
     path = f'{path_to_app}/{script["action"]}.sh'
