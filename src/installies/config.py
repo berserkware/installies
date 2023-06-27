@@ -29,7 +29,9 @@ supported_distros = [
 
 supported_script_actions = [
     'install',
-    'remove'
+    'remove',
+    'update',
+    'compile',
 ]
 
 supported_visibility_options = [

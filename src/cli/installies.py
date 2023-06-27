@@ -127,6 +127,7 @@ if __name__ == '__main__':
         action='store_true',
         help="shows the script before exectuting"
     )
+    action_parser.add_argument('app_name')
     
     install_parser = subparsers.add_parser(
         "install",
@@ -134,8 +135,31 @@ if __name__ == '__main__':
         parents=[action_parser],
         add_help=False
     )
-    install_parser.add_argument('app_name')
     install_parser.set_defaults(action='install')
+
+    remove_parser = subparsers.add_parser(
+        "remove",
+        help="Removes apps",
+        parents=[action_parser],
+        add_help=False
+    )
+    remove_parser.set_defaults(action='remove')
+
+    update_parser = subparsers.add_parser(
+        "update",
+        help="Updates apps",
+        parents=[action_parser],
+        add_help=False
+    )
+    update_parser.set_defaults(action='update')
+
+    compile_parser = subparsers.add_parser(
+        "compile",
+        help="Compiles apps",
+        parents=[action_parser],
+        add_help=False
+    )
+    compile_parser.set_defaults(action='compile')
     
     args = main_parser.parse_args()
 
