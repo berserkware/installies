@@ -1,9 +1,10 @@
-from flask import Blueprint, abort, request
+from flask import Blueprint, abort, request, g
 from installies.blueprints.app_manager.groups import AppGroup, ScriptGroup
 from installies.blueprints.app_manager.models import App, Script, AppNotFound
 from peewee import *
 
 import json
+import re
 
 api = Blueprint('api', __name__)
 
@@ -39,6 +40,17 @@ def scripts(slug):
     }
 
     for script in scripts:
-        data['scripts'].append(script.serialize())
+        serialized_script = script.serialize()
+        
+        if 'version' in request.args.keys():
+            if re.fullmatch(script.app.version_regex, request.args['version']) is None:
+                data['error'] = "VersionDoesNotMatchRegex"
+                continue
+
+            serialized_script['content'] = serialized_script['content'].replace('<version>', request.args['version'])
+        else:
+            serialized_script['content'] = serialized_script['content'].replace('<version>', script.app.current_version)
+
+        data['scripts'].append(serialized_script)
 
     return data
