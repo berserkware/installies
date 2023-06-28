@@ -32,6 +32,8 @@ class App(BaseModel):
     name = CharField(255, unique=True)
     slug = CharField(255, unique=True)
     description = TextField()
+    current_version = CharField(255, null=True)
+    version_regex = CharField(255, null=True)
     creation_date = DateTimeField(default=datetime.now)
     last_modified = DateTimeField(default=datetime.now)
     submitter = ForeignKeyField(User, backref='apps')
@@ -60,7 +62,14 @@ class App(BaseModel):
         return app.get()
     
     @classmethod
-    def create(cls, name: str, description: str, submitter: User):
+    def create(
+            cls,
+            name: str,
+            description: str,
+            submitter: User,
+            current_version: str=None,
+            version_regex: str=None,
+    ):
         """
         Create a App object, and adds it to the database.
 
@@ -69,6 +78,8 @@ class App(BaseModel):
         :param name: The name of the app.
         :param description: The app's description.
         :param submitter: The app's submitter.
+        :param current_version: The app's current version.
+        :param version_regex: The regex to check user-submitted app versions.
         """
         name = bleach.clean(name)
         description = bleach.clean(description)
@@ -80,6 +91,8 @@ class App(BaseModel):
             slug=slug,
             description=description,
             submitter=submitter,
+            current_version=current_version,
+            version_regex=version_regex,
         )
 
         # adds the user as a maintainer
@@ -94,6 +107,8 @@ class App(BaseModel):
         data['name'] = self.name
         data['slug'] = self.slug
         data['description'] = self.description
+        data['current_version'] = self.current_version
+        data['version_regex'] = self.version_regex
         data['creation_date'] = str(self.creation_date)
         data['last_modified'] = str(self.last_modified)
         data['submitter'] = self.submitter.username
@@ -114,16 +129,20 @@ class App(BaseModel):
 
         return app_path
 
-    def edit(self, description: str):
+    def edit(self, description: str, current_version: str, version_regex: str):
         """
         Edits the app.
 
         :param description: The new description for the app.
+        :param current_version: The new current version.
+        :param version_regex: The new version regex for the the app.
         """
 
         description = bleach.clean(description)
         
         self.description = description
+        self.current_version = current_version
+        self.version_regex = version_regex
 
         self.last_modified = datetime.today()
 
@@ -168,6 +187,7 @@ class Script(BaseModel):
     action = CharField(255)
     last_modified = DateTimeField(default=datetime.now)
     filepath = CharField(255)
+    version = CharField(64, null=True)
     app = ForeignKeyField(App, backref='scripts')
     
     @classmethod
@@ -235,7 +255,8 @@ class Script(BaseModel):
             action: str,
             supported_distros: list,
             content: str,
-            app: App
+            app: App,
+            version: str=None,
     ):
         """
         Create a Script object, and adds it to the database.
@@ -243,6 +264,7 @@ class Script(BaseModel):
         :param action: The action that the script preforms.
         :param supported_distros: A list of distros that the script supports.
         :param content: The content of the script.
+        :param version: The version of the app the script is for.
         :param app: The app the script is for.
         """
         app_dir = app.create_or_get_folder()
@@ -252,7 +274,8 @@ class Script(BaseModel):
         created_script = super().create(
             action=action,
             filepath=script_path,
-            app=app
+            version=version,
+            app=app,
         )
 
         SupportedDistro.create_from_list(supported_distros, created_script)
@@ -262,7 +285,7 @@ class Script(BaseModel):
 
         return created_script
 
-    def edit(self, action: str, supported_distros: list, content: str):
+    def edit(self, action: str, supported_distros: list, content: str, version: str=None):
         """
         Edits the script.
 
@@ -273,6 +296,7 @@ class Script(BaseModel):
 
         self.action = action
         self.last_modified = datetime.today()
+        self.version = version
 
         # deletes and replaces the supported distros.
         SupportedDistro.delete().where(SupportedDistro.script == self).execute()

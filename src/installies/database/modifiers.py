@@ -118,7 +118,7 @@ class ByColumn(Modifier):
 
         attribute = getattr(self.model, self.attribute)
 
-        return query.where(attribute == attr_value)
+        return query.where((attribute == attr_value) | (attribute == ''))
 
 
 class SearchableAttribute:

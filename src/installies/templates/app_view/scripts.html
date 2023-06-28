@@ -16,6 +16,7 @@
 	<label for="sort-by">Sort By:</label>
 	<select name="sort-by" id="sort-by">
 	  <option value="last_modified" {% if request.args.get('sort-by') == 'last_modified' %}selected=""{% endif %}>Last Modified</option>
+	  <option value="version" {% if request.args.get('sort-by') == 'version' %}selected=""{% endif %}>Version</option>
 	  <option value="action" {% if request.args.get('sort-by') == 'action' %}selected=""{% endif %}>Action</option>
 	</select>
       </div>
@@ -61,6 +62,7 @@
       {% endif %}
       <th class="bold">Action</th>
       <th class="bold">Supports</th>
+      <th class="bold">For Version</th>
       <th class="bold">Last Modified</th>
     </tr>
     {% for script in scripts %}
@@ -78,6 +80,7 @@
 	  {% endfor %}
 	</table>
       </th>
+      <th>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</th>
       <th>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</th>
     </tr>
     {% endfor %}

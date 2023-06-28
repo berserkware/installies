@@ -1,6 +1,7 @@
 import bleach
 import json
 import os
+import re
 
 from flask import (
     Blueprint,
@@ -126,12 +127,13 @@ class AppEditView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view to edit apps."""
 
     template_path = 'app_view/edit.html'
+    form_class = EditAppForm
     public_only = True
     maintainer_only = True
 
     def form_valid(self, form, **kwargs):
         app = kwargs['app']
-        form.save()
+        form.save(app)
         flash('App succesfully edited.', 'success')
         return redirect(url_for('app_manager.app_view', app_slug=app.slug), 303)
 
@@ -267,6 +269,10 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         return kwargs
 
     def form_valid(self, form, **kwargs):
+        if re.fullmatch(kwargs['app'].version_regex, form.data['for-version']) is None:
+            flash('Version does not match app\'s version regex.', 'error')
+            return self.get(**kwargs)
+        
         form.save(app=kwargs['app'])
         
         flash('Script successfully created.', 'success')

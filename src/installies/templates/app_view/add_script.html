@@ -75,7 +75,7 @@
 	    distroNamesInput.id = tablerowId + "-distros";
 	    distroNamesInput.required = true;
 	    if (distros != '') {
-		distroNamesInput.value = distros
+		distroNamesInput.value = distros;
 	    }
 	    distroNames.appendChild(distroNamesInput);
 	    const distroArchs = document.createElement('th');
@@ -85,7 +85,7 @@
 	    distroArchsInput.name = tablerowId + "-archs";
 	    distroArchsInput.id = tablerowId + "-archs";
 	    if (archs != '') {
-		distroArchsInput.value = archs
+		distroArchsInput.value = archs;
 	    }
 	    distroArchs.appendChild(distroArchsInput);
 	    tablerow.appendChild(action);
@@ -94,9 +94,13 @@
 	    const table = document.getElementById("distro-table").firstElementChild;
 	    table.appendChild(tablerow);
 	}
+
+	function addDistroOnClick(e) {
+	    addDistro();
+	}		     
 			     
 	addDistroButton = document.getElementById('add-distro-button')
-	addDistroButton.onclick = addDistro
+	addDistroButton.onclick = addDistroOnClick
 
 	form = document.getElementById('script-form')
 	form.onformdata = (e) => {
@@ -149,6 +153,11 @@
 	    theme: "monokai",
 	});
       </script>
+    </div>
+
+    <div class="form-input-container">
+      <label for="for-version">For App Version</label><br>
+      <input type="text" name="for-version" id="for-version" class"textbox">
     </div>
 
     <div class="form-input-container">

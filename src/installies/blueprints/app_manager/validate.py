@@ -47,6 +47,40 @@ class AppDescriptionValidator(Validator):
     data_name = 'App description'
 
 
+class VersionValidator(Validator):
+    """A class to validate version strings."""
+
+    checkers = [
+        LengthChecker(max_len=64),
+        AllowedCharactersChecker(
+            allow_extra=['.', '-']
+        )
+    ]
+
+    data_name = 'Version'
+
+
+class AppCurrentVersionValidator(VersionValidator):
+    """A class to validator app current version strings."""
+
+    data_name = "App current version"
+
+
+class AppVersionRegexValidator(Validator):
+    """A class to validate app version regex validator"""
+
+    checkers = [
+        LengthChecker(max_len=256),
+        AllowedCharactersChecker(
+            allow_extra=[
+                '.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '(', ')', '\\', '|', '/', '-', ':',
+            ]
+        )
+    ]
+
+    data_name = 'App version regex'
+    
+
 class AppVisibilityValidator(Validator):
     """A class for validating visibility options submitted by the user."""
 
@@ -60,7 +94,7 @@ class AppVisibilityValidator(Validator):
 
     data_name = 'Visibility option'
 
-
+    
 class ScriptActionValidator(Validator):
     """A class for validating script actions submitted by the user."""
 
@@ -128,3 +162,9 @@ class ScriptContentValidator(Validator):
     ]
 
     data_name = 'Script content'
+
+
+class ScriptVersionValidator(VersionValidator):
+    """A class for validating script version strings"""
+
+    data_name = 'Script version'

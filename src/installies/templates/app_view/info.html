@@ -30,6 +30,18 @@
     <th class="bold">Description:</th>
     <th>{{ app.description }}</th>
   </tr>
+  {% if app.current_version != ''%}
+  <tr>
+    <th class="bold">Current Version:</th>
+    <th>{{ app.current_version }}</th>
+  </tr>
+  {% endif %}
+  {% if app.version_regex != ''%}
+  <tr>
+    <th class="bold">Version Regex:</th>
+    <th>{{ app.version_regex }}</th>
+  </tr>
+  {% endif %}
 </table>
 {% endblock content %}
 

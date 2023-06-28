@@ -94,9 +94,13 @@
 	    const table = document.getElementById("distro-table").firstElementChild;
 	    table.appendChild(tablerow);
 	}
+	
+	function addDistroOnClick(e) {
+	    addDistro();
+	}		     
 			     
 	addDistroButton = document.getElementById('add-distro-button')
-	addDistroButton.onclick = addDistro
+	addDistroButton.onclick = addDistroOnClick
 
 	{% set supported_distros = script.get_all_supported_distros() %}
 	{% for arch, distros in supported_distros.items() %}
@@ -156,6 +160,11 @@
 	    theme: "monokai",
 	});
       </script>
+    </div>
+
+    <div class="form-input-container">
+      <label for="for-version">For App Version</label><br>
+      <input type="text" name="for-version" id="for-version" class"textbox" value="{{ script.version }}">
     </div>
 
     <div class="form-input-container">

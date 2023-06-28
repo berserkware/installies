@@ -93,7 +93,8 @@ class ScriptGroup(Group):
             model = Script,
             allowed_attributes = [
                 'action',
-                'last_modified'
+                'version',
+                'last_modified',
             ],
             default_attribute = 'last_modified',
             default_order = 'asc',
@@ -102,6 +103,11 @@ class ScriptGroup(Group):
             model = Script,
             kwarg_name = 'action',
             attribute = 'action',
+        ),
+        ByColumn(
+            model = Script,
+            kwarg_name = 'version',
+            attribute = 'version'
         ),
         ByColumn(
             model = Script,

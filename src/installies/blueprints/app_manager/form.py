@@ -3,11 +3,14 @@ from installies.lib.form import Form, FormInput
 from installies.blueprints.app_manager.validate import (
     AppNameValidator,
     AppDescriptionValidator,
+    AppCurrentVersionValidator,
+    AppVersionRegexValidator,
     AppVisibilityValidator,
     ScriptActionValidator,
     ScriptDistroValidator,
     ScriptContentValidator,
     ScriptDistroDictionaryValidator,
+    ScriptVersionValidator,
 )
 from installies.blueprints.app_manager.upload import get_distros_from_string
 from installies.blueprints.app_manager.models import App, Script
@@ -19,7 +22,9 @@ class CreateAppForm(Form):
 
     inputs = [
         FormInput('app-name', AppNameValidator, default=''),
-        FormInput('app-desc', AppDescriptionValidator, default='')
+        FormInput('app-desc', AppDescriptionValidator, default=''),
+        FormInput('app-current-version', AppCurrentVersionValidator, default=None),
+        FormInput('app-version-regex', AppVersionRegexValidator, default=None),
     ]
     model = App
 
@@ -28,6 +33,8 @@ class CreateAppForm(Form):
         return App.create(
             name=self.data['app-name'],
             description=self.data['app-desc'],
+            current_version=self.data['app-current-version'],
+            version_regex=self.data['app-version-regex'],
             submitter=g.user,
         )
 
@@ -38,15 +45,20 @@ class EditAppForm(Form):
     """
 
     inputs = [
-        FormInput('app-desc', AppDescriptionValidator, default='')
+        FormInput('app-desc', AppDescriptionValidator, default=''),
+        FormInput('app-current-version', AppCurrentVersionValidator, default=None),
+        FormInput('app-version-regex', AppVersionRegexValidator, default=None),
     ]
     model = App
 
-    def save(self):
+    def save(self, app):
         """Edits the app."""
-        return App.edit(
-            description=self.data['app-desc']
+        return app.edit(
+            description=self.data['app-desc'],
+            current_version=self.data['app-current-version'],
+            version_regex=self.data['app-version-regex'],
         )
+    
 
 
 class ChangeAppVisibilityForm(Form):
@@ -79,7 +91,8 @@ class ModifyScriptForm(Form):
             get_distros_from_string,
             '',
         ),
-        FormInput('script-content', ScriptContentValidator)
+        FormInput('script-content', ScriptContentValidator),
+        FormInput('for-version', ScriptVersionValidator, default=None)
     ]
     model = Script
 
@@ -92,7 +105,8 @@ class AddScriptForm(ModifyScriptForm):
             action=self.data['script-action'],
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
-            app=app
+            app=app,
+            version=self.data['for-version']
         )
 
 
@@ -104,4 +118,5 @@ class EditScriptForm(ModifyScriptForm):
             action=self.data['script-action'],
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
+            version=self.data['for-version'],
         )

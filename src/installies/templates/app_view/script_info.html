@@ -23,19 +23,27 @@
       <th>{{ script.action.capitalize() }}</th>
     </tr>
     <tr>
+      <th class="bold">For Version:</th>
+      <th>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</th>
+    </tr>
+    <tr>
       <th class="bold">Last Modified:</th>
       <th>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</th>
     </tr>
-  </table>
-  <p>Supported Distros</p>
-  <table>
-    {% set distros = script.get_all_supported_distros() %}
-    {% for architechture in distros %}
     <tr>
-      <th class="no-height-padding">{{ architechture }}:</th>
-      <th class="no-height-padding">{{ ', '.join(distros[architechture]) }}</th>
+      <th class="bold">Supported Distros</th>
+      <th>
+	<table>
+	  {% set distros = script.get_all_supported_distros() %}
+	  {% for architechture in distros %}
+	  <tr>
+	    <th class="no-height-padding">{{ architechture }}:</th>
+	    <th class="no-height-padding">{{ ', '.join(distros[architechture]) }}</th>
+	  </tr>
+	  {% endfor %}
+	</table>
+      </th>
     </tr>
-    {% endfor %}
   </table>
   <p>Content</p>
   <textarea name="script-content" id="script-content">
