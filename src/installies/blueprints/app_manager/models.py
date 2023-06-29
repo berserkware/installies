@@ -363,6 +363,7 @@ class Script(BaseModel):
         data['action'] = self.action
         data['supported_distros'] = self.get_all_supported_distros()
         data['last_modified'] = str(self.last_modified)
+        data['for_version'] = self.version
         with self.open_content() as c:
             data['content'] = c.read()
 
