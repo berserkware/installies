@@ -73,7 +73,7 @@ class AppVersionRegexValidator(Validator):
         LengthChecker(max_len=256),
         AllowedCharactersChecker(
             allow_extra=[
-                '.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '(', ')', '\\', '|', '/', '-', ':',
+                '.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '(', ')', '\\', '|', '/', '-', ':', '<', '>'
             ]
         )
     ]

@@ -39,14 +39,14 @@ def scripts(slug):
         'scripts': []
     }
 
+    if 'version' in request.args.keys() and re.match(app.version_regex, request.args['version']) is None:
+        data['error'] = "VersionDoesNotMatchRegex"
+        return data
+        
     for script in scripts:
         serialized_script = script.serialize()
         
         if 'version' in request.args.keys():
-            if re.fullmatch(script.app.version_regex, request.args['version']) is None:
-                data['error'] = "VersionDoesNotMatchRegex"
-                continue
-
             serialized_script['content'] = serialized_script['content'].replace('<version>', request.args['version'])
         else:
             serialized_script['content'] = serialized_script['content'].replace('<version>', script.app.current_version)
