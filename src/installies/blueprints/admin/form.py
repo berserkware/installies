@@ -4,7 +4,7 @@ from installies.blueprints.admin.validate import (
     DistroNameValidatior,
     ArchitechtureNameValidator,
 )
-from installies.blueprints.app_manager.models import Distro, Architechture, AlternativeArchitechtureName
+from installies.models.supported_distros import Distro, Architechture, AlternativeArchitechtureName
 from installies.blueprints.admin.converter import get_other_architechture_names_from_string
 
 class CreateDistroForm(Form):

@@ -6,7 +6,7 @@ from installies.lib.check import (
     ExistsInDatabaseChecker,
     EmailChecker,
 )
-from installies.blueprints.auth.models import User
+from installies.models.user import User
 
 
 class UsernameValidator(Validator):

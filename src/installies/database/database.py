@@ -1,14 +1,8 @@
 from installies.config import database
-from installies.blueprints.app_manager.models import (
-    App,
-    Script,
-    Distro,
-    SupportedDistro,
-    Maintainer,
-    Architechture,
-    AlternativeArchitechtureName,
-)
-from installies.blueprints.auth.models import User
+from installies.models.app import App, Maintainer
+from installies.models.script import Script
+from installies.models.supported_distros import Distro, SupportedDistro, Architechture, AlternativeArchitechtureName
+from installies.models.user import User
 
 
 def create_database():

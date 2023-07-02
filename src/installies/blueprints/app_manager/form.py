@@ -13,7 +13,8 @@ from installies.blueprints.app_manager.validate import (
     ScriptVersionValidator,
 )
 from installies.blueprints.app_manager.upload import get_distros_from_string
-from installies.blueprints.app_manager.models import App, Script
+from installies.models.app import App
+from installies.models.script import Script
 
 class CreateAppForm(Form):
     """

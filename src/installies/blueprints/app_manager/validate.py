@@ -8,7 +8,8 @@ from installies.lib.check import (
     NotInContainerChecker,
     DictionaryChecker,
 )
-from installies.blueprints.app_manager.models import App, Distro
+from installies.models.app import App
+from installies.models.supported_distros import Distro
 from installies.lib.url import make_slug
 from installies.config import (
     supported_script_actions,

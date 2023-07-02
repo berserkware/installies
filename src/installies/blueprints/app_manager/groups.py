@@ -1,11 +1,7 @@
-from installies.blueprints.app_manager.models import (
-    App,
-    Script,
-    SupportedDistro,
-    Distro,
-    Maintainer,
-    User
-)
+from installies.models.app import App, Maintainer
+from installies.models.script import Script
+from installies.models.supported_distros import SupportedDistro, Distro
+from installies.models.user import User
 from installies.database.group import Group
 from installies.database.modifiers import (
     JoinModifier,

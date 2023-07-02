@@ -30,8 +30,9 @@ from installies.config import (
     supported_script_actions,
     supported_visibility_options,
 )
-from installies.blueprints.app_manager.models import App, Script, Maintainer
-from installies.blueprints.auth.models import User
+from installies.models.app import App, Maintainer
+from installies.models.script import Script
+from installies.models.user import User
 from installies.blueprints.auth.decorators import authenticated_required
 from installies.blueprints.app_manager.form import (
     CreateAppForm,

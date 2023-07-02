@@ -8,7 +8,7 @@ from installies.blueprints.auth.validate import (
     EmailValidator,
     PasswordConfirmValidator,
 )
-from installies.blueprints.auth.models import User
+from installies.models.user import User
 from installies.blueprints.auth.decorators import (
     unauthenticated_required,
     authenticated_required,

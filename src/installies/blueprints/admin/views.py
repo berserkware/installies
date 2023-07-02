@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g
 from installies.blueprints.auth.decorators import authenticated_required
 from installies.blueprints.admin.decorators import admin_required
-from installies.blueprints.app_manager.models import Distro
+from installies.models.supported_distros import Distro
 from installies.lib.validate import ValidationError
 from installies.blueprints.admin.validate import DistroSlugValidator, DistroNameValidatior
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView

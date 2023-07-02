@@ -1,6 +1,6 @@
 from installies.lib.validate import Validator
 from installies.lib.check import InContainerChecker, AllowedCharactersChecker, EmptyChecker
-from installies.blueprints.app_manager.models import Distro
+from installies.models.supported_distros import Distro
 
 class DistroSlugValidator(Validator):
     """A class for validating new distro slugs submitted by admins."""
