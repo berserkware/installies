@@ -5,7 +5,7 @@ from peewee import (
     BooleanField,
     DateTimeField,
 )
-from installies.database.models import BaseModel
+from installies.models.base import BaseModel
 from installies.config import database, apps_path
 from installies.lib.random import gen_random_id
 from installies.lib.url import make_slug

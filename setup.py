@@ -10,6 +10,7 @@ setup(
         'installies.templates',
         'installies.lib',
         'installies.models',
+        'installies.groups',
         'installies.blueprints.api',
         'installies.blueprints.app_library',
         'installies.blueprints.app_manager',

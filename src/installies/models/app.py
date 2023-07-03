@@ -7,7 +7,7 @@ from peewee import (
     ForeignKeyField,
     JOIN,
 )
-from installies.database.models import BaseModel
+from installies.models.base import BaseModel
 from installies.models.user import User
 from installies.config import database, apps_path
 from installies.lib.url import make_slug

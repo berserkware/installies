@@ -1,5 +1,6 @@
 from flask import Blueprint, abort, request, g
-from installies.blueprints.app_manager.groups import AppGroup, ScriptGroup
+from installies.groups.app import AppGroup
+from installies.groups.script import ScriptGroup
 from installies.models.app import App, AppNotFound
 from installies.models.script import Script
 from peewee import *

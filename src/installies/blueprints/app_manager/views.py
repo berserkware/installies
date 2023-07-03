@@ -25,7 +25,7 @@ from installies.blueprints.app_manager.validate import (
     ScriptDistroValidator,
     ScriptContentValidator
 )
-from installies.blueprints.app_manager.groups import ScriptGroup
+from installies.groups.script import ScriptGroup
 from installies.config import (
     supported_script_actions,
     supported_visibility_options,
