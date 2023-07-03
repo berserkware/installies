@@ -1,6 +1,7 @@
 from flask import Blueprint, abort, request, g
 from installies.groups.app import AppGroup
 from installies.groups.script import ScriptGroup
+from installies.groups.modifiers import Paginate
 from installies.models.app import App, AppNotFound
 from installies.models.script import Script
 from peewee import *
@@ -17,6 +18,13 @@ def apps():
     data = {
         'apps': []
     }
+
+    paginator = Paginate(
+         default_per_page = 10,
+         max_per_page = 50,
+     )
+
+    apps = paginator.modify(apps, **request.args)
 
     for app in apps:
         data['apps'].append(app.serialize())

@@ -1,8 +1,11 @@
 from flask import render_template, Blueprint, request, g, Response
 from installies.lib.view import TemplateView
 from installies.groups.app import AppGroup
+from installies.groups.modifiers import Paginate
 from installies.models.app import App, Maintainer
 from peewee import *
+
+import math
 
 app_library = Blueprint('app_library', __name__)
 
@@ -29,5 +32,24 @@ def apps():
     apps = AppGroup.get(**request.args).where(
         ((Maintainer.user == g.user) & (App.visibility != 'public')) | (App.visibility == 'public')
     )
+
+    paginator = Paginate(
+        default_per_page = 10,
+        max_per_page = 50,
+    )
+
+    paginated_apps = paginator.modify(apps, **request.args)
+    total_app_count = apps.count()
+    try:
+        per_page = int(request.args.get('per-page', 10))
+    except ValueError:
+        per_page = 10
     
-    return render_template('apps.html', apps=apps)
+    page_count = math.ceil(total_app_count / per_page)
+
+    return render_template(
+        'apps.html',
+        apps=paginated_apps,
+        total_app_count=total_app_count,
+        page_count=page_count,
+    )
