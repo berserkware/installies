@@ -33,7 +33,7 @@ from installies.config import (
 from installies.models.app import App, Maintainer
 from installies.models.script import Script
 from installies.models.user import User
-from installies.models.report import ReportBase, AppReport, ScriptReport
+from installies.models.report import ReportBase, AppReport
 from installies.blueprints.auth.decorators import authenticated_required
 from installies.blueprints.app_manager.form import (
     CreateAppForm,
@@ -42,7 +42,6 @@ from installies.blueprints.app_manager.form import (
     AddScriptForm,
     EditScriptForm,
     ReportAppForm,
-    ReportScriptForm,
 )
 from installies.lib.view import (
     View,
@@ -338,24 +337,6 @@ class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
         return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)
 
 
-class ReportScriptView(AuthenticationRequiredMixin, AppMixin, FormView):
-    """A view for reporting scripts."""
-
-    template_path = 'app_view/report_script.html'
-    public_only = True
-    form_class = ReportScriptForm
-
-    def on_request(self, **kwargs):
-        kwargs['script'] = Script.get_by_id(kwargs['script_id'])
-        return super().on_request(**kwargs)
-
-    def form_valid(self, form, **kwargs):
-        form.save(script=kwargs['script'])
-
-        flash('Script successfully reported.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)
-
-
 class ReportMixin:
     """
     A mixin for getting reports.
@@ -391,19 +372,6 @@ class AppReportDetailView(AuthenticationRequiredMixin, AppMixin, ReportMixin, Te
         return super().get(**kwargs)
 
 
-class ScriptReportDetailView(AuthenticationRequiredMixin, AppMixin, ReportMixin, TemplateView):
-    """A view to get script reports."""
-
-    template_path = 'app_view/script_report_view.html'
-    public_only = True
-    report_class = ScriptReport
-
-    def get(self, **kwargs):
-        if kwargs['report'].submitter != g.user and g.user.admin is False:
-            abort(404)
-        return super().get(**kwargs)
-    
-
 class DeleteAppReportView(AuthenticationRequiredMixin, AppMixin, ReportMixin, TemplateView):
     """A view for deleting app reports."""
 
@@ -411,20 +379,6 @@ class DeleteAppReportView(AuthenticationRequiredMixin, AppMixin, ReportMixin, Te
     public_only = True
     report_class = AppReport
     
-    def post(self, **kwargs):
-        report = kwargs['report']
-        report.delete_instance()
-        flash('Report successfully removed.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)
-
-
-class DeleteScriptReportView(AuthenticationRequiredMixin, AppMixin, ReportMixin, TemplateView):
-    """A view for deleting script reports."""
-
-    template_path = 'app_view/delete_script_report.html'
-    public_only = True
-    report_class = ScriptReport
-
     def post(self, **kwargs):
         report = kwargs['report']
         report.delete_instance()

@@ -17,7 +17,7 @@ from installies.blueprints.app_manager.validate import (
 from installies.blueprints.app_manager.upload import get_distros_from_string
 from installies.models.app import App
 from installies.models.script import Script
-from installies.models.report import AppReport, ScriptReport
+from installies.models.report import AppReport
 
 class CreateAppForm(Form):
     """
@@ -146,18 +146,4 @@ class ReportAppForm(CreateReportBaseForm):
             body=self.data['body'],
             submitter=g.user,
             app=app,
-        )
-
-
-class ReportScriptForm(CreateReportBaseForm):
-    """A form to report scripts."""
-
-    model = Script
-
-    def save(self, script: Script):
-        return ScriptReport.create(
-            title=self.data['title'],
-            body=self.data['body'],
-            submitter=g.user,
-            script=script,
         )
