@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-<div class="container" style="max-width:800px;">
+<div class="container" style="max-width:1150px;">
     <h3>Welcome to installies!</h3>
     <p class="container-description">
         Installies is a website that removes all the hassle
@@ -15,14 +15,13 @@
     </p>
 </div>
 {% if g.is_authed %}
-<div class="container" style="max-width:800px">
+<div class="container black" style="max-width:1150px">
   <h2>My Apps</h2>
   {% if user_maintained_apps|length == 0 %}
   <p class="no-margin">You maintain no apps.</p>
   {% else %}
-  {% for app in user_maintained_apps %}
-  {% include "app_card.html" %}
-  {% endfor %}
+  {% set apps = user_maintained_apps %}
+  {% include "app_table.html" %}
   {% endif %}
   <a href="{{ url_for('app_library.apps', **{'search-in':'maintainers','k':g.user.username}) }}">Search for apps I maintain</a>
 </div>

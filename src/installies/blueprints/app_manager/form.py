@@ -11,10 +11,13 @@ from installies.blueprints.app_manager.validate import (
     ScriptContentValidator,
     ScriptDistroDictionaryValidator,
     ScriptVersionValidator,
+    ReportTitleValidator,
+    ReportBodyValidator,
 )
 from installies.blueprints.app_manager.upload import get_distros_from_string
 from installies.models.app import App
 from installies.models.script import Script
+from installies.models.report import AppReport, ScriptReport
 
 class CreateAppForm(Form):
     """
@@ -120,4 +123,41 @@ class EditScriptForm(ModifyScriptForm):
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
             version=self.data['for-version'],
+        )
+
+
+class CreateReportBaseForm(Form):
+    """A form to create reports."""
+    
+    inputs = [
+        FormInput('title', ReportTitleValidator),
+        FormInput('body', ReportBodyValidator),
+    ]
+
+
+class ReportAppForm(CreateReportBaseForm):
+    """A form to report apps."""
+
+    model = App
+
+    def save(self, app: App):
+        return AppReport.create(
+            title=self.data['title'],
+            body=self.data['body'],
+            submitter=g.user,
+            app=app,
+        )
+
+
+class ReportScriptForm(CreateReportBaseForm):
+    """A form to report scripts."""
+
+    model = Script
+
+    def save(self, script: Script):
+        return ScriptReport.create(
+            title=self.data['title'],
+            body=self.data['body'],
+            submitter=g.user,
+            script=script,
         )

@@ -12,6 +12,12 @@ from installies.blueprints.app_manager.views import (
     AddScriptFormView,
     EditScriptFormView,
     DeleteScriptView,
+    ReportAppView,
+    ReportScriptView,
+    DeleteAppReportView,
+    DeleteScriptReportView,
+    AppReportDetailView,
+    ScriptReportDetailView,
 )
 
 app_manager = Blueprint('app_manager', __name__)
@@ -23,8 +29,15 @@ app_manager.add_url_rule('/apps/<app_slug>/edit', 'app_edit', AppEditView.as_vie
 app_manager.add_url_rule('/apps/<app_slug>/change-visibility', 'change_visibility', AppChangeVisibilityView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_slug>/add-mantainer', 'add_maintainer', AddMaintainerView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_slug>/maintainer/<username>/remove', 'remove_maintainer', RemoveMaintainerView.as_view(), methods=['GET', 'POST'])
+app_manager.add_url_rule('/apps/<app_slug>/report', 'report_app', ReportAppView.as_view(), methods=['GET', 'POST'])
+app_manager.add_url_rule('/apps/<app_slug>/reports/<int:report_id>/delete', 'delete_app_report', DeleteAppReportView.as_view(), methods=['GET', 'POST'])
+app_manager.add_url_rule('/apps/<app_slug>/reports/<int:report_id>', 'app_report_view', AppReportDetailView.as_view())
+
 app_manager.add_url_rule('/apps/<app_slug>/scripts', 'app_scripts', ScriptListView.as_view())
 app_manager.add_url_rule('/apps/<app_slug>/scripts/<int:script_id>', 'script_view', ScriptDetailView.as_view())
 app_manager.add_url_rule('/apps/<app_slug>/add-script', 'add_script', AddScriptFormView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_slug>/scripts/<int:script_id>/edit', 'edit_script', EditScriptFormView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_slug>/scripts/<int:script_id>/delete', 'delete_script', DeleteScriptView.as_view(), methods=['GET', 'POST'])
+app_manager.add_url_rule('/apps/<app_slug>/scripts/<int:script_id>/report', 'report_script', ReportScriptView.as_view(), methods=['GET', 'POST'])
+app_manager.add_url_rule('/apps/<app_slug>/scripts/<int:script_id>/reports/<int:report_id>/delete', 'delete_script_report', DeleteScriptReportView.as_view(), methods=['GET', 'POST'])
+app_manager.add_url_rule('/apps/<app_slug>/scripts/<int:script_id>/reports/<int:report_id>', 'script_report_view', ScriptReportDetailView.as_view())

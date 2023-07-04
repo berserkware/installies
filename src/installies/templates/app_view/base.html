@@ -28,6 +28,7 @@
       <li><a href="{{ url_for("app_manager.add_maintainer", app_slug=app.slug) }}">Add Maintainer</a></li>
       <li><a href="{{ url_for("app_manager.change_visibility", app_slug=app.slug) }}">Change Visibility</a></li>
       {% endif %}
+      <li><a href="{{ url_for("app_manager.report_app", app_slug=app.slug) }}" class="red">Report</a></li>
     </ul>
   </div>
 </div>

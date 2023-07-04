@@ -169,3 +169,31 @@ class ScriptVersionValidator(VersionValidator):
     """A class for validating script version strings"""
 
     data_name = 'Script version'
+
+
+class ReportTitleValidator(Validator):
+    """A class for validating report title."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=64),
+        AllowedCharactersChecker(
+            allow_extra=['-', ',', '.', '"', '\'', '(', ')'],
+        )
+    ]
+    
+    data_name = 'Report title'
+
+
+class ReportBodyValidator(Validator):
+    """A class for validating report body."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=2048),
+        AllowedCharactersChecker(
+            allow_extra=['-', ',', '.', '"', '\'', '(', ')'],
+        )
+    ]
+
+    data_name = 'Report body'

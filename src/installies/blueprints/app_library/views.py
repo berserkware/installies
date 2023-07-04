@@ -39,6 +39,7 @@ def apps():
     )
 
     paginated_apps = paginator.modify(apps, **request.args)
+    
     total_app_count = apps.count()
     try:
         per_page = int(request.args.get('per-page', 10))

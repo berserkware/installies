@@ -1,0 +1,28 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}View Report of {% endblock %}
+
+{% block content %}
+<div class="container black" style="width:auto">
+  <h2>App Report Details</h2>
+
+  <table>
+    <tr>
+      <th class="bold">Title:</th>
+      <th>{{ report.title }}</th>
+    </tr>
+     <tr>
+      <th class="bold">Body:</th>
+      <th>{{ report.body }}</th>
+     </tr>
+     <tr>
+      <th class="bold">Submitter:</th>
+      <th><a href="{{ url_for('auth.profile', username=report.submitter.username) }}">{{ report.submitter.username }}</a></th>
+     </tr>
+    <tr>
+      <th class="bold">Action:</th>
+      <th>[<a href="{{ url_for('app_manager.delete_app_report', app_slug=app.slug, report_id=report.id) }}">Delete</a>]</th>
+    </tr>
+  </table>
+</div>
+{% endblock %}
