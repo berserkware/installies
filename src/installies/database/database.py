@@ -3,7 +3,7 @@ from installies.models.app import App, Maintainer
 from installies.models.script import Script
 from installies.models.supported_distros import Distro, SupportedDistro, Architechture, AlternativeArchitechtureName
 from installies.models.user import User
-from installies.models.report import AppReport, ScriptReport
+from installies.models.report import AppReport
 
 
 def create_database():
@@ -20,7 +20,6 @@ def create_database():
                 Architechture,
                 AlternativeArchitechtureName,
                 AppReport,
-                ScriptReport,
             ]
         )
 
@@ -39,7 +38,6 @@ def drop_database():
                 Architechture,
                 AlternativeArchitechtureName,
                 AppReport,
-                ScriptReport,
             ]
         )
 

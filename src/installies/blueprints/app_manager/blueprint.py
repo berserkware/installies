@@ -13,8 +13,6 @@ from installies.blueprints.app_manager.views import (
     EditScriptFormView,
     DeleteScriptView,
     ReportAppView,
-    DeleteAppReportView,
-    AppReportDetailView,
 )
 
 app_manager = Blueprint('app_manager', __name__)
@@ -27,8 +25,6 @@ app_manager.add_url_rule('/apps/<app_slug>/change-visibility', 'change_visibilit
 app_manager.add_url_rule('/apps/<app_slug>/add-mantainer', 'add_maintainer', AddMaintainerView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_slug>/maintainer/<username>/remove', 'remove_maintainer', RemoveMaintainerView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_slug>/report', 'report_app', ReportAppView.as_view(), methods=['GET', 'POST'])
-app_manager.add_url_rule('/apps/<app_slug>/reports/<int:report_id>/delete', 'delete_app_report', DeleteAppReportView.as_view(), methods=['GET', 'POST'])
-app_manager.add_url_rule('/apps/<app_slug>/reports/<int:report_id>', 'app_report_view', AppReportDetailView.as_view())
 
 app_manager.add_url_rule('/apps/<app_slug>/scripts', 'app_scripts', ScriptListView.as_view())
 app_manager.add_url_rule('/apps/<app_slug>/scripts/<int:script_id>', 'script_view', ScriptDetailView.as_view())

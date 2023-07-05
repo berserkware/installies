@@ -3,6 +3,7 @@ from installies.lib.view import TemplateView
 from installies.groups.app import AppGroup
 from installies.groups.modifiers import Paginate
 from installies.models.app import App, Maintainer
+from installies.models.report import AppReport
 from peewee import *
 
 import math
@@ -22,6 +23,9 @@ class IndexView(TemplateView):
                 .distinct()
             )
             kwargs['user_maintained_apps'] = user_maintained_apps
+
+            user_reports = AppReport.select().where(AppReport.submitter == g.user)
+            kwargs['user_reports'] = user_reports
 
         return kwargs
 

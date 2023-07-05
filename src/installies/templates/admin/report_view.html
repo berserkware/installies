@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+
+{% block title %}View Report{% endblock %}
+
+{% block content %}
+<div class="container black">
+  <h2>App Report Details</h2>
+
+  <table>
+    <tr>
+      <th class="bold">Title:</th>
+      <th>{{ report.title }}</th>
+    </tr>
+     <tr>
+      <th class="bold">Body:</th>
+      <th>{{ report.body }}</th>
+     </tr>
+    <tr>
+      <th class="bold">Creation Date:</th>
+      <th>{{ report.app.creation_date.day }}-{{ report.app.creation_date.month }}-{{ report.app.creation_date.year }} {{ report.app.creation_date.hour }}:{{ report.app.creation_date.minute }} (UTC)</th>
+    </tr>
+    <tr>
+      <th class="bold">Resolved:</th>
+      <th>{% if report.resolved %}True{% else %}False{% endif %}</th>
+    </tr>
+     <tr>
+      <th class="bold">Submitter:</th>
+      <th><a href="{{ url_for('auth.profile', username=report.submitter.username) }}">{{ report.submitter.username }}</a></th>
+     </tr>
+    <tr>
+      <th class="bold">Action:</th>
+      <th>[<a href="{{ url_for('admin.delete_app_report', report_id=report.id) }}">Delete</a>][<a href="{{ url_for('admin.resolve_app_report', report_id=report.id) }}">Resolve</a>]</th>
+    </tr>
+  </table>
+</div>
+{% endblock %}

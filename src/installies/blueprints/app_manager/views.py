@@ -52,6 +52,7 @@ from installies.lib.view import (
     DetailView,
 )
 from peewee import JOIN
+from installies.blueprints.admin.views import AdminRequiredMixin
 
 
 class AppMixin:
@@ -334,53 +335,4 @@ class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
         form.save(app=kwargs['app'])
 
         flash('App successfully reported.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)
-
-
-class ReportMixin:
-    """
-    A mixin for getting reports.
-
-    :param report_class: The class of the report. Default is the Report class.
-    """
-
-    report_class = ReportBase
-
-    def on_request(self, **kwargs):
-        report = self.report_class.select().where(self.report_class.id == kwargs['report_id'])
-
-        if report.exists() is False:
-            abort(404)
-
-        report = report.get()
-
-        kwargs['report'] = report
-        
-        return super().on_request(**kwargs)
-
-
-class AppReportDetailView(AuthenticationRequiredMixin, AppMixin, ReportMixin, TemplateView):
-    """A view to get app reports."""
-
-    template_path = 'app_view/report_view.html'
-    public_only = True
-    report_class = AppReport
-
-    def get(self, **kwargs):
-        if kwargs['report'].submitter != g.user and g.user.admin is False:
-            abort(404)
-        return super().get(**kwargs)
-
-
-class DeleteAppReportView(AuthenticationRequiredMixin, AppMixin, ReportMixin, TemplateView):
-    """A view for deleting app reports."""
-
-    template_path = 'app_view/delete_app_report.html'
-    public_only = True
-    report_class = AppReport
-    
-    def post(self, **kwargs):
-        report = kwargs['report']
-        report.delete_instance()
-        flash('Report successfully removed.', 'success')
         return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)

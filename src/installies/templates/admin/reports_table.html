@@ -1,0 +1,20 @@
+<table class="max-width">
+  <tr class="underline">
+    <th class="bold">Action</th>
+    <th class="bold">Title</th>
+    <th class="bold">Submitter</th>
+    <th class="bold">App</th>
+    <th class="bold">Creation Date</th>
+    <th class="bold">Resolved</th>
+  </tr>
+  {% for report in reports %}
+  <tr>
+    <th>[<a href="{{ url_for('admin.app_report_view', report_id=report.id) }}">View</a>]</th>
+    <th>{{ report.title}}</th>
+    <th><a href="{{ url_for('auth.profile', username=report.submitter.username) }}">{{ report.submitter.username }}</a></th>
+    <th><a href="{{ url_for('app_manager.app_view', app_slug=report.app.slug) }}">{{ report.app.name }}</a></th>
+    <th>{{ report.app.creation_date.day }}-{{ report.app.creation_date.month }}-{{ report.app.creation_date.year }} {{ report.app.creation_date.hour }}:{{ report.app.creation_date.minute }} (UTC)</th>
+    <th>{% if report.resolved %}True{% else %}False{% endif %}</th>
+  </tr>
+  {% endfor %}
+</table>
