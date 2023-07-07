@@ -10,7 +10,7 @@
     This action is not reversable.
   </p>
 
-  <form class="delete-app-form" action="{{ url_for('app_manager.app_delete', app_slug=app.slug) }}" method="post">
+  <form class="delete-app-form" action="{{ url_for('app_manager.app_delete', app_name=app.name) }}" method="post">
     <input type="submit" value="Delete App" class="button">
   </form>
 </div>

@@ -10,7 +10,7 @@
     </tr>
     {% for app in apps %}
     <tr class="underline">
-      <th><a href="{{ url_for('app_manager.app_view', app_slug=app.slug) }}" >{{ app.name }}</a></th>
+      <th><a href="{{ url_for('app_manager.app_view', app_name=app.name) }}" >{{ app.name }}</a></th>
       <th>{{ app.creation_date.day }}-{{ app.creation_date.month }}-{{ app.creation_date.year }} {{ app.creation_date.hour }}:{{ app.creation_date.minute }} (UTC)</th>
       <th>{{ app.last_modified.day }}-{{ app.last_modified.month }}-{{ app.last_modified.year }} {{ app.last_modified.hour }}:{{ app.last_modified.minute }} (UTC)</th>
       <th>{{ app.description }}</th>

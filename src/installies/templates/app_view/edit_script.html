@@ -13,7 +13,7 @@
 <div class="container black auto-width" style="width:auto">
   <h2>Edit Script</h2>
 
-  <form action="{{ url_for('app_manager.edit_script', app_slug=app.slug, script_id=script.id) }}" method="post" id="script-form">
+  <form action="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}" method="post" id="script-form">
     <div class="form-input-container">
       <label for="script-action">Script Action</label><br>
       <select name="script-action" id="script-action" required>

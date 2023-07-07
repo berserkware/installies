@@ -66,12 +66,12 @@ class AppMixin:
     maintainer_only = False
     
     def on_request(self, **kwargs):
-        app_slug = kwargs.get('app_slug')
+        app_name = kwargs.get('app_name')
 
-        if app_slug is None:
+        if app_name is None:
             abort(404)
 
-        app = App.select().where(App.slug == app_slug)
+        app = App.select().where(App.name == app_name)
 
         if app.exists() is False:
             abort(404)
@@ -86,7 +86,7 @@ class AppMixin:
                 'You do not have permission to do that.',
                 'error'
             )
-            return redirect(url_for('app_manager.app_view', app_slug=app.slug), 303)
+            return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
 
         kwargs['app'] = app
         
@@ -103,7 +103,7 @@ class CreateAppFormView(AuthenticationRequiredMixin, FormView):
          app = form.save()
 
          flash('App successfully created.', 'success')
-         return redirect(url_for('app_manager.app_view', app_slug=app.slug), 303)
+         return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
 
 
 class AppDetailView(AppMixin, TemplateView):
@@ -139,7 +139,7 @@ class AppEditView(AuthenticationRequiredMixin, AppMixin, FormView):
         app = kwargs['app']
         form.save(app)
         flash('App succesfully edited.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=app.slug), 303)
+        return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
 
 
 class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -155,12 +155,12 @@ class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
         # if app has no scripts, dont allow to make public
         if form.data['visibility'] != 'private' and len(app.scripts) == 0:
             flash('App must have at least one script to be made public', 'error')
-            return redirect(url_for('app_manager.app_view', slug=app.slug), 303)
+            return redirect(url_for('app_manager.app_view', app_name=app_name), 303)
 
         form.save(app=app)
 
         flash(f'App visibility successfully changed to {form.data["visibility"]}.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=app.slug), 303)
+        return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
 
 
 class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
@@ -186,12 +186,12 @@ class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
             .where(Maintainer.app == app)
             .exists()):
             flash(f'{user.username} is already a maintainer.', 'error')
-            return redirect(url_for('app_manager.add_maintainer', slug=app.slug), 303)
+            return redirect(url_for('app_manager.add_maintainer', app_name=app.name), 303)
 
         maintainer = Maintainer.create(user=user, app=app)
 
         flash(f'{user.username} successfully added as a maintainer.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=app.slug), 303)
+        return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
         
 
 class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
@@ -230,12 +230,12 @@ class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
 
         if len(app.maintainers) == 1:
             flash(f'You cannot remove the last maintainer.', 'error')
-            return redirect(url_for('app_manager.app_view', app_slug=app.slug), 303)
+            return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
         
         maintainer.delete_instance()
 
         flash(f'Maintainer successfully removed.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=app.slug), 303)
+        return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
 
 
 class ScriptListView(AppMixin, ListView):
@@ -280,7 +280,7 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         form.save(app=kwargs['app'])
         
         flash('Script successfully created.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)
+        return redirect(url_for('app_manager.app_view', app_name=kwargs['app'].name), 303)
 
 
 class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -303,7 +303,7 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         form.save(script=kwargs['script'])
 
         flash('Script successfully edited.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)
+        return redirect(url_for('app_manager.app_view', app_name=kwargs['app'].name), 303)
 
 
 class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
@@ -321,7 +321,7 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
         script = kwargs['script']
         script.delete_instance()
         flash('Script successfully deleted.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)
+        return redirect(url_for('app_manager.app_view', app_name=kwargs['app'].name), 303)
 
 
 class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -335,4 +335,4 @@ class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
         form.save(app=kwargs['app'])
 
         flash('App successfully reported.', 'success')
-        return redirect(url_for('app_manager.app_view', app_slug=kwargs['app'].slug), 303)
+        return redirect(url_for('app_manager.app_view', app_name=kwargs['app'].name), 303)

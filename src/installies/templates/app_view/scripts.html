@@ -6,7 +6,7 @@
 <div class="container black">
   <h2>Refine Scripts</h2>
   
-  <form action="{{ url_for('app_manager.app_scripts', app_slug=app.slug) }}" method="get">
+  <form action="{{ url_for('app_manager.app_scripts', app_name=app.name) }}" method="get">
     <fieldset>
       <div>
 	<label for="supports">Supports:</label>
@@ -67,7 +67,7 @@
     </tr>
     {% for script in scripts %}
     <tr class="underline">
-      <th>[<a href="{{ url_for('app_manager.script_view', app_slug=app.slug, script_id=script.id) }}">View</a>] {% if app.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_slug=app.slug, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_slug=app.slug, script_id=script.id) }}">Delete</a>]{% endif %}</th>
+      <th>[<a href="{{ url_for('app_manager.script_view', app_name=app.name, script_id=script.id) }}">View</a>] {% if app.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>]{% endif %}</th>
       <th>{{ script.action }}</th>
       <th>
 	<table>

@@ -40,8 +40,8 @@ class AppGroup(Group):
         ),
         ByColumn(
             model = App,
-            kwarg_name = 'slug',
-            attribute = 'slug',
+            kwarg_name = 'display_name',
+            attribute = 'display_name',
         ),
         ByColumn(
             model = App,

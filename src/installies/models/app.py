@@ -27,7 +27,7 @@ class App(BaseModel):
     """A class for storing app data."""
 
     name = CharField(255, unique=True)
-    slug = CharField(255, unique=True)
+    display_name = CharField(255, unique=True, null=True)
     description = TextField()
     current_version = CharField(255, null=True)
     version_regex = CharField(255, null=True)
@@ -37,20 +37,20 @@ class App(BaseModel):
     visibility = CharField(255, default='private')
 
     @classmethod
-    def get_by_slug(cls, slug: str):
+    def get_by_name(cls, name: str):
         """
-        Gets an app by its slug.
+        Gets an app by its name.
 
         An AppNotFound error is raised if it cannot be found.
 
-        :param slug: The slug to get the app by.
+        :param name: The name to get the app by.
         """
 
         app = (
             App
             .select()
             .join(Script, JOIN.LEFT_OUTER)
-            .where(App.slug == slug)
+            .where(App.name == name)
         )
 
         if app.exists() is False:
@@ -64,6 +64,7 @@ class App(BaseModel):
             name: str,
             description: str,
             submitter: User,
+            display_name: str=None,
             current_version: str=None,
             version_regex: str=None,
     ):
@@ -73,6 +74,7 @@ class App(BaseModel):
         The data is also cleaned.
 
         :param name: The name of the app.
+        :param display_name: The display_name of the App
         :param description: The app's description.
         :param submitter: The app's submitter.
         :param current_version: The app's current version.
@@ -81,11 +83,9 @@ class App(BaseModel):
         name = bleach.clean(name)
         description = bleach.clean(description)
         
-        slug = make_slug(name)
-
         app = super().create(
             name=name,
-            slug=slug,
+            display_name=display_name,
             description=description,
             submitter=submitter,
             current_version=current_version,
@@ -102,7 +102,7 @@ class App(BaseModel):
         data = {}
 
         data['name'] = self.name
-        data['slug'] = self.slug
+        data['display_name'] = self.display_name
         data['description'] = self.description
         data['current_version'] = self.current_version
         data['version_regex'] = self.version_regex
@@ -120,19 +120,20 @@ class App(BaseModel):
 
         :param apps_dir: The directory to put the apps in.
         """
-        app_path = os.path.join(apps_dir, self.slug)
+        app_path = os.path.join(apps_dir, self.name)
         if os.path.isdir(app_path) is False:
             os.mkdir(app_path)
 
         return app_path
 
-    def edit(self, description: str, current_version: str, version_regex: str):
+    def edit(self, description: str, current_version: str, version_regex: str, display_name: str):
         """
         Edits the app.
 
         :param description: The new description for the app.
         :param current_version: The new current version.
         :param version_regex: The new version regex for the the app.
+        :param display_name: The new display name.
         """
 
         description = bleach.clean(description)
@@ -140,6 +141,7 @@ class App(BaseModel):
         self.description = description
         self.current_version = current_version
         self.version_regex = version_regex
+        self.display_name = display_name
 
         self.last_modified = datetime.today()
 

@@ -16,7 +16,7 @@
   <table>
     {% if app.can_user_edit(g.user) %}
     <th class="bold">Options:</th>
-    <th>[<a href="{{ url_for('app_manager.edit_script', app_slug=app.slug, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_slug=app.slug, script_id=script.id) }}">Delete</a>]</th>
+    <th>[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>]</th>
     {% endif %}
     <tr>
       <th class="bold">Action:</th>

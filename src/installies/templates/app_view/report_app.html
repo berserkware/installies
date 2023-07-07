@@ -6,7 +6,7 @@
 <div class="container black" style="width:auto">
     <h2>Report App</h2>
     
-    <form action="{{ url_for('app_manager.report_app', app_slug=app.slug) }}" method="post">
+    <form action="{{ url_for('app_manager.report_app', app_name=app.name) }}" method="post">
         <div class="form-input-container">
           <label for="title" >Title</label><br>
 	  <input type="text" name="title" id="title" class="textbox" required>

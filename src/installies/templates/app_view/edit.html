@@ -6,25 +6,30 @@
 <div class="container black" style="width:auto">
     <h2>Edit App</h2>
     
-    <form action="{{ url_for('app_manager.app_edit', app_slug=app.slug) }}" method="post">
-        <div class="form-input-container">
-            <label for="app-desc" >Description</label><br>
-            <textarea name="app-desc" id="app-desc" class="textbox" cols="30" rows="6">{{ app.description }}</textarea>
-        </div>
+    <form action="{{ url_for('app_manager.app_edit', app_name=app.name) }}" method="post">
+      <div class="form-input-container">
+	<label for="app-display-name">Display Name</label><br>
+	<input type="text" name="app-display-name" id="app-display-name" class="textbox" value="{{ app.display_name }}"><br>
+      </div>
+      
+      <div class="form-input-container">
+        <label for="app-desc" >Description</label><br>
+        <textarea name="app-desc" id="app-desc" class="textbox" cols="30" rows="6">{{ app.description }}</textarea>
+      </div>
 
-	<div class="form-input-container">
-	  <label for="app-current-version">Current Version</label><br>
-	  <input type="text" name="app-current-version" id="app-current-version" class="textbox" value="{{ app.current_version }}"><br>
-	</div>
+      <div class="form-input-container">
+	<label for="app-current-version">Current Version</label><br>
+	<input type="text" name="app-current-version" id="app-current-version" class="textbox" value="{{ app.current_version }}"><br>
+      </div>
 
-	<div class="form-input-container">
-	  <label for="app-version-regex">Version Regex</label></br>
-	  <input type="text" name="app-version-regex" id="app-version-regex" class="textbox" value="{{ app.version_regex }}"><br>
-	</div>
+      <div class="form-input-container">
+	<label for="app-version-regex">Version Regex</label></br>
+	<input type="text" name="app-version-regex" id="app-version-regex" class="textbox" value="{{ app.version_regex }}"><br>
+      </div>
         
-        <div class="form-input-container">
-            <input type="submit" value="Submit" class="button">
-        </div>
+      <div class="form-input-container">
+        <input type="submit" value="Submit" class="button">
+      </div>
     </form>
 </div>
 {% endblock %}

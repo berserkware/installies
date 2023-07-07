@@ -23,19 +23,37 @@ class AppNameValidator(Validator):
 
     checkers = [
         AllowedCharactersChecker(
-            allow_extra=['-', '_', '<', '>', '!']
+            allow_uppercase=False,
+            allow_spaces=False,
+            allow_extra=['-', '_']
         ),
         LengthChecker(max_len=64),
         EmptyChecker(),
         ExistsInDatabaseChecker(
             table=App,
-            column_name='slug',
-            data_modifier=make_slug
+            column_name='name',
         ),
     ]
 
     data_name = 'App name'
 
+
+class AppDisplayNameValidator(Validator):
+    """A class for validating app display names."""
+
+    checkers = [
+        AllowedCharactersChecker(
+            allow_extra=['-', '_'],
+        ),
+        LengthChecker(max_len=64),
+        ExistsInDatabaseChecker(
+            table=App,
+            column_name='display_name',
+        ),
+    ]
+
+    data_name = 'App display name'
+    
 
 class AppDescriptionValidator(Validator):
     """A class for validating app descriptions submitted by the user."""
