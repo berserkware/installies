@@ -96,12 +96,11 @@ def do_action(args):
         architechture = 'amd64'
 
     split_app_name = args.app_name.split('==')
-    app_name = args.app_name
-    version = None
-    if len(split_app_name) == 2:
-        app_name = split_app_name[0]
-        version = split_app_name[1]
-        
+    app_name = split_app_name[0]
+
+    #if the user specifies a version of the app to get
+    version = (split_app_name[1] if len(split_app_name) == 2 else None)
+
     try:
         script = Script.get(
             app_name,

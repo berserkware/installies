@@ -31,9 +31,9 @@ def apps():
 
     return data
 
-@api.route('/api/apps/<slug>/scripts')
-def scripts(slug):
-    app = App.select().where(App.slug == slug)
+@api.route('/api/apps/<app_name>/scripts')
+def scripts(app_name):
+    app = App.select().where(App.name == app_name)
 
     if app.exists() is False:
         abort(404)
