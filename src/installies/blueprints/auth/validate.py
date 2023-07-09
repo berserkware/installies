@@ -3,7 +3,7 @@ from installies.lib.check import (
     EmptyChecker,
     LengthChecker,
     AllowedCharactersChecker,
-    ExistsInDatabaseChecker,
+    UniqueChecker,
     EmailChecker,
 )
 from installies.models.user import User
@@ -18,7 +18,7 @@ class UsernameValidator(Validator):
         AllowedCharactersChecker(
             allow_extra=['-', '_', '<', '>', '!']
         ),
-        ExistsInDatabaseChecker(table=User, column_name='username'),
+        UniqueChecker(table=User, column_name='username'),
     ]
 
     data_name = 'Username'
@@ -30,7 +30,7 @@ class EmailValidator(Validator):
     checkers = [
         EmptyChecker(),
         EmailChecker(),
-        ExistsInDatabaseChecker(User, 'email'),
+        UniqueChecker(User, 'email'),
     ]
 
     data_name = 'Email'

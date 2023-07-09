@@ -15,34 +15,34 @@
 
   <table>
     {% if app.can_user_edit(g.user) %}
-    <th class="bold">Options:</th>
+    <td class="bold">Options:</td>
     <th>[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>]</th>
     {% endif %}
     <tr>
       <th class="bold">Action:</th>
-      <th>{{ script.action.capitalize() }}</th>
+      <td>{{ script.action.capitalize() }}</td>
     </tr>
     <tr>
       <th class="bold">For Version:</th>
-      <th>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</th>
+      <td>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</td>
     </tr>
     <tr>
       <th class="bold">Last Modified:</th>
-      <th>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</th>
+      <td>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</td>
     </tr>
     <tr>
       <th class="bold">Supported Distros</th>
-      <th>
+      <td>
 	<table>
 	  {% set distros = script.get_all_supported_distros() %}
 	  {% for architechture in distros %}
 	  <tr>
-	    <th class="no-height-padding">{{ architechture }}:</th>
-	    <th class="no-height-padding">{{ ', '.join(distros[architechture]) }}</th>
+	    <td class="no-height-padding">{{ architechture }}:</td>
+	    <td class="no-height-padding">{{ ', '.join(distros[architechture]) }}</td>
 	  </tr>
 	  {% endfor %}
 	</table>
-      </th>
+      </td>
     </tr>
   </table>
   <p>Content</p>

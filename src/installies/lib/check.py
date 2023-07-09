@@ -12,7 +12,7 @@ class EmptyChecker:
         """
         Check if data string is empty.
 
-        A ValueError is raised if data is empty.
+        A ValidationError is raised if data is empty.
 
         :param data: The data to check.
         """
@@ -41,7 +41,7 @@ class LengthChecker:
         """
         Check the length of a data string.
 
-        A ValueError is raised if the data is too long or short.
+        A ValidationError is raised if the data is too long or short.
 
         :param data: The data to check.
         """
@@ -95,7 +95,7 @@ class AllowedCharactersChecker:
         """
         Check that only allowed characters in data string.
 
-        Raises ValueError if data contains characters that are not allowed.
+        Raises ValidationError if data contains characters that are not allowed.
 
         :param data: The data string to check.
         """
@@ -120,7 +120,7 @@ class DisallowedCharactersChecker:
         """
         Check that no disallowed characters in data string.
 
-        Raises ValueError if data contains characters that are not allowed.
+        Raises ValidationError if data contains characters that are not allowed.
 
         :param data: The data string to check.
         """
@@ -131,9 +131,9 @@ class DisallowedCharactersChecker:
                 )
 
 
-class ExistsInDatabaseChecker:
+class UniqueChecker:
     """
-    A checker that checks that a string does not exist in the database.
+    A checker that checks that a string is unique in an column of a table.
 
     :param table: The table to check in.
     :param column_name: The name of the column to check in.
@@ -155,7 +155,7 @@ class ExistsInDatabaseChecker:
         """
         Check that data string does not exist in the database.
 
-        A ValueError is raised if the string exists in the database.
+        A ValidationError is raised if the string exists in the database.
 
         :param data: The data string to check.
         """
@@ -189,7 +189,7 @@ class NotInContainerChecker:
         """
         Check that a data string exists in the the container.
 
-        A ValueError is raised if the string is not in the container.
+        A ValidationError is raised if the string is not in the container.
 
         :param data: The data string to check.
         """
@@ -219,7 +219,7 @@ class InContainerChecker:
         """
         Check that a data string does not exist in the container.
 
-        A ValueError is raised if the string is in the container.
+        A ValidationError is raised if the string is in the container.
 
         :param data: The data string to check.
         """

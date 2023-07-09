@@ -3,43 +3,43 @@
 {% block content %}
 <table>
   <tr>
-    <th class="bold">Original Submitter:</th>
-    <th><a class="link" href="{{ url_for("auth.profile", username=app.submitter.username) }}">{{ app.submitter.username }}</a></th>
+    <th>Original Submitter:</th>
+    <td><a class="link" href="{{ url_for("auth.profile", username=app.submitter.username) }}">{{ app.submitter.username }}</a></td>
   </tr>
    <tr>
-     <th class="bold">Maintainers:</th>
-     <th>
+     <th>Maintainers:</th>
+     <td>
        {% for maintainer in app.maintainers %}
        <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if app.can_user_edit(g.user) %} [<a class='red' href="{{ url_for("app_manager.remove_maintainer", app_name=app.name, username=maintainer.user.username) }}">Remove</a>]{% endif %}{% if loop.index != app.maintainers|length %}, {% endif %}
        {% endfor %}
-     </th>
+     </td>
   </tr>
   <tr>
-    <th class="bold">Creation Date:</th>
-    <th>{{ app.creation_date.day }}-{{ app.creation_date.month }}-{{ app.creation_date.year }} {{ app.creation_date.hour }}:{{ app.creation_date.minute }} (UTC)</th>
+    <th>Creation Date:</th>
+    <td>{{ app.creation_date.day }}-{{ app.creation_date.month }}-{{ app.creation_date.year }} {{ app.creation_date.hour }}:{{ app.creation_date.minute }} (UTC)</td>
   </tr>
   <tr>
-    <th class="bold">Last Modified:</th>
-    <th>{{ app.last_modified.day }}-{{ app.last_modified.month }}-{{ app.last_modified.year }} {{ app.last_modified.hour }}:{{ app.last_modified.minute }} (UTC)</th>
+    <th>Last Modified:</th>
+    <td>{{ app.last_modified.day }}-{{ app.last_modified.month }}-{{ app.last_modified.year }} {{ app.last_modified.hour }}:{{ app.last_modified.minute }} (UTC)</td>
   </tr>
   <tr>
-    <th class="bold">Visibility:</th>
-    <th>{{ app.visibility.capitalize() }}</th>
+    <th>Visibility:</th>
+    <td>{{ app.visibility.capitalize() }}</td>
   </tr>
   <tr>
-    <th class="bold">Description:</th>
-    <th>{{ app.description }}</th>
+    <th>Description:</th>
+    <td>{{ app.description }}</td>
   </tr>
   {% if app.current_version != ''%}
   <tr>
-    <th class="bold">Current Version:</th>
-    <th>{{ app.current_version }}</th>
+    <th>Current Version:</th>
+    <td>{{ app.current_version }}</td>
   </tr>
   {% endif %}
   {% if app.version_regex != ''%}
   <tr>
-    <th class="bold">Versioning Regex:</th>
-    <th>{{ app.version_regex }}</th>
+    <th>Versioning Regex:</th>
+    <td>{{ app.version_regex }}</td>
   </tr>
   {% endif %}
 </table>

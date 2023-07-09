@@ -4,7 +4,7 @@ from installies.lib.check import (
     LengthChecker,
     AllowedCharactersChecker,
     DisallowedCharactersChecker,
-    ExistsInDatabaseChecker,
+    UniqueChecker,
     NotInContainerChecker,
     DictionaryChecker,
 )
@@ -29,7 +29,7 @@ class AppNameValidator(Validator):
         ),
         LengthChecker(max_len=64),
         EmptyChecker(),
-        ExistsInDatabaseChecker(
+        UniqueChecker(
             table=App,
             column_name='name',
         ),
@@ -46,7 +46,7 @@ class AppDisplayNameValidator(Validator):
             allow_extra=['-', '_'],
         ),
         LengthChecker(max_len=64),
-        ExistsInDatabaseChecker(
+        UniqueChecker(
             table=App,
             column_name='display_name',
         ),

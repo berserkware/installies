@@ -154,7 +154,14 @@ table {
     border-collapse: collapse;
 }
 
+td {
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
 th {
+    font-family: Inter Bold;
     padding-right: 20px;
     padding-top: 5px;
     padding-bottom: 5px;

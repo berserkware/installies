@@ -27,9 +27,9 @@
       <label for="script-supported-distros">Supported Distros</label><br>
       <table id="distro-table" class="max-width">
 	<tr class="underline">
-	  <th class="bold">Options</th>
-	  <th class="bold">Distro Names</th>
-	  <th class="bold">Architechture Names</th>
+	  <th>Options</th>
+	  <th>Distro Names</th>
+	  <th>Architechture Names</th>
 	</tr>
       </table>
       <button id="add-distro-button" type="button" class="link-button">Add Distro</button>
@@ -56,7 +56,7 @@
 	    tablerow.classList.add("underline");
 	    tablerowId = 'distro-' + makeId();
 	    tablerow.id = tablerowId;
-	    const action = document.createElement('th');
+	    const action = document.createElement('td');
 	    const openBracket = document.createTextNode('[')
 	    const closeBracket = document.createTextNode(']')
 	    const actionButton = document.createElement('button')
@@ -67,7 +67,7 @@
 	    action.appendChild(openBracket)
 	    action.appendChild(actionButton)
 	    action.appendChild(closeBracket)
-	    const distroNames = document.createElement('th');
+	    const distroNames = document.createElement('td');
 	    const distroNamesInput = document.createElement('input');
 	    distroNamesInput.classList.add('textbox');
 	    distroNamesInput.placeholder = "distro1, distro2, distro3...";
@@ -78,7 +78,7 @@
 		distroNamesInput.value = distros
 	    }
 	    distroNames.appendChild(distroNamesInput);
-	    const distroArchs = document.createElement('th');
+	    const distroArchs = document.createElement('td');
 	    const distroArchsInput = document.createElement('input');
 	    distroArchsInput.classList.add('textbox');
 	    distroArchsInput.placeholder = "arch1, arch2, arch3";

@@ -8,28 +8,28 @@
 
   <table>
     <tr>
-      <th class="bold">Title:</th>
-      <th>{{ report.title }}</th>
+      <th>Title:</th>
+      <td>{{ report.title }}</td>
     </tr>
      <tr>
-      <th class="bold">Body:</th>
-      <th>{{ report.body }}</th>
+      <th>Body:</th>
+      <td>{{ report.body }}</td>
      </tr>
     <tr>
-      <th class="bold">Creation Date:</th>
-      <th>{{ report.app.creation_date.day }}-{{ report.app.creation_date.month }}-{{ report.app.creation_date.year }} {{ report.app.creation_date.hour }}:{{ report.app.creation_date.minute }} (UTC)</th>
+      <th>Creation Date:</th>
+      <td>{{ report.app.creation_date.day }}-{{ report.app.creation_date.month }}-{{ report.app.creation_date.year }} {{ report.app.creation_date.hour }}:{{ report.app.creation_date.minute }} (UTC)</td>
     </tr>
     <tr>
-      <th class="bold">Resolved:</th>
-      <th>{% if report.resolved %}True{% else %}False{% endif %}</th>
+      <th>Resolved:</th>
+      <td>{% if report.resolved %}True{% else %}False{% endif %}</td>
     </tr>
      <tr>
-      <th class="bold">Submitter:</th>
-      <th><a href="{{ url_for('auth.profile', username=report.submitter.username) }}">{{ report.submitter.username }}</a></th>
+      <th>Submitter:</th>
+      <td><a href="{{ url_for('auth.profile', username=report.submitter.username) }}">{{ report.submitter.username }}</a></td>
      </tr>
     <tr>
-      <th class="bold">Action:</th>
-      <th>[<a href="{{ url_for('admin.delete_app_report', report_id=report.id) }}">Delete</a>][<a href="{{ url_for('admin.resolve_app_report', report_id=report.id) }}">Resolve</a>]</th>
+      <th>Action:</th>
+      <td>[<a href="{{ url_for('admin.delete_app_report', report_id=report.id) }}">Delete</a>][<a href="{{ url_for('admin.resolve_app_report', report_id=report.id) }}">Resolve</a>]</td>
     </tr>
   </table>
 </div>

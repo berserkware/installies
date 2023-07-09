@@ -8,12 +8,12 @@
         
         <table>
             <tr>
-                <th class="bold">Join Date:</th>
-                <th class="value-cell">{{ user.creation_date.day }}-{{ user.creation_date.month }}-{{ user.creation_date.year }} {{ user.creation_date.hour }}:{{ user.creation_date.minute }} (UTC)</th>
+                <th>Join Date:</th>
+                <td>{{ user.creation_date.day }}-{{ user.creation_date.month }}-{{ user.creation_date.year }} {{ user.creation_date.hour }}:{{ user.creation_date.minute }} (UTC)</td>
             </tr>
 	    <tr>
-	      <th class="bold">Links:</th>
-	      <th><a href="{{ url_for('app_library.apps', **{'search-in':'maintainers','k':user.username}) }}">View this user's packages</a></th>
+	      <th>Links:</th>
+	      <td><a href="{{ url_for('app_library.apps', **{'search-in':'maintainers','k':user.username}) }}">View this user's packages</a></td>
 	    </tr>
         </table>
     </div>

@@ -9,12 +9,12 @@
   </tr>
   {% for report in reports %}
   <tr>
-    <th>[<a href="{{ url_for('admin.app_report_view', report_id=report.id) }}">View</a>]</th>
-    <th>{{ report.title}}</th>
-    <th><a href="{{ url_for('auth.profile', username=report.submitter.username) }}">{{ report.submitter.username }}</a></th>
-    <th><a href="{{ url_for('app_manager.app_view', app_name=report.app.name) }}">{{ report.app.name }}</a></th>
-    <th>{{ report.app.creation_date.day }}-{{ report.app.creation_date.month }}-{{ report.app.creation_date.year }} {{ report.app.creation_date.hour }}:{{ report.app.creation_date.minute }} (UTC)</th>
-    <th>{% if report.resolved %}True{% else %}False{% endif %}</th>
+    <td>[<a href="{{ url_for('admin.app_report_view', report_id=report.id) }}">View</a>]</th>
+    <td>{{ report.title}}</td>
+    <td><a href="{{ url_for('auth.profile', username=report.submitter.username) }}">{{ report.submitter.username }}</a></td>
+    <td><a href="{{ url_for('app_manager.app_view', app_name=report.app.name) }}">{{ report.app.name }}</a></td>
+    <td>{{ report.app.creation_date.day }}-{{ report.app.creation_date.month }}-{{ report.app.creation_date.year }} {{ report.app.creation_date.hour }}:{{ report.app.creation_date.minute }} (UTC)</td>
+    <td>{% if report.resolved %}True{% else %}False{% endif %}</td>
   </tr>
   {% endfor %}
 </table>
