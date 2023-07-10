@@ -10,6 +10,7 @@ from installies.lib.check import (
 )
 from installies.models.app import App
 from installies.models.supported_distros import Distro
+from installies.models.discussion import Thread, Comment
 from installies.lib.url import make_slug
 from installies.config import (
     supported_script_actions,
@@ -215,3 +216,35 @@ class ReportBodyValidator(Validator):
     ]
 
     data_name = 'Report body'
+
+
+class ThreadTitleValidator(Validator):
+    """A class for validating topic titles."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=128),
+        AllowedCharactersChecker(
+            allow_extra=['-', ',', '.', '"', '\'', '(', ')'],
+        ),
+        UniqueChecker(
+            table=Thread,
+            column_name='title',
+        ),
+    ]
+
+    data_name = 'Thread title'
+
+
+class CommentContentValidator(Validator):
+    """A class for validating comment content."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=1024),
+        AllowedCharactersChecker(
+            allow_extra=['-', ',', '.', '"', '\'', '(', ')'],
+        ),
+    ]
+
+    data_name = 'Comment content'

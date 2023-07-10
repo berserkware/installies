@@ -14,11 +14,14 @@ from installies.blueprints.app_manager.validate import (
     ScriptVersionValidator,
     ReportTitleValidator,
     ReportBodyValidator,
+    ThreadTitleValidator,
+    CommentContentValidator,
 )
 from installies.blueprints.app_manager.upload import get_distros_from_string
 from installies.models.app import App
 from installies.models.script import Script
 from installies.models.report import AppReport
+from installies.models.discussion import Thread, Comment
 
 class CreateAppForm(Form):
     """
@@ -152,3 +155,51 @@ class ReportAppForm(CreateReportBaseForm):
             submitter=g.user,
             app=app,
         )
+
+
+class CreateThreadForm(Form):
+    """A form to create threads."""
+
+    inputs = [
+        FormInput('title', ThreadTitleValidator)
+    ]
+    
+    model = Thread
+
+    def save(self, app: App):
+        return Thread.create(
+            title=self.data['title'],
+            app=app,
+            creator=g.user,
+        )
+
+
+class CommentForm(Form):
+    """A base form for creating or editing comments."""
+
+    inputs = [
+        FormInput('content', CommentContentValidator)
+    ]
+
+    model = Comment
+
+    
+class CreateCommentForm(CommentForm):
+    """A form to create comments."""
+
+    def save(self, thread: Thread):
+        return Comment.create(
+            thread=thread,
+            creator=g.user,
+            content=self.data['content'],
+        )
+
+
+class EditCommentForm(CommentForm):
+    """A form to edit comments"""
+
+    def save(self, comment: Comment):
+        comment.content = self.data['content']
+        comment.edited = True
+        comment.save()
+        return comment

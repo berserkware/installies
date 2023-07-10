@@ -338,3 +338,11 @@ th {
 .vertical-resize {
     resize: vertical;
 }
+
+.no-underline {
+    border-bottom: none;
+}
+
+.white-text {
+    color: white;
+}

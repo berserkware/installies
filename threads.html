@@ -1,0 +1,32 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}Discussion of {% endblock %}
+
+{% block content %}
+<h2>Discussion</h2>
+<div class="container black" style="width:auto">
+
+  {% if threads|length == 0 %}
+  <p class="no-margin">No threads found.</p>
+  {% else %}
+  <table class="max-width">
+    <thead>
+      <tr class="underline">
+	<th>Title</th>
+	<th>Creator</th>
+	<th>Creation Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for thread in threads %}
+      <tr class="underline">
+	<td><a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id) }}">{{ thread.title }}</a></td>
+	<td><a href="url_for('auth.profile', username=thread.creator.username)">{{ thread.creator.username }}</a></td>
+	<td>{{ thread.creation_date.day }}-{{ thread.creation_date.month }}-{{ thread.creation_date.year }} {{ thread.creation_date.hour }}:{{ thread.creation_date.minute }} (UTC)</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

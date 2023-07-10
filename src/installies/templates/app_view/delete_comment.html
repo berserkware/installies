@@ -1,0 +1,16 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}Delete Comment for {% endblock %}
+
+{% block content %}
+<div class="container black" style="width:auto">
+    <h2>Delete Comment</h2>
+    
+    <form action="{{ url_for('app_manager.delete_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) }}" method="post">
+
+        <div class="form-input-container">
+            <input type="submit" value="Submit" class="button">
+        </div>
+    </form>
+</div>
+{% endblock %}

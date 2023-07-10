@@ -2,6 +2,7 @@ import bleach
 import json
 import os
 import re
+import math
 
 from flask import (
     Blueprint,
@@ -34,6 +35,7 @@ from installies.models.app import App, Maintainer
 from installies.models.script import Script
 from installies.models.user import User
 from installies.models.report import ReportBase, AppReport
+from installies.models.discussion import Thread, Comment
 from installies.blueprints.auth.decorators import authenticated_required
 from installies.blueprints.app_manager.form import (
     CreateAppForm,
@@ -42,6 +44,9 @@ from installies.blueprints.app_manager.form import (
     AddScriptForm,
     EditScriptForm,
     ReportAppForm,
+    CreateThreadForm,
+    CreateCommentForm,
+    EditCommentForm,
 )
 from installies.lib.view import (
     View,
@@ -53,6 +58,7 @@ from installies.lib.view import (
 )
 from peewee import JOIN
 from installies.blueprints.admin.views import AdminRequiredMixin
+from installies.database.modifiers import Paginate
 
 
 class AppMixin:
@@ -91,6 +97,12 @@ class AppMixin:
         kwargs['app'] = app
         
         return super().on_request(**kwargs)
+
+
+    def get_app_view_redirect(self, **kwargs):
+        """Get the redirect to the app view page."""
+        app = kwargs['app']
+        return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
 
 
 class CreateAppFormView(AuthenticationRequiredMixin, FormView):
@@ -139,7 +151,7 @@ class AppEditView(AuthenticationRequiredMixin, AppMixin, FormView):
         app = kwargs['app']
         form.save(app)
         flash('App succesfully edited.', 'success')
-        return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
+        return self.get_app_view_redirect(**kwargs)
 
 
 class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -155,12 +167,12 @@ class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
         # if app has no scripts, dont allow to make public
         if form.data['visibility'] != 'private' and len(app.scripts) == 0:
             flash('App must have at least one script to be made public', 'error')
-            return redirect(url_for('app_manager.app_view', app_name=app_name), 303)
+            return self.get_app_view_redirect(**kwargs)
 
         form.save(app=app)
 
         flash(f'App visibility successfully changed to {form.data["visibility"]}.', 'success')
-        return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
+        return self.get_app_view_redirect(**kwargs)
 
 
 class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
@@ -191,7 +203,7 @@ class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
         maintainer = Maintainer.create(user=user, app=app)
 
         flash(f'{user.username} successfully added as a maintainer.', 'success')
-        return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
+        return self.get_app_view_redirect(**kwargs)
         
 
 class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
@@ -230,13 +242,12 @@ class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
 
         if len(app.maintainers) == 1:
             flash(f'You cannot remove the last maintainer.', 'error')
-            return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
+            return self.get_app_view_redirect(**kwargs)
         
         maintainer.delete_instance()
 
         flash(f'Maintainer successfully removed.', 'success')
-        return redirect(url_for('app_manager.app_view', app_name=app.name), 303)
-
+        return self.get_app_view_redirect(**kwargs)
 
 class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""
@@ -280,7 +291,7 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         form.save(app=kwargs['app'])
         
         flash('Script successfully created.', 'success')
-        return redirect(url_for('app_manager.app_view', app_name=kwargs['app'].name), 303)
+        return self.get_app_view_redirect(**kwargs)
 
 
 class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -303,7 +314,7 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         form.save(script=kwargs['script'])
 
         flash('Script successfully edited.', 'success')
-        return redirect(url_for('app_manager.app_view', app_name=kwargs['app'].name), 303)
+        return self.get_app_view_redirect(**kwargs)
 
 
 class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
@@ -321,7 +332,7 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
         script = kwargs['script']
         script.delete_instance()
         flash('Script successfully deleted.', 'success')
-        return redirect(url_for('app_manager.app_view', app_name=kwargs['app'].name), 303)
+        return self.get_app_view_redirect(**kwargs)
 
 
 class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -335,4 +346,208 @@ class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
         form.save(app=kwargs['app'])
 
         flash('App successfully reported.', 'success')
-        return redirect(url_for('app_manager.app_view', app_name=kwargs['app'].name), 303)
+        return self.get_app_view_redirect(**kwargs)
+
+
+class CreateThreadView(AuthenticationRequiredMixin, AppMixin, FormView):
+    """A view for creating discussion threads."""
+
+    template_path = 'app_view/create_thread.html'
+    public_only = True
+    form_class = CreateThreadForm
+
+    def form_valid(self, form, **kwargs):
+        thread = form.save(app=kwargs['app'])
+
+        flash('Topic successfully created.', 'success')
+        return redirect(
+            url_for(
+                'app_manager.comments',
+                app_name=kwargs['app'].name,
+                thread_id=thread.id
+            ),
+            303
+        )
+
+
+class ThreadMixin:
+    """A mixin for getting threads from url variables."""
+
+    def on_request(self, **kwargs):
+        thread = Thread.select().where(Thread.id == kwargs['thread_id'])
+
+        if thread.exists() is False:
+            abort(404)
+
+        kwargs['thread'] = thread.get()
+        return super().on_request(**kwargs)
+
+
+class DeleteThreadView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, FormView):
+    """A view for deleting threads."""
+
+    template_path = 'app_view/delete_thread.html'
+    public_only = True
+
+    def post(self, **kwargs):
+        if kwargs['thread'].creator != g.user:
+            flash('You do not have permission to delete this thread.', 'error')
+            return redirect(
+                url_for(
+                    'app_manager.comments',
+                    app_name=kwargs['app'].name,
+                    thread_id=kwargs['thread'].id
+                ),
+                303
+            )
+
+        thread = kwargs['thread']
+
+        for comment in thread.comments:
+            comment.delete_instance()
+        thread.delete_instance()
+        
+        flash('Thread successfully deleted.', 'success')
+        return self.get_app_view_redirect(**kwargs)
+    
+
+class CreateCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, FormView):
+    """A view for creating comments"""
+
+    public_only = True
+    form_class = CreateCommentForm
+    
+    def form_valid(self, form, **kwargs):
+        form.save(thread=kwargs['thread'])
+
+        flash('Comment successfully posted.', 'success')
+        return redirect(
+            url_for(
+                'app_manager.comments',
+                app_name=kwargs['app'].name,
+                thread_id=kwargs['thread'].id
+            ),
+            303
+        )
+
+
+class CommentMixin:
+    """A mixin for getting comments from url variables."""
+
+    def on_request(self, **kwargs):
+        comment = Comment.select().where(Comment.id == kwargs['comment_id'])
+
+        if comment.exists() is False:
+            abort(404)
+
+        comment = comment.get()
+
+        if comment.creator != g.user:
+            flash('You do not have permission to modify this comment.', 'error')
+            return self.get_app_view_redirect(**kwargs)
+        
+        kwargs['comment'] = comment
+        return super().on_request(**kwargs)
+    
+
+class EditCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, FormView):
+    """A view for editing comments."""
+
+    template_path = 'app_view/edit_comment.html'
+    public_only = True
+    form_class = EditCommentForm
+    
+    def form_valid(self, form, **kwargs):
+        form.save(comment=kwargs['comment'])
+
+        flash('Comment successfully edited', 'success')
+        return redirect(
+            url_for(
+                'app_manager.comments',
+                app_name=kwargs['app'].name,
+                thread_id=kwargs['thread'].id
+            ),
+            303
+        )
+
+
+class DeleteCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, FormView):
+    """A view for deleting comments."""
+
+    template_path = 'app_view/delete_comment.html'
+    public_only = True
+
+    def post(self, **kwargs):
+        kwargs['comment'].delete_instance()
+
+        flash('Comment successfully deleted', 'success')
+        return redirect(
+            url_for(
+                'app_manager.comments',
+                app_name=kwargs['app'].name,
+                thread_id=kwargs['thread'].id
+            ),
+            303
+        )
+
+
+class CommentListView(AppMixin, ThreadMixin, TemplateView):
+    """A view for listing comments."""
+
+    template_path = 'app_view/comments.html'
+    public_only = True
+
+    def get(self, **kwargs):
+        comments = kwargs['thread'].comments
+
+        paginator = Paginate(
+            default_per_page = 10,
+            max_per_page = 50,
+        )
+
+        paginated_comments = paginator.modify(comments, **request.args)
+
+        total_comment_count = comments.count()
+        
+        try:
+            per_page = int(request.args.get('per-page', 10))
+        except ValueError:
+            per_page = 10
+    
+        page_count = math.ceil(total_comment_count / per_page)
+        
+        kwargs['comments'] = paginated_comments
+        kwargs['total_comment_count'] = total_comment_count
+        kwargs['page_count'] = page_count
+        return super().get(**kwargs)
+
+
+class ThreadListView(AppMixin, TemplateView):
+    """A view for listing threads."""
+
+    template_path = 'app_view/threads.html'
+    public_only = True
+
+    def get(self, **kwargs):
+        threads = Thread.select().where(Thread.app == kwargs['app'])
+
+        paginator = Paginate(
+            default_per_page = 10,
+            max_per_page = 50,
+        )
+
+        paginated_threads = paginator.modify(threads, **request.args)
+
+        total_thread_count = threads.count()
+        
+        try:
+            per_page = int(request.args.get('per-page', 10))
+        except ValueError:
+            per_page = 10
+    
+        page_count = math.ceil(total_thread_count / per_page)
+        
+        kwargs['threads'] = paginated_threads
+        kwargs['total_thread_count'] = total_thread_count
+        kwargs['page_count'] = page_count
+        return super().get(**kwargs)

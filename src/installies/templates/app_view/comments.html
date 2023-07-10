@@ -1,0 +1,90 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}Comments for "{{ thread.title }}" on {% endblock %}
+
+{% block content %}
+
+<div class="container black">
+  <h1 class="no-underline no-padding no-margin">{{ thread.title }}</h1>
+  <p>By <a href="{{ url_for('auth.profile', username=thread.creator.username) }}">{{ thread.creator.username }}</a> on {{ thread.creation_date.day }}-{{ thread.creation_date.month }}-{{ thread.creation_date.year }} {{ thread.creation_date.hour }}:{{ thread.creation_date.minute }} (UTC) [<a class="red" href="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}">Delete</a>]</p>
+</div>
+
+<div class="container black">
+  <form action="{{ url_for('app_manager.create_comment', app_name=app.name, thread_id=thread.id) }}" method="post">
+    <label for="content" >Comment</label><br>
+    <textarea name="content" id="content" class="textbox" cols="40" rows="3" required></textarea><br>
+
+    <input type="submit" value="Post" class="button">
+  </form>
+</div>
+
+<p>{{ total_comment_count }} comment{% if total_comment_count > 1 %}s{% endif%} found. Page {{ request.args.get('page', '1') }} of {{ page_count }}.</p>
+{% for comment in comments %}
+<div class="container black">
+  <p class="no-margin">By <a href="{{ url_for('auth.profile', username=comment.creator.username) }}">{{ comment.creator.username }}</a> {% if comment.creator == thread.creator %}(OP) {% endif %}on {{ comment.creation_date.day }}-{{ comment.creation_date.month }}-{{ comment.creation_date.year }} {{ comment.creation_date.hour }}:{{ comment.creation_date.minute }} (UTC) {% if comment.edited %}(edited){% endif %}<p>
+  <p class="white-text">{{ comment.content }}</p>
+  {% if g.user == comment.creator %}
+  <p>[<a href="{{ url_for('app_manager.edit_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) }}">Edit</a>][<a class="red" href="{{ url_for('app_manager.delete_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) }}">Delete</a>]</p>
+  {% endif %}
+</div>
+{% endfor %}
+
+{# worse code ever #}
+<p>
+  {% if request.args.get('page', '1')|int > 1 %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=1) }}">&lt;&lt; First</a> 
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int - 1) }}">&lt; Previous</a>
+  {% endif %}
+
+  {% if page_count > 1 %}
+
+  {% if request.args.get('page', '1')|int-5 > 0 %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int-5) }}">{{ request.args.get('page', '1')|int-5 }}</a> 
+  {% endif %}
+  
+  {% if request.args.get('page', '1')|int-4 > 0 %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int-4) }}">{{ request.args.get('page', '1')|int-4 }}</a> 
+  {% endif %}
+  
+  {% if request.args.get('page', '1')|int-3 > 0 %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int-3) }}">{{ request.args.get('page', '1')|int-3 }}</a> 
+  {% endif %}
+  
+  {% if request.args.get('page', '1')|int-2 > 0 %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int-2) }}">{{ request.args.get('page', '1')|int-2 }}</a> 
+  {% endif %}
+  
+  {% if request.args.get('page', '1')|int-1 > 0 %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int-1) }}">{{ request.args.get('page', '1')|int-1 }}</a> 
+  {% endif %}
+  
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int) }}">{{ request.args.get('page', '1')|int }}</a>
+
+  {% if request.args.get('page', '1')|int+1 <= page_count %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int+1) }}">{{ request.args.get('page', '1')|int+1 }}</a>
+  {% endif %}
+
+  {% if request.args.get('page', '1')|int+2 <= page_count %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int+2) }}">{{ request.args.get('page', '1')|int+2 }}</a>
+  {% endif %}
+
+  {% if request.args.get('page', '1')|int+3 <= page_count %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int+3) }}">{{ request.args.get('page', '1')|int+3 }}</a>
+  {% endif %}
+
+  {% if request.args.get('page', '1')|int+4 <= page_count %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int+4) }}">{{ request.args.get('page', '1')|int+4 }}</a>
+  {% endif %}
+
+  {% if request.args.get('page', '1')|int+5 <= page_count %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int+5) }}">{{ request.args.get('page', '1')|int+5 }}</a>
+  {% endif %}
+    
+  {% endif %}
+  
+  {% if request.args.get('page', '1')|int < page_count %}
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int + 1) }}">Next &gt;</a>
+  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=page_count) }}">Last &gt;&gt;</a> 
+  {% endif %}
+</p>
+{% endblock %}
