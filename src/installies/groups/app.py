@@ -72,9 +72,5 @@ class AppGroup(Group):
             default_attribute = 'name',
         ),
         BySupportedDistro(),
-        Paginate(
-            default_per_page = 10,
-            max_per_page = 50,
-        )
     ]
     model = App

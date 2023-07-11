@@ -47,9 +47,5 @@ class ScriptGroup(Group):
             converter = datetime.fromisoformat,
         ),
         BySupportedDistro(),
-        Paginate(
-            default_per_page = 10,
-            max_per_page = 50,
-        )
     ]
     model = Script

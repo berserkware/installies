@@ -255,6 +255,10 @@ class ScriptListView(AppMixin, ListView):
     template_path = 'app_view/scripts.html'
     public_only = True
     group_name = 'scripts'
+    paginator = Paginate(
+        default_per_page = 10,
+        max_per_page = 50,
+    )
 
     def get_group(self, **kwargs):
         return ScriptGroup.get(**request.args).where(Script.app == kwargs['app'])
@@ -491,63 +495,31 @@ class DeleteCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Comm
         )
 
 
-class CommentListView(AppMixin, ThreadMixin, TemplateView):
+class CommentListView(AppMixin, ThreadMixin, ListView):
     """A view for listing comments."""
 
     template_path = 'app_view/comments.html'
     public_only = True
+    group_name = 'comments'
+    paginator = Paginate(
+        default_per_page = 10,
+        max_per_page = 50,
+    )
 
-    def get(self, **kwargs):
-        comments = kwargs['thread'].comments
-
-        paginator = Paginate(
-            default_per_page = 10,
-            max_per_page = 50,
-        )
-
-        paginated_comments = paginator.modify(comments, **request.args)
-
-        total_comment_count = comments.count()
-        
-        try:
-            per_page = int(request.args.get('per-page', 10))
-        except ValueError:
-            per_page = 10
-    
-        page_count = math.ceil(total_comment_count / per_page)
-        
-        kwargs['comments'] = paginated_comments
-        kwargs['total_comment_count'] = total_comment_count
-        kwargs['page_count'] = page_count
-        return super().get(**kwargs)
+    def get_group(self, **kwargs):
+        return kwargs['thread'].comments
 
 
-class ThreadListView(AppMixin, TemplateView):
+class ThreadListView(AppMixin, ListView):
     """A view for listing threads."""
 
     template_path = 'app_view/threads.html'
     public_only = True
+    group_name = 'threads'
+    paginator = Paginate(
+        default_per_page = 10,
+        max_per_page = 50,
+    )
 
-    def get(self, **kwargs):
-        threads = Thread.select().where(Thread.app == kwargs['app'])
-
-        paginator = Paginate(
-            default_per_page = 10,
-            max_per_page = 50,
-        )
-
-        paginated_threads = paginator.modify(threads, **request.args)
-
-        total_thread_count = threads.count()
-        
-        try:
-            per_page = int(request.args.get('per-page', 10))
-        except ValueError:
-            per_page = 10
-    
-        page_count = math.ceil(total_thread_count / per_page)
-        
-        kwargs['threads'] = paginated_threads
-        kwargs['total_thread_count'] = total_thread_count
-        kwargs['page_count'] = page_count
-        return super().get(**kwargs)
+    def get_group(self, **kwargs):
+        return Thread.select().where(Thread.app == kwargs['app'])

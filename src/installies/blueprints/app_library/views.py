@@ -49,7 +49,7 @@ def apps():
         per_page = int(request.args.get('per-page', 10))
     except ValueError:
         per_page = 10
-    
+
     page_count = math.ceil(total_app_count / per_page)
 
     return render_template(

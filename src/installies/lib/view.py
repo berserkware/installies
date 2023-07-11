@@ -1,5 +1,7 @@
 from flask import request, abort, render_template, g, redirect, flash
 
+import math
+
 class View:
     """
     A class for creating views.
@@ -87,6 +89,7 @@ class ListMixin:
 
     group = None
     group_name = None
+    paginator = None
 
     def get_group(self, **kwargs):
         """
@@ -98,8 +101,28 @@ class ListView(ListMixin, TemplateMixin, View):
     """A view for returning groups of objects to the user."""
 
     def get(self, **kwargs):
-        group = self.get_group(**kwargs)
-        kwargs[self.group_name] = group
+        objects = self.get_group(**kwargs)
+
+        if self.paginator is not None:
+            paginated_objects = self.paginator.modify(
+                objects,
+                **request.args
+            )
+
+            total_object_count = objects.count()
+
+            try:
+                per_page = int(request.args.get('per-page', 10))
+            except ValueError:
+                per_page = 10
+    
+            page_count = math.ceil(total_object_count / per_page)
+
+            kwargs['total_object_count'] = total_object_count
+            kwargs['page_count'] = page_count
+            objects = paginated_objects
+        
+        kwargs[self.group_name] = objects
 
         context = self.get_context_data(**kwargs)
         return render_template(self.template_path, **context)

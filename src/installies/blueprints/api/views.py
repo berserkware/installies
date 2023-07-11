@@ -45,6 +45,13 @@ def scripts(app_name):
 
     scripts = ScriptGroup.get(**request.args).where(Script.app == app)
 
+    paginator = Paginate(
+        default_per_page = 10,
+        max_per_page = 50,
+    )
+
+    scripts = paginator.modify(scripts, **request.args)
+
     data = {
         'scripts': []
     }
