@@ -29,33 +29,8 @@
 </div>
 {% endfor %}
 
-<p>
-  {% if request.args.get('page', '1')|int > 1 %}
-  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=1) }}">&lt;&lt; First</a> 
-  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int - 1) }}">&lt; Previous</a>
-  {% endif %}
+{% set url_for_route = 'app_manager.comments' %}
+{% set url_for_arguments = {'app_name': app.name, 'thread_id': thread.id} %}
+{% include "pager.html" %}
 
-  {% if page_count > 1 %}
-
-  {% for i in range(6, 0, -1) %}
-  {% if request.args.get('page', '1')|int-i > 0 %}
-  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int-i) }}">{{ request.args.get('page', '1')|int-i }}</a> 
-  {% endif %}
-  {% endfor %}
-  
-  <span>{{ request.args.get('page', '1')|int }}</span>
-
-  {% for i in range(1, 6) %}
-  {% if request.args.get('page', '1')|int+i <= page_count %}
-  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int+i) }}">{{ request.args.get('page', '1')|int+i }}</a> 
-  {% endif %}
-  {% endfor %}
-    
-  {% endif %}
-  
-  {% if request.args.get('page', '1')|int < page_count %}
-  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=request.args.get('page', '1')|int + 1) }}">Next &gt;</a>
-  <a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id, page=page_count) }}">Last &gt;&gt;</a> 
-  {% endif %}
-</p>
 {% endblock %}

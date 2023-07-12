@@ -31,4 +31,9 @@
   </table>
   {% endif %}
 </div>
+
+{% set url_for_route = 'app_manager.discussion' %}
+{% set url_for_arguments = {'app_name': app.name} %}
+{% include "pager.html" %}
+
 {% endblock %}

@@ -67,34 +67,8 @@
   {% endif %}
 </div>
 
-<p>
-  {% set new_request_args = remove_value_from_dictionary(request.args.to_dict(), 'page') %}
-  {% if request.args.get('page', '1')|int > 1 %}
-  <a href="{{ url_for('app_library.apps', page=1, **new_request_args) }}">&lt;&lt; First</a> 
-  <a href="{{ url_for('app_library.apps', page=request.args.get('page', '1')|int - 1, **new_request_args) }}">&lt; Previous</a>
-  {% endif %}
+{% set url_for_route = 'app_library.apps' %}
+{% set url_for_arguments = {} %}
+{% include "pager.html" %}
 
-  {% if page_count > 1 %}
-
-  {% for i in range(6, 0, -1) %}
-  {% if request.args.get('page', '1')|int-i > 0 %}
-  <a href="{{ url_for('app_library.apps', page=request.args.get('page', '1')|int-i, **new_request_args) }}">{{ request.args.get('page', '1')|int-i }}</a> 
-  {% endif %}
-  {% endfor %}
-  
-  <span>{{ request.args.get('page', '1')|int }}</span>
-
-  {% for i in range(1, 6) %}
-  {% if request.args.get('page', '1')|int+i <= page_count %}
-  <a href="{{ url_for('app_library.apps', page=request.args.get('page', '1')|int+i, **new_request_args) }}">{{ request.args.get('page', '1')|int+i }}</a> 
-  {% endif %}
-  {% endfor %}
-    
-  {% endif %}
-  
-  {% if request.args.get('page', '1')|int < page_count %}
-  <a href="{{ url_for('app_library.apps', page=request.args.get('page', '1')|int + 1, **new_request_args) }}">Next &gt;</a>
-  <a href="{{ url_for('app_library.apps', page=page_count, **new_request_args) }}">Last &gt;&gt;</a> 
-  {% endif %}
-</p>
 {% endblock %}

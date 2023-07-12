@@ -121,14 +121,14 @@ class CreateAppFormView(AuthenticationRequiredMixin, FormView):
 class AppDetailView(AppMixin, TemplateView):
     """A view to get an app."""
 
-    template_path = 'app_view/info.html'
+    template_path = 'app/info.html'
     public_only = True
 
 
 class AppDeleteView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     """A view to delete apps."""
 
-    template_path = 'app_view/delete.html'
+    template_path = 'app/delete.html'
     public_only = True
     maintainer_only = True
 
@@ -142,7 +142,7 @@ class AppDeleteView(AuthenticationRequiredMixin, AppMixin, TemplateView):
 class AppEditView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view to edit apps."""
 
-    template_path = 'app_view/edit.html'
+    template_path = 'app/edit.html'
     form_class = EditAppForm
     public_only = True
     maintainer_only = True
@@ -157,7 +157,7 @@ class AppEditView(AuthenticationRequiredMixin, AppMixin, FormView):
 class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view to change visibility."""
 
-    template_path = 'app_view/change_visibility.html'
+    template_path = 'app/change_visibility.html'
     public_only = True
     maintainer_only = True
     form_class = ChangeAppVisibilityForm
@@ -178,7 +178,7 @@ class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
 class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     """A view for adding maintainers."""
 
-    template_path = 'app_view/add_maintainer.html'
+    template_path = 'app/add_maintainer.html'
     public_only = True
     maintainer_only = True
 
@@ -209,7 +209,7 @@ class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
 class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     """A view for removing maintainer"""
 
-    template_path = 'app_view/remove_maintainer.html'
+    template_path = 'app/remove_maintainer.html'
     public_only = True
     maintainer_only = True
 
@@ -252,7 +252,7 @@ class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
 class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""
 
-    template_path = 'app_view/scripts.html'
+    template_path = 'script/scripts.html'
     public_only = True
     group_name = 'scripts'
     paginator = Paginate(
@@ -267,7 +267,7 @@ class ScriptListView(AppMixin, ListView):
 class ScriptDetailView(AppMixin, DetailView):
     """A view for getting the details of a script."""
 
-    template_path = 'app_view/script_info.html'
+    template_path = 'script/script_info.html'
     public_only = True
     model_name = 'script'
 
@@ -278,7 +278,7 @@ class ScriptDetailView(AppMixin, DetailView):
 class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for adding apps."""
 
-    template_path = 'app_view/add_script.html'
+    template_path = 'script/add_script.html'
     public_only = True
     maintainer_only = True
     form_class = AddScriptForm
@@ -301,7 +301,7 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
 class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for editing scripts."""
 
-    template_path = 'app_view/edit_script.html'
+    template_path = 'script/edit_script.html'
     public_only = True
     maintainer_only = True
     form_class = EditScriptForm
@@ -324,7 +324,7 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
 class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     """A view for deleting scripts."""
 
-    template_path = 'app_view/delete_script.html'
+    template_path = 'script/delete_script.html'
     public_only = True
     maintainer_only = True
 
@@ -342,7 +342,7 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
 class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for reporting apps."""
 
-    template_path = 'app_view/report_app.html'
+    template_path = 'app/report_app.html'
     public_only = True
     form_class = ReportAppForm
 
@@ -356,7 +356,7 @@ class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
 class CreateThreadView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for creating discussion threads."""
 
-    template_path = 'app_view/create_thread.html'
+    template_path = 'discussion/create_thread.html'
     public_only = True
     form_class = CreateThreadForm
 
@@ -390,7 +390,7 @@ class ThreadMixin:
 class DeleteThreadView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, FormView):
     """A view for deleting threads."""
 
-    template_path = 'app_view/delete_thread.html'
+    template_path = 'discussion/delete_thread.html'
     public_only = True
 
     def post(self, **kwargs):
@@ -457,7 +457,7 @@ class CommentMixin:
 class EditCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, FormView):
     """A view for editing comments."""
 
-    template_path = 'app_view/edit_comment.html'
+    template_path = 'discussion/edit_comment.html'
     public_only = True
     form_class = EditCommentForm
     
@@ -478,7 +478,7 @@ class EditCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Commen
 class DeleteCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, FormView):
     """A view for deleting comments."""
 
-    template_path = 'app_view/delete_comment.html'
+    template_path = 'discussion/delete_comment.html'
     public_only = True
 
     def post(self, **kwargs):
@@ -498,7 +498,7 @@ class DeleteCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Comm
 class CommentListView(AppMixin, ThreadMixin, ListView):
     """A view for listing comments."""
 
-    template_path = 'app_view/comments.html'
+    template_path = 'discussion/comments.html'
     public_only = True
     group_name = 'comments'
     paginator = Paginate(
@@ -513,7 +513,7 @@ class CommentListView(AppMixin, ThreadMixin, ListView):
 class ThreadListView(AppMixin, ListView):
     """A view for listing threads."""
 
-    template_path = 'app_view/threads.html'
+    template_path = 'discussion/threads.html'
     public_only = True
     group_name = 'threads'
     paginator = Paginate(

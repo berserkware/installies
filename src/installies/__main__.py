@@ -10,7 +10,7 @@ from installies.config import (
     supported_visibility_options,
 )
 from installies.models.supported_distros import Distro, Architechture
-from installies.lib.dict import remove_value_from_dictionary
+from installies.lib.dict import remove_value_from_dictionary, join_dictionaries
 from flask import Flask, request, g, render_template
 from peewee import *
 
@@ -61,6 +61,7 @@ app.register_blueprint(auth)
 app.register_blueprint(admin)
 
 app.jinja_env.globals['remove_value_from_dictionary'] = remove_value_from_dictionary
+app.jinja_env.globals['join_dictionaries'] = join_dictionaries
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)

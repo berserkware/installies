@@ -47,10 +47,6 @@ class AppDisplayNameValidator(Validator):
             allow_extra=['-', '_'],
         ),
         LengthChecker(max_len=64),
-        UniqueChecker(
-            table=App,
-            column_name='display_name',
-        ),
     ]
 
     data_name = 'App display name'

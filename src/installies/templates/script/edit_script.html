@@ -1,0 +1,20 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}Edit Script for {% endblock %}
+
+{% block header %}
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
+<script src="/static/js/codemirror/mode/shell/shell.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container black auto-width" style="width:auto">
+  <h2>Edit Script</h2>
+
+  {% set form_url = url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) %}
+  {% set default_form_script = script %}
+  {% include "script/script_editor.html" %}
+</div>
+{% endblock %}

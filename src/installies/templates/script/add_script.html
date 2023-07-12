@@ -1,0 +1,19 @@
+{% extends "app_view/base.html" %}
+
+{% block app_page_title %}Add Script to {% endblock %}
+
+{% block header %}
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
+<script src="/static/js/codemirror/mode/shell/shell.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container black auto-width">
+  <h2>Add a Script</h2>
+
+  {% set form_url = url_for('app_manager.add_script', app_name=app.name) %}
+  {% include "script/script_editor.html" %}
+</div>
+{% endblock %}
