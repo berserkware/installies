@@ -141,8 +141,8 @@ class ScriptDistroValidator(Validator):
     data_name = 'Script distro'
 
 
-class ScriptArchitechtureValidator(Validator):
-    """A class for validating script architechtures submiited by users."""
+class ScriptArchitectureValidator(Validator):
+    """A class for validating script architectures submiited by users."""
 
     checkers = [
         EmptyChecker(),
@@ -154,17 +154,17 @@ class ScriptArchitechtureValidator(Validator):
         ),
     ]
 
-    data_name = 'Script architechture'
+    data_name = 'Script architecture'
 
 
 class ScriptDistroDictionaryValidator(Validator):
-    """A class for validating the dictionarys containing the distros and their architechtures."""
+    """A class for validating the dictionarys containing the distros and their architectures."""
 
     checkers = [
         EmptyChecker(),
         DictionaryChecker(
             key_validator=ScriptDistroValidator,
-            value_validator=ScriptArchitechtureValidator,
+            value_validator=ScriptArchitectureValidator,
         ),
     ]
     

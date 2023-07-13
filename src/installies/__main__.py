@@ -9,7 +9,7 @@ from installies.config import (
     supported_script_actions,
     supported_visibility_options,
 )
-from installies.models.supported_distros import Distro, Architechture
+from installies.models.supported_distros import Distro, Architecture
 from installies.lib.dict import remove_value_from_dictionary, join_dictionaries
 from flask import Flask, request, g, render_template
 from peewee import *
@@ -27,7 +27,7 @@ def before_request():
     g.supported_script_actions = supported_script_actions
     g.supported_visibility_options = supported_visibility_options
     g.supported_distros = Distro.get_all_distro_slugs()
-    g.supported_architechtures = Architechture.get_all_architechture_names()
+    g.supported_architectures = Architecture.get_all_architecture_names()
     
     token = request.cookies.get('user-token')
 

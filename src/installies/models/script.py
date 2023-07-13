@@ -24,6 +24,7 @@ import bleach
 class ScriptNotFound(Exception):
     """An exception to raise when an app cannot be found."""
 
+    
 class Script(BaseModel):
     """A model for storing data about scripts."""
 
@@ -173,10 +174,10 @@ class Script(BaseModel):
         distros = {}
 
         for distro in self.supported_distros:
-            if distro.architechture_name not in distros.keys():
-                distros[distro.architechture_name] = []
+            if distro.architecture_name not in distros.keys():
+                distros[distro.architecture_name] = []
 
-            distros[distro.architechture_name].append(distro.distro_name)
+            distros[distro.architecture_name].append(distro.distro_name)
             
         return distros
 
@@ -193,7 +194,7 @@ class Script(BaseModel):
             if distro.distro_name not in distros.keys():
                 distros[distro.distro_name] = []
 
-            distros[distro.distro_name].append(distro.architechture_name)
+            distros[distro.distro_name].append(distro.architecture_name)
 
         distro_strings = []
         for distro in distros:

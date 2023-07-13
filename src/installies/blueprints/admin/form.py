@@ -2,10 +2,10 @@ from installies.lib.form import Form, FormInput
 from installies.blueprints.admin.validate import (
     DistroSlugValidator,
     DistroNameValidatior,
-    ArchitechtureNameValidator,
+    ArchitectureNameValidator,
 )
-from installies.models.supported_distros import Distro, Architechture, AlternativeArchitechtureName
-from installies.blueprints.admin.converter import get_other_architechture_names_from_string
+from installies.models.supported_distros import Distro, Architecture, AlternativeArchitectureName
+from installies.blueprints.admin.converter import get_other_architecture_names_from_string
 
 class CreateDistroForm(Form):
     """A form for creating distros"""
@@ -31,30 +31,30 @@ class CreateDistroForm(Form):
         )
 
 
-class CreateArchitechtureForm(Form):
+class CreateArchitectureForm(Form):
     """A form for creating architechtures."""
 
     inputs = [
-        FormInput('architechture-name', ArchitechtureNameValidator),
+        FormInput('architecture-name', ArchitectureNameValidator),
         FormInput(
-            'architechture-other-names',
-            ArchitechtureNameValidator,
-            get_other_architechture_names_from_string
+            'architecture-other-names',
+            ArchitectureNameValidator,
+            get_other_architecture_names_from_string
         ),
     ]
-    model = Architechture
+    model = Architecture
 
     def save(self):
         """Creates the architechture."""
 
-        architechture = Architechture.create(
-            name=self.data['architechture-name'],
+        architechture = Architecture.create(
+            name=self.data['architecture-name'],
         )
 
-        for name in self.data['architechture-other-names']:
-            AlternativeArchitechtureName.create(
+        for name in self.data['architecture-other-names']:
+            AlternativeArchitectureName.create(
                 name=name,
-                architechture=architechture,
+                architecture=architecture,
             )
 
-        return Architechture
+        return Architecture

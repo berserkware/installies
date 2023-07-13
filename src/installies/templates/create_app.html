@@ -7,6 +7,7 @@
     <h2>Create an App</h2>
 
     {% set form_url = url_for('app_manager.create_app') %}
-    {% include "app_view/app_editor.html" %}
+    {% set show_app_name_input = 'not false' %}
+    {% include "app/app_editor.html" %}
 </div>
 {% endblock %}

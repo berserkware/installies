@@ -4,7 +4,7 @@ from installies.models.report import ReportBase, AppReport
 from installies.lib.validate import ValidationError
 from installies.blueprints.admin.validate import DistroSlugValidator, DistroNameValidatior
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView, ListView
-from installies.blueprints.admin.form import CreateDistroForm, CreateArchitechtureForm
+from installies.blueprints.admin.form import CreateDistroForm, CreateArchitectureForm
 
 admin = Blueprint('admin', __name__)
 
@@ -50,16 +50,16 @@ class AddDistroView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
         return redirect(url_for('admin.admin_options'))
 
 
-class AddArchitechtureView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
+class AddArchitectureView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
     """A view for adding architechture."""
 
-    template_path = 'admin/add_architechture.html'
-    form_class = CreateArchitechtureForm
+    template_path = 'admin/add_architecture.html'
+    form_class = CreateArchitectureForm
 
     def form_valid(self, form, **kwarg):
         form.save()         
 
-        flash('Architechture successfully created.', 'success')
+        flash('Architecture successfully created.', 'success')
         return redirect(url_for('admin.admin_options'))
         
 
@@ -150,7 +150,7 @@ class AppReportListView(AuthenticationRequiredMixin, AdminRequiredMixin, ListVie
     
 admin.add_url_rule('/admin', 'admin_options', AdminOptions.as_view())    
 admin.add_url_rule('/admin/add-distro', 'add_distro', AddDistroView.as_view(), methods=['get', 'post'])
-admin.add_url_rule('/admin/add-architechture', 'add_architechture', AddArchitechtureView.as_view(), methods=['get', 'post'])
+admin.add_url_rule('/admin/add-architecture', 'add_architecture', AddArchitectureView.as_view(), methods=['get', 'post'])
 
 admin.add_url_rule('/admin/reports/<int:report_id>/delete', 'delete_app_report', DeleteAppReportView.as_view(), methods=['GET', 'POST'])
 admin.add_url_rule('/admin/reports/<int:report_id>', 'app_report_view', AppReportDetailView.as_view())

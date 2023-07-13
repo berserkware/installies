@@ -32,6 +32,7 @@ supported_script_actions = [
     'remove',
     'update',
     'compile',
+    'run',
 ]
 
 supported_visibility_options = [

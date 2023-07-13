@@ -1,4 +1,11 @@
 <form action="{{ form_url }}" method="post">
+
+  <div class="form-input-container">
+    <label for="app-name" >App Name</label><br>
+    <input type="text" name="app-name" id="app-name" class="textbox" required><br>
+  </div>
+
+  
   <div class="form-input-container">
     <label for="app-display-name">Display Name</label><br>
     <input type="text" name="app-display-name" id="app-display-name" class="textbox" {% if default_form_app %}value="{{ default_form_app.display_name }}"{% endif %}><br>

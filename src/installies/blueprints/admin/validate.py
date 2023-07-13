@@ -29,8 +29,8 @@ class DistroNameValidatior(Validator):
     data_name = 'Distro name'
 
 
-class ArchitechtureNameValidator(Validator):
-    """A class for validating new architechture names."""
+class ArchitectureNameValidator(Validator):
+    """A class for validating new architecture names."""
 
     checkers = [
         EmptyChecker(),
@@ -41,4 +41,4 @@ class ArchitechtureNameValidator(Validator):
         ),
     ]
 
-    data_name = 'Architechture name'
+    data_name = 'Architecture name'

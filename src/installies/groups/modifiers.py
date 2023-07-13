@@ -222,12 +222,12 @@ class BySupportedDistro(Modifier):
             distro = distro.split(':')
             distro_name = distro[0].strip()
             if len(distro) > 1:
-                architechtures = distro[1:]
+                architectures = distro[1:]
             else:
                 supported_distros[distro_name] = ['*']
                 continue
 
-            supported_distros[distro_name] = (arch.strip() for arch in architechtures)
+            supported_distros[distro_name] = (arch.strip() for arch in architectures)
 
         if supported_distros == {}:
             return query
@@ -239,7 +239,7 @@ class BySupportedDistro(Modifier):
                 query = query.where(
                     reduce(
                         lambda a, b: a & b,
-                        [(((SupportedDistro.distro_name == distro) | (SupportedDistro.distro_name == '*')) if distro != '*' else True) & (((SupportedDistro.architechture_name == arch) | (SupportedDistro.architechture_name == '*')) if arch != '*' else True)]
+                        [(((SupportedDistro.distro_name == distro) | (SupportedDistro.distro_name == '*')) if distro != '*' else True) & (((SupportedDistro.architecture_name == arch) | (SupportedDistro.architecture_name == '*')) if arch != '*' else True)]
                     )
                 )
 

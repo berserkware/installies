@@ -58,7 +58,7 @@ from installies.lib.view import (
 )
 from peewee import JOIN
 from installies.blueprints.admin.views import AdminRequiredMixin
-from installies.database.modifiers import Paginate
+from installies.groups.modifiers import Paginate
 
 
 class AppMixin:

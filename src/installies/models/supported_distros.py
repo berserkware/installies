@@ -49,7 +49,7 @@ class SupportedDistro(BaseModel):
     script = ForeignKeyField(Script, backref='supported_distros')
     app = ForeignKeyField(App, backref='supported_distros')
     distro_name = CharField(255)
-    architechture_name = CharField(255)
+    architecture_name = CharField(255)
 
     @classmethod
     def create_from_list(cls, distros: dict, script: Script):
@@ -58,56 +58,56 @@ class SupportedDistro(BaseModel):
 
         A list of the created SupportedDistro objects are returned.
         
-        :param distros: A dictionary of the distros and their architechtures.
+        :param distros: A dictionary of the distros and their architectures.
         :param script: The Script to make the SupportedDistro objects for.
         """
 
         supported_distros = []
 
         for distro in distros.keys():
-            architechtures = distros[distro]
-            if architechtures == []:
-                architechtures = ['*']
+            architectures = distros[distro]
+            if architectures == []:
+                architectures = ['*']
 
-            for architechture in architechtures:
-                alternate_name = (AlternativeArchitechtureName
+            for architecture in architectures:
+                alternate_name = (AlternativeArchitectureName
                                   .select()
-                                  .where(AlternativeArchitechtureName.name == architechture)
+                                  .where(AlternativeArchitectureName.name == architecture)
                                   )
                 
                 if alternate_name.exists():
                     # gets the main name of the architechutre
-                    architechture = alternate_name.get().architechture.name
+                    architecture = alternate_name.get().architecture.name
 
                 supported_distro = SupportedDistro.create(
                     script=script,
                     app=script.app,
                     distro_name=distro,
-                    architechture_name=architechture,
+                    architecture_name=architecture,
                 )
                 supported_distros.append(supported_distro)
 
         return supported_distros
 
 
-class Architechture(BaseModel):
-    """A model for storing infomation about a cpu architechture."""
+class Architecture(BaseModel):
+    """A model for storing infomation about a cpu architecture."""
 
     name = CharField(255)
     
     @classmethod
-    def get_all_architechture_names(cls):
+    def get_all_architecture_names(cls):
         """Gets a list of all the architechture names."""
         names = []
-        for architechture in cls.select():
-            names.append(architechture.name)
+        for architecture in cls.select():
+            names.append(architecture.name)
 
         return names
 
 
-class AlternativeArchitechtureName(BaseModel):
-    """A model for storing alternative names for architechtures."""
+class AlternativeArchitectureName(BaseModel):
+    """A model for storing alternative names for architectures."""
 
     name = CharField(255)
-    architechture = ForeignKeyField(Architechture, backref='alternative_names')
+    architecture = ForeignKeyField(Architecture, backref='alternative_names')
     

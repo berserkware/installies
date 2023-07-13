@@ -27,7 +27,7 @@ class App(BaseModel):
     """A class for storing app data."""
 
     name = CharField(255, unique=True)
-    display_name = CharField(255, unique=True, null=True)
+    display_name = CharField(255, null=True)
     description = TextField()
     current_version = CharField(255, null=True)
     version_regex = CharField(255, null=True)
