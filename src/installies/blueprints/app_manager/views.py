@@ -192,6 +192,7 @@ class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
             return self.get(**kwargs)
 
         user = user.get()
+        app = kwargs['app']
         
         if (Maintainer.select()
             .where(Maintainer.user == user)
@@ -420,6 +421,16 @@ class CreateCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Form
 
     public_only = True
     form_class = CreateCommentForm
+
+    def form_invaid(self, form, **kwargs):
+        return redirect(
+            url_for(
+                'app_manager.comments',
+                app_name=kwargs['app'].name,
+                thread_id=kwargs['thread'].id
+            ),
+            303
+        )
     
     def form_valid(self, form, **kwargs):
         form.save(thread=kwargs['thread'])

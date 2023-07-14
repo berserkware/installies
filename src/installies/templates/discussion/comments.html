@@ -9,6 +9,7 @@
   <p>By <a href="{{ url_for('auth.profile', username=thread.creator.username) }}">{{ thread.creator.username }}</a> on {{ thread.creation_date.day }}-{{ thread.creation_date.month }}-{{ thread.creation_date.year }} {{ thread.creation_date.hour }}:{{ thread.creation_date.minute }} (UTC) [<a class="red" href="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}">Delete</a>]</p>
 </div>
 
+{% if g.is_authed %}
 <div class="container black">
   <form action="{{ url_for('app_manager.create_comment', app_name=app.name, thread_id=thread.id) }}" method="post">
     <label for="content" >Comment</label><br>
@@ -17,6 +18,7 @@
     <input type="submit" value="Post" class="button">
   </form>
 </div>
+{% endif %}
 
 <p>{{ total_object_count }} comment{% if total_object_count > 1 %}s{% endif%} found. Page {{ request.args.get('page', '1') }} of {{ page_count }}.</p>
 {% for comment in comments %}

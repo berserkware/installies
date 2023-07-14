@@ -35,9 +35,9 @@
       <td>
 	<table>
 	  {% set distros = script.get_all_supported_distros() %}
-	  {% for architechture in distros %}
+	  {% for architecture in distros %}
 	  <tr>
-	    <td class="no-height-padding">{{ architechture }}:</td>
+	    <td class="no-height-padding">{{ architecture }}:</td>
 	    <td class="no-height-padding">{{ ', '.join(distros[architechture]) }}</td>
 	  </tr>
 	  {% endfor %}

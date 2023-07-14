@@ -6,7 +6,7 @@
 <div class="container black" style="width:auto">
   <h2>Remove {{ user.username }} from Maintainers?</h2>
   
-  <form action="{{ url_for('app_manager.remove_maintainer', app_slug=app.slug, username=user.username) }}" method="post">
+  <form action="{{ url_for('app_manager.remove_maintainer', app_name=app.name, username=user.username) }}" method="post">
     <input type="submit" value="Remove" class="button">
   </form>
 </div>

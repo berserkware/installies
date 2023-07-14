@@ -24,9 +24,6 @@ class IndexView(TemplateView):
             )
             kwargs['user_maintained_apps'] = user_maintained_apps
 
-            user_reports = AppReport.select().where(AppReport.submitter == g.user)
-            kwargs['user_reports'] = user_reports
-
         return kwargs
 
 app_library.add_url_rule('/', 'index', view_func=IndexView.as_view())

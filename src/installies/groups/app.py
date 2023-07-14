@@ -20,7 +20,7 @@ class AppGroup(Group):
     """
 
     modifiers = [
-        JoinModifier(models=[User, Maintainer]),
+        JoinModifier(models=[Maintainer, User]),
         SortBy(
             model = App,
             allowed_attributes = [

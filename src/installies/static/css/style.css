@@ -46,6 +46,15 @@ body {
     padding: 0;
     padding-left: 20px;
     padding-right: 20px;
+    line-height: 1.4;
+}
+
+nav {
+    padding-bottom: 5px;
+}
+
+nav * {
+    line-height: 1.2;
 }
 
 h1, h2, h3 {
@@ -71,6 +80,16 @@ p {
 a {
     color: var(--blue);
     text-decoration: none;
+}
+
+footer {
+    text-align: center;
+}
+
+footer p {
+    text-align: center;
+    font-size: 0.85em;
+    margin: 0;
 }
 
 a:hover {
@@ -152,6 +171,7 @@ fieldset div {
 
 table {
     border-collapse: collapse;
+    font-size: 0.9em;
 }
 
 td {

@@ -1,0 +1,23 @@
+<nav class="underline">
+  <div class="flex gap-15 align-flex-end flex-wrap">
+    <h1 class="logo">
+      <a class="white-link" href="/">installies</a>
+    </h1>
+    
+    <a class="white-link nav-link" href="{{ url_for('app_library.index') }}">Home</a>
+    <a class="white-link nav-link" href="{{ url_for('app_library.apps') }}">Apps</a>
+    <a class="white-link nav-link" href="{{ url_for('app_manager.create_app') }}">Create an App</a>
+    {% if g.is_authed == True %}
+    <a class="white-link nav-link" href="{{ url_for('auth.profile', username=g.user.username) }}">Profile</a>
+    <a class="white-link nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+      {% else %}
+    <a class="white-link nav-link" href="{{ url_for('auth.login') }}">Log In</a>
+    <a class="white-link nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
+    {% endif %}
+    
+    <form action="{{ url_for('app_library.apps') }}" method="get" class="flex margin-left-auto gap-5">
+      <input type="text" name="k" placeholder="Search an App..." class="no-top-margin no-bottom-margin black">
+      <input type="submit" value="Search" class="no-top-margin no-bottom-margin">
+    </form>
+  </div>
+</nav>

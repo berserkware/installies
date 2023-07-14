@@ -1,10 +1,10 @@
 <form action="{{ form_url }}" method="post">
-
+  {% if show_app_name_input %}
   <div class="form-input-container">
     <label for="app-name" >App Name</label><br>
     <input type="text" name="app-name" id="app-name" class="textbox" required><br>
   </div>
-
+  {% endif %}
   
   <div class="form-input-container">
     <label for="app-display-name">Display Name</label><br>
