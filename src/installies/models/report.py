@@ -1,7 +1,7 @@
 from installies.models.base import BaseModel
 from installies.models.user import User
 from installies.models.app import App
-from installies.models.script import Script
+from installies.models.script import AppScript
 from peewee import (
     CharField,
     DateTimeField,

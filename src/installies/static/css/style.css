@@ -367,3 +367,7 @@ th {
 .white-text {
     color: white;
 }
+
+.initial-font-size {
+    font-size: initial;
+}

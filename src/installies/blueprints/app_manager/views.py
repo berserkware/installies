@@ -26,13 +26,13 @@ from installies.blueprints.app_manager.validate import (
     ScriptDistroValidator,
     ScriptContentValidator
 )
-from installies.groups.script import ScriptGroup
+from installies.groups.script import AppScriptGroup
 from installies.config import (
     supported_script_actions,
     supported_visibility_options,
 )
 from installies.models.app import App, Maintainer
-from installies.models.script import Script
+from installies.models.script import AppScript
 from installies.models.user import User
 from installies.models.report import ReportBase, AppReport
 from installies.models.discussion import Thread, Comment
@@ -262,7 +262,7 @@ class ScriptListView(AppMixin, ListView):
     )
 
     def get_group(self, **kwargs):
-        return ScriptGroup.get(**request.args).where(Script.app == kwargs['app'])
+        return AppScriptGroup.get(**request.args).where(AppScript.app == kwargs['app'])
 
 
 class ScriptDetailView(AppMixin, DetailView):
@@ -273,7 +273,7 @@ class ScriptDetailView(AppMixin, DetailView):
     model_name = 'script'
 
     def get_object(self, **kwargs):
-        return Script.get_by_id(kwargs['script_id'])
+        return AppScript.get_by_id(kwargs['script_id'])
 
 
 class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -308,7 +308,7 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     form_class = EditScriptForm
 
     def on_request(self, **kwargs):
-        kwargs['script'] = Script.get_by_id(kwargs['script_id'])
+        kwargs['script'] = AppScript.get_by_id(kwargs['script_id'])
         return super().on_request(**kwargs)
     
     def get_context_data(self, **kwargs):
@@ -330,7 +330,7 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     maintainer_only = True
 
     def on_request(self, **kwargs):
-        kwargs['script'] = Script.get_by_id(kwargs['script_id'])
+        kwargs['script'] = AppScript.get_by_id(kwargs['script_id'])
         return super().on_request(**kwargs)
 
     def post(self, **kwargs):

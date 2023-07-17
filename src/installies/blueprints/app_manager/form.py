@@ -19,7 +19,7 @@ from installies.blueprints.app_manager.validate import (
 )
 from installies.blueprints.app_manager.upload import get_distros_from_string
 from installies.models.app import App
-from installies.models.script import Script
+from installies.models.script import AppScript
 from installies.models.report import AppReport
 from installies.models.discussion import Thread, Comment
 
@@ -106,14 +106,14 @@ class ModifyScriptForm(Form):
         FormInput('script-content', ScriptContentValidator),
         FormInput('for-version', ScriptVersionValidator, default=None)
     ]
-    model = Script
+    model = AppScript
 
 
 class AddScriptForm(ModifyScriptForm):
     """A form for adding scripts."""
 
     def save(self, app: App):
-        return Script.create(
+        return AppScript.create(
             action=self.data['script-action'],
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
@@ -125,7 +125,7 @@ class AddScriptForm(ModifyScriptForm):
 class EditScriptForm(ModifyScriptForm):
     """A form for editing scripts."""
 
-    def save(self, script: Script):
+    def save(self, script: AppScript):
         return script.edit(
             action=self.data['script-action'],
             supported_distros=self.data['script-supported-distros'],

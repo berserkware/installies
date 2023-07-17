@@ -73,8 +73,8 @@
         <td>[<a href="{{ url_for('app_manager.script_view', app_name=app.name, script_id=script.id) }}">View</a>] {% if app.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>]{% endif %}</td>
         <td>{{ script.action }}</td>
         <td>
-	  <table>
-	    {% set distros = script.get_all_supported_distros() %}
+	  <table class="initial-font-size">
+	    {% set distros = script.script_data.get_all_supported_distros() %}
 	    {% for architechture in distros %}
 	    <tr>
 	      <td class="no-height-padding">{{ architechture }}:</th>

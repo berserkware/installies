@@ -31,14 +31,14 @@
       <td>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</td>
     </tr>
     <tr>
-      <th class="bold">Supported Distros</th>
+      <th class="bold">Supported Distros:</th>
       <td>
 	<table>
-	  {% set distros = script.get_all_supported_distros() %}
+	  {% set distros = script.script_data.get_all_supported_distros() %}
 	  {% for architecture in distros %}
-	  <tr>
+	  <tr class="initial-font-size">
 	    <td class="no-height-padding">{{ architecture }}:</td>
-	    <td class="no-height-padding">{{ ', '.join(distros[architechture]) }}</td>
+	    <td class="no-height-padding">{{ ', '.join(distros[architecture]) }}</td>
 	  </tr>
 	  {% endfor %}
 	</table>
@@ -47,7 +47,7 @@
   </table>
   <p>Content</p>
   <textarea name="script-content" id="script-content">
-    {% with f = script.open_content() %}{{ f.read() }}{% endwith %}</textarea>
+    {% with f = script.script_data.open_content() %}{{ f.read() }}{% endwith %}</textarea>
   <script>
     mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
 	lineNumbers: true,

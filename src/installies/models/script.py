@@ -24,54 +24,29 @@ import bleach
 class ScriptNotFound(Exception):
     """An exception to raise when an app cannot be found."""
 
-    
-class Script(BaseModel):
+
+class ScriptData(BaseModel):
     """A model for storing data about scripts."""
 
-    action = CharField(255)
-    last_modified = DateTimeField(default=datetime.now)
     filepath = CharField(255)
-    version = CharField(64, null=True)
-    app = ForeignKeyField(App, backref='scripts')
-    
-    @classmethod
-    def get_by_id(cls, id: int):
-        """
-        Gets a script by its id.
-
-        A ScriptNotFound error will be raised if it cannot be found.
-
-        :param id: The id to get the script from.
-        """
-
-        script = (
-            Script
-            .select()
-            .where(Script.id == id)
-        )
-
-        if script.exists() is False:
-            raise ScriptNotFound
-
-        return script.get()
 
     def open_content(self, mode='r'):
         """
         Get the content of the script.
 
-        :param mode: The mode to opne the content in.
+        :param mode: The mode to open the content in.
         """
         return open(self.filepath, mode)
 
     @classmethod
-    def create_script_file(cls, app_dir: str, script_content: str):
+    def create_script_file(cls, directory: str, content: str):
         """
         Create a file to store the data for the script.
 
         The path is returned.
 
-        :param app_dir: The directory of the app the script is for.
-        :param script_content: The content of the script.
+        :param directory: The directory to put the script in.
+        :param content: The content of the script.
         """
         script_filename = ''
         script_path = ''
@@ -82,87 +57,17 @@ class Script(BaseModel):
         while True:
             script_filename = f'script-{gen_random_id()}'
 
-            script_path = os.path.join(app_dir, script_filename)
+            script_path = os.path.join(directory, script_filename)
 
             if os.path.exists(script_path) is False:
 
                 with open(script_path, 'w') as f:
-                    f.write(script_content)
+                    f.write(content)
 
                 break
 
         return script_path
 
-    @classmethod
-    def create(
-            cls,
-            action: str,
-            supported_distros: list,
-            content: str,
-            app: App,
-            version: str=None,
-    ):
-        """
-        Create a Script object, and adds it to the database.
-
-        :param action: The action that the script preforms.
-        :param supported_distros: A list of distros that the script supports.
-        :param content: The content of the script.
-        :param version: The version of the app the script is for.
-        :param app: The app the script is for.
-        """
-        app_dir = app.create_or_get_folder()
-
-        script_path = cls.create_script_file(app_dir, content)
-
-        created_script = super().create(
-            action=action,
-            filepath=script_path,
-            version=version,
-            app=app,
-        )
-
-        from installies.models.supported_distros import SupportedDistro
-        SupportedDistro.create_from_list(supported_distros, created_script)
-
-        app.last_modified = datetime.today()
-        app.save()
-
-        return created_script
-
-    def edit(self, action: str, supported_distros: list, content: str, version: str=None):
-        """
-        Edits the script.
-
-        :param action: The new action for the script.
-        :param supported_distros: The new supported distros.
-        :param content: The new content.
-        """
-
-        self.action = action
-        self.last_modified = datetime.today()
-        self.version = version
-
-        # deletes and replaces the supported distros.
-        from installies.models.supported_distros import SupportedDistro
-        SupportedDistro.delete().where(SupportedDistro.script == self).execute()
-        SupportedDistro.create_from_list(supported_distros, self)
-        
-        with self.open_content('w') as f:
-            f.write(content)
-
-        self.app.last_modified = datetime.today()
-        self.app.save()
-
-        self.save()
-
-    def delete_instance(self):
-        """Deletes the script and its related SupportedDistro objects."""
-
-        from installies.models.supported_distros import SupportedDistro
-        SupportedDistro.delete().where(SupportedDistro.script == self).execute()
-        
-        return super().delete_instance()
 
     def get_all_supported_distros(self) -> dict:
         """
@@ -203,6 +108,120 @@ class Script(BaseModel):
         return ', '.join(distro_strings)
 
 
+    @classmethod
+    def create(cls, directory: str, content: str):
+        """Creates the script data."""
+
+        filepath = cls.create_script_file(directory, content)
+        return super().create(
+            filepath=filepath
+        )
+    
+    
+class AppScript(BaseModel):
+    """A model for storing data about app scripts."""
+
+    action = CharField(255)
+    last_modified = DateTimeField(default=datetime.now)
+    version = CharField(64, null=True)
+    script_data = ForeignKeyField(ScriptData)
+    app = ForeignKeyField(App, backref='scripts')
+    
+    @classmethod
+    def get_by_id(cls, id: int):
+        """
+        Gets a script by its id.
+
+        A ScriptNotFound error will be raised if it cannot be found.
+
+        :param id: The id to get the script from.
+        """
+
+        script = (
+            AppScript
+            .select()
+            .where(AppScript.id == id)
+        )
+
+        if script.exists() is False:
+            raise ScriptNotFound
+
+        return script.get()
+
+    @classmethod
+    def create(
+            cls,
+            action: str,
+            supported_distros: list,
+            content: str,
+            app: App,
+            version: str=None,
+    ):
+        """
+        Create a Script object, and adds it to the database.
+
+        :param action: The action that the script preforms.
+        :param supported_distros: A list of distros that the script supports.
+        :param content: The content of the script.
+        :param version: The version of the app the script is for.
+        :param app: The app the script is for.
+        """
+        app_dir = app.create_or_get_folder()
+
+        script_data = ScriptData.create(app_dir, content)
+
+        from installies.models.supported_distros import SupportedDistro
+        SupportedDistro.create_from_list(supported_distros, script_data, app)
+        
+        created_script = super().create(
+            action=action,
+            version=version,
+            script_data=script_data,
+            app=app,
+        )
+
+        app.last_modified = datetime.today()
+        app.save()
+
+        return created_script
+
+    def edit(self, action: str, supported_distros: list, content: str, version: str=None):
+        """
+        Edits the script.
+
+        :param action: The new action for the script.
+        :param supported_distros: The new supported distros.
+        :param content: The new content.
+        """
+
+        self.action = action
+        self.last_modified = datetime.today()
+        self.version = version
+
+        # deletes and replaces the supported distros.
+        from installies.models.supported_distros import SupportedDistro
+        SupportedDistro.delete().where(SupportedDistro.script_data == self.script_data).execute()
+        SupportedDistro.create_from_list(supported_distros, self.script_data, self.app)
+        
+        with self.script_data.open_content('w') as f:
+            f.write(content)
+
+        self.app.last_modified = datetime.today()
+        self.app.save()
+
+        self.save()
+
+    def delete_instance(self):
+        """Deletes the script and its related SupportedDistro objects."""
+
+        from installies.models.supported_distros import SupportedDistro
+        SupportedDistro.delete().where(SupportedDistro.script_data == self.script_data).execute()
+        
+        super().delete_instance()
+
+        self.script_data.delete_instance()
+
+
     def serialize(self):
         """Turns the Script into a json serializable dict."""
         data = {}
@@ -211,7 +230,7 @@ class Script(BaseModel):
         data['supported_distros'] = self.get_all_supported_distros()
         data['last_modified'] = str(self.last_modified)
         data['for_version'] = self.version
-        with self.open_content() as c:
+        with self.script_data.open_content() as c:
             data['content'] = c.read()
 
         return data

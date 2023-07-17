@@ -88,7 +88,7 @@
       addDistroButton.onclick = addDistroOnClick
 
       {% if default_form_script %}
-        {% set supported_distros = default_form_script.get_all_supported_distros() %}
+        {% set supported_distros = default_form_script.script_data.get_all_supported_distros() %}
         {% for arch, distros in supported_distros.items() %}
       addDistro("{{ ', '.join(distros) }}", "{{ arch }}")
         {% endfor %}
@@ -138,7 +138,7 @@
   
   <div class="form-input-container">
     <label for="script-content">Script Content</label><br>
-    <textarea name="script-content" id="script-content">{% if default_form_script %}{% with f = default_form_script.open_content() %}{{ f.read() }}{% endwith %}{% endif %}</textarea>
+    <textarea name="script-content" id="script-content">{% if default_form_script %}{% with f = default_form_script.script_data.open_content() %}{{ f.read() }}{% endwith %}{% endif %}</textarea>
     
     <script>
       mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
