@@ -1,6 +1,6 @@
 from peewee import Query
 from installies.models.app import App, Maintainer
-from installies.models.script import AppScript
+from installies.models.script import Script
 from installies.models.supported_distros import Distro, SupportedDistro
 from functools import reduce
 

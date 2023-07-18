@@ -1,5 +1,5 @@
 from installies.models.app import App, Maintainer
-from installies.models.script import AppScript
+from installies.models.script import Script
 from installies.models.supported_distros import SupportedDistro, Distro
 from installies.models.user import User
 from installies.groups.base import Group
@@ -14,14 +14,14 @@ from installies.groups.modifiers import (
 )
 from datetime import datetime
 
-class AppScriptGroup(Group):
+class ScriptGroup(Group):
     """
-    A class for getting multiple AppScript objects from the database.
+    A class for getting multiple Script objects from the database.
     """
 
     modifiers = [
         SortBy(
-            model = AppScript,
+            model = Script,
             allowed_attributes = [
                 'action',
                 'version',
@@ -31,21 +31,21 @@ class AppScriptGroup(Group):
             default_order = 'asc',
         ),
         ByColumn(
-            model = AppScript,
+            model = Script,
             kwarg_name = 'action',
             attribute = 'action',
         ),
         ByColumn(
-            model = AppScript,
+            model = Script,
             kwarg_name = 'version',
             attribute = 'version'
         ),
         ByColumn(
-            model = AppScript,
+            model = Script,
             kwarg_name = 'last_modified',
             attribute = 'last_modified',
             converter = datetime.fromisoformat,
         ),
         BySupportedDistro(),
     ]
-    model = AppScript
+    model = Script

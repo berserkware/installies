@@ -1,9 +1,9 @@
 from flask import Blueprint, abort, request, g
 from installies.groups.app import AppGroup
-from installies.groups.script import AppScriptGroup
+from installies.groups.script import ScriptGroup
 from installies.groups.modifiers import Paginate
 from installies.models.app import App, AppNotFound
-from installies.models.script import AppScript
+from installies.models.script import Script
 from peewee import *
 
 import json
@@ -43,7 +43,7 @@ def scripts(app_name):
     if app.visibility == 'private' and app.submitter != g.user:
         abort(404)
 
-    scripts = AppScriptGroup.get(**request.args).where(AppScript.app == app)
+    scripts = ScriptGroup.get(**request.args).where(Script.app == app)
 
     paginator = Paginate(
         default_per_page = 10,

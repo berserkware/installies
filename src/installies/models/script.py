@@ -26,7 +26,7 @@ class ScriptNotFound(Exception):
 
 
 class ScriptData(BaseModel):
-    """A model for storing data about scripts."""
+    """A model for storing the path to the script content."""
 
     filepath = CharField(255)
 
@@ -118,8 +118,8 @@ class ScriptData(BaseModel):
         )
     
     
-class AppScript(BaseModel):
-    """A model for storing data about app scripts."""
+class Script(BaseModel):
+    """A model for storing data about scripts."""
 
     action = CharField(255)
     last_modified = DateTimeField(default=datetime.now)
