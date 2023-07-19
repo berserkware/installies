@@ -9,6 +9,7 @@ from peewee import (
 )
 from installies.models.base import BaseModel
 from installies.models.user import User
+from installies.models.maintainer import Maintainers
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
@@ -34,6 +35,7 @@ class App(BaseModel):
     creation_date = DateTimeField(default=datetime.now)
     last_modified = DateTimeField(default=datetime.now)
     submitter = ForeignKeyField(User, backref='apps')
+    maintainers = ForeignKeyField(Maintainers)
     visibility = CharField(255, default='private')
 
     @classmethod
@@ -82,18 +84,20 @@ class App(BaseModel):
         """
         name = bleach.clean(name)
         description = bleach.clean(description)
+
+        maintainers = Maintainers.create()
         
         app = super().create(
             name=name,
             display_name=display_name,
             description=description,
             submitter=submitter,
+            maintainers=maintainers,
             current_version=current_version,
             version_regex=version_regex,
         )
 
-        # adds the user as a maintainer
-        Maintainer.create(app=app, user=submitter)
+        maintainers.add_maintainer(submitter)
         
         return app
 
@@ -153,8 +157,7 @@ class App(BaseModel):
         for script in self.scripts:
             script.delete_instance()
 
-        for maintainer in self.maintainers:
-            maintainer.delete_instance()
+        self.maintainers.delete_instance()
 
         super().delete_instance()
 
@@ -168,20 +171,7 @@ class App(BaseModel):
         if user.admin is True:
             return True
 
-        maintainer = (
-            Maintainer.select()
-            .where(Maintainer.user == user)
-            .where(Maintainer.app == self)
-        )
-
-        if maintainer.exists() is True:
+        if self.maintainers.is_maintainer(user):
             return True
 
         return False
-
-
-class Maintainer(BaseModel):
-    """A model for storing maintainer infomation."""
-
-    user = ForeignKeyField(User, backref='maintains')
-    app = ForeignKeyField(App, backref='maintainers')

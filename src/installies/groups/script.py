@@ -1,4 +1,4 @@
-from installies.models.app import App, Maintainer
+from installies.models.app import App
 from installies.models.script import Script
 from installies.models.supported_distros import SupportedDistro, Distro
 from installies.models.user import User

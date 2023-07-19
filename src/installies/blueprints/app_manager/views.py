@@ -31,7 +31,8 @@ from installies.config import (
     supported_script_actions,
     supported_visibility_options,
 )
-from installies.models.app import App, Maintainer
+from installies.models.app import App
+from installies.models.maintainer import Maintainer, Maintainers
 from installies.models.script import Script
 from installies.models.user import User
 from installies.models.report import ReportBase, AppReport
@@ -194,14 +195,11 @@ class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
         user = user.get()
         app = kwargs['app']
         
-        if (Maintainer.select()
-            .where(Maintainer.user == user)
-            .where(Maintainer.app == app)
-            .exists()):
+        if app.maintainers.is_maintainer(user):
             flash(f'{user.username} is already a maintainer.', 'error')
             return redirect(url_for('app_manager.add_maintainer', app_name=app.name), 303)
 
-        maintainer = Maintainer.create(user=user, app=app)
+        maintainer = app.maintainers.add_mainatainer(user)
 
         flash(f'{user.username} successfully added as a maintainer.', 'success')
         return self.get_app_view_redirect(**kwargs)
@@ -228,27 +226,19 @@ class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     
     def post(self, **kwargs):
         app = kwargs['app']
-        
-        maintainer = (
-            Maintainer
-            .select()
-            .where(Maintainer.user == kwargs['user'])
-            .where(Maintainer.app == app)
-        )
-        
-        if maintainer.exists() is False:
-            abort(404)
 
-        maintainer = maintainer.get()
-
-        if len(app.maintainers) == 1:
+        if len(app.maintainers.get_maintainers()) == 1:
             flash(f'You cannot remove the last maintainer.', 'error')
             return self.get_app_view_redirect(**kwargs)
-        
-        maintainer.delete_instance()
 
+        if app.maintainers.is_maintainer(kwargs['user']) is False:
+            abort(404)
+            
+        app.maintainers.delete_maintainer(kwargs['user'])
+        
         flash(f'Maintainer successfully removed.', 'success')
         return self.get_app_view_redirect(**kwargs)
+
 
 class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""

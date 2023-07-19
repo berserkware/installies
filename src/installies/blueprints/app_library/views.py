@@ -2,7 +2,8 @@ from flask import render_template, Blueprint, request, g, Response
 from installies.lib.view import TemplateView
 from installies.groups.app import AppGroup
 from installies.groups.modifiers import Paginate
-from installies.models.app import App, Maintainer
+from installies.models.app import App
+from installies.models.maintainer import Maintainer
 from installies.models.report import AppReport
 from peewee import *
 

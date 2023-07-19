@@ -20,8 +20,8 @@
         <td>{{ app.current_version }}</td>
         <td><a href="{{ url_for('auth.profile', username=app.submitter.username) }}">{{ app.submitter.username }}</a></td>
         <td>
-	  {% for maintainer in app.maintainers %}
-         <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if app.can_user_edit(g.user) %}{% endif %}{% if loop.index != app.maintainers|length %}, {% endif %}
+	  {% for maintainer in app.maintainers.get_maintainers() %}
+         <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if app.can_user_edit(g.user) %}{% endif %}{% if loop.index != app.maintainers.get_maintainers()|length %}, {% endif %}
          {% endfor %}
         </td>
       </tr>

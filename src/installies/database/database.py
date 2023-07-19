@@ -1,10 +1,11 @@
 from installies.config import database
-from installies.models.app import App, Maintainer
+from installies.models.app import App
 from installies.models.script import Script, ScriptData
 from installies.models.supported_distros import Distro, SupportedDistro, Architecture, AlternativeArchitectureName
 from installies.models.user import User
 from installies.models.report import AppReport
 from installies.models.discussion import Thread, Comment
+from installies.models.maintainer import Maintainers, Maintainer
 
 tables =  [
     User,
@@ -14,6 +15,7 @@ tables =  [
     Distro,
     SupportedDistro,
     Maintainer,
+    Maintainers,
     Architecture,
     AlternativeArchitectureName,
     AppReport,
