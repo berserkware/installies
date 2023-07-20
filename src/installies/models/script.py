@@ -10,6 +10,7 @@ from peewee import (
 from installies.models.base import BaseModel
 from installies.models.user import User
 from installies.models.app import App
+from installies.models.supported_distros import SupportedDistrosJunction
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
@@ -29,6 +30,7 @@ class ScriptData(BaseModel):
     """A model for storing the path to the script content."""
 
     filepath = CharField(255)
+    supported_distros = ForeignKeyField(SupportedDistrosJunction)
 
     def open_content(self, mode='r'):
         """
@@ -69,52 +71,18 @@ class ScriptData(BaseModel):
         return script_path
 
 
-    def get_all_supported_distros(self) -> dict:
-        """
-        Gets all the script's supported distros, and puts them in a dictionary.
-
-        The keys are the distro's architechture, and the values are lists of distro names.
-        """
-
-        distros = {}
-
-        for distro in self.supported_distros:
-            if distro.architecture_name not in distros.keys():
-                distros[distro.architecture_name] = []
-
-            distros[distro.architecture_name].append(distro.distro_name)
-            
-        return distros
-
-
-    def get_supported_distro_string(self):
-        """
-        Gets the supported distro in the state the user entered it.
-
-        Example: "distro:arch:arch, distro:arch:arch".
-        """
-
-        distros = {}
-        for distro in self.supported_distros:
-            if distro.distro_name not in distros.keys():
-                distros[distro.distro_name] = []
-
-            distros[distro.distro_name].append(distro.architecture_name)
-
-        distro_strings = []
-        for distro in distros:
-            distro_strings.append(f'{distro}:{":".join(distros[distro])}')
-
-        return ', '.join(distro_strings)
-
-
     @classmethod
-    def create(cls, directory: str, content: str):
+    def create(cls, directory: str, content: str, distros: dict):
         """Creates the script data."""
 
         filepath = cls.create_script_file(directory, content)
+
+        supported_distros = SupportedDistrosJunction.create()
+        supported_distros.create_from_list(distros)
+        
         return super().create(
-            filepath=filepath
+            filepath=filepath,
+            supported_distros=supported_distros,
         )
     
     
@@ -138,9 +106,9 @@ class Script(BaseModel):
         """
 
         script = (
-            AppScript
+            Script
             .select()
-            .where(AppScript.id == id)
+            .where(Script.id == id)
         )
 
         if script.exists() is False:
@@ -167,11 +135,8 @@ class Script(BaseModel):
         :param app: The app the script is for.
         """
         app_dir = app.create_or_get_folder()
-
-        script_data = ScriptData.create(app_dir, content)
-
-        from installies.models.supported_distros import SupportedDistro
-        SupportedDistro.create_from_list(supported_distros, script_data, app)
+        
+        script_data = ScriptData.create(app_dir, content, supported_distros)
         
         created_script = super().create(
             action=action,
@@ -198,10 +163,8 @@ class Script(BaseModel):
         self.last_modified = datetime.today()
         self.version = version
 
-        # deletes and replaces the supported distros.
-        from installies.models.supported_distros import SupportedDistro
-        SupportedDistro.delete().where(SupportedDistro.script_data == self.script_data).execute()
-        SupportedDistro.create_from_list(supported_distros, self.script_data, self.app)
+        self.script_data.supported_distros.delete_all_distros()
+        self.script_data.supported_distros.create_from_list(supported_distros)
         
         with self.script_data.open_content('w') as f:
             f.write(content)
@@ -213,13 +176,12 @@ class Script(BaseModel):
 
     def delete_instance(self):
         """Deletes the script and its related SupportedDistro objects."""
-
-        from installies.models.supported_distros import SupportedDistro
-        SupportedDistro.delete().where(SupportedDistro.script_data == self.script_data).execute()
         
         super().delete_instance()
 
         self.script_data.delete_instance()
+
+        self.script_data.supported_distros.delete_instance()
 
 
     def serialize(self):

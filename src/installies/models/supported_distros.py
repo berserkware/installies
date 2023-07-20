@@ -9,8 +9,6 @@ from peewee import (
 )
 from installies.models.base import BaseModel
 from installies.models.user import User
-from installies.models.script import ScriptData
-from installies.models.app import App
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
@@ -22,6 +20,90 @@ import string
 import random
 import bleach
 
+
+class SupportedDistrosJunction(BaseModel):
+    """A junction models between SupportedDistro models and scripts."""
+
+
+    def get_as_dict(self) -> dict:
+        """
+        Gets all the distros, and put's them in a dictionary.
+
+        The keys are the distro's architechture, and the values are lists of distro names.
+        """
+
+        distros = {}
+
+        for distro in self.distros:
+            if distro.architecture_name not in distros.keys():
+                distros[distro.architecture_name] = []
+
+            distros[distro.architecture_name].append(distro.distro_name)
+            
+        return distros
+
+    def get_as_string(self):
+        """
+        Gets the distros in the state the user entered it.
+
+        Example: "distro:arch:arch, distro:arch:arch".
+        """
+
+        distros = {}
+        for distro in self.distros:
+            if distro.distro_name not in distros.keys():
+                distros[distro.distro_name] = []
+
+            distros[distro.distro_name].append(distro.architecture_name)
+
+        distro_strings = []
+        for distro in distros:
+            distro_strings.append(f'{distro}:{":".join(distros[distro])}')
+
+        return ', '.join(distro_strings)
+    
+    def create_from_list(self, distros: dict):
+        """
+        Creates mutliple supported distros from a list of distro slugs.
+        
+        :param distros: A dictionary of the distros and their architectures.
+        """
+
+        supported_distros = []
+
+        for distro in distros.keys():
+            architectures = distros[distro]
+            if architectures == []:
+                architectures = ['*']
+
+            for architecture in architectures:
+                alternate_name = (AlternativeArchitectureName
+                                  .select()
+                                  .where(AlternativeArchitectureName.name == architecture)
+                                  )
+                
+                if alternate_name.exists():
+                    # gets the main name of the architechutre
+                    architecture = alternate_name.get().architecture.name
+
+                supported_distro = SupportedDistro.create(
+                    group=self,
+                    distro_name=distro,
+                    architecture_name=architecture,
+                )
+                supported_distros.append(supported_distro)
+
+        return supported_distros
+
+    def delete_all_distros(self):
+        """Delete all the distros related to this."""
+
+        SupportedDistro.delete().where(SupportedDistro.group == self).execute()
+
+    def delete_instance(self):
+        self.delete_all_distros()
+        super().delete_instance()
+    
 
 class Distro(BaseModel):
     """A model for storing data about a linux distribution."""
@@ -43,53 +125,14 @@ class Distro(BaseModel):
         
         return slugs
 
+
 class SupportedDistro(BaseModel):
     """A model for storing a supported distro of a script."""
 
-    script_data = ForeignKeyField(ScriptData, backref='supported_distros')
-    app = ForeignKeyField(App, backref='supported_distros')
+    group = ForeignKeyField(SupportedDistrosJunction, backref="distros")
     distro_name = CharField(255)
     architecture_name = CharField(255)
-
-    @classmethod
-    def create_from_list(cls, distros: dict, script_data: ScriptData, app: App):
-        """
-        Creates mutliple supported distros from a list of distro slugs.
-
-        A list of the created SupportedDistro objects are returned.
-        
-        :param distros: A dictionary of the distros and their architectures.
-        :param script_data: The ScriptData object.
-        :param app: The app for the supported_distro.
-        """
-
-        supported_distros = []
-
-        for distro in distros.keys():
-            architectures = distros[distro]
-            if architectures == []:
-                architectures = ['*']
-
-            for architecture in architectures:
-                alternate_name = (AlternativeArchitectureName
-                                  .select()
-                                  .where(AlternativeArchitectureName.name == architecture)
-                                  )
-                
-                if alternate_name.exists():
-                    # gets the main name of the architechutre
-                    architecture = alternate_name.get().architecture.name
-
-                supported_distro = SupportedDistro.create(
-                    script_data=script_data,
-                    app=app,
-                    distro_name=distro,
-                    architecture_name=architecture,
-                )
-                supported_distros.append(supported_distro)
-
-        return supported_distros
-
+    
 
 class Architecture(BaseModel):
     """A model for storing infomation about a cpu architecture."""

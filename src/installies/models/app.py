@@ -156,10 +156,10 @@ class App(BaseModel):
 
         for script in self.scripts:
             script.delete_instance()
+        
+        super().delete_instance()
 
         self.maintainers.delete_instance()
-
-        super().delete_instance()
 
     def can_user_edit(self, user: User):
         """

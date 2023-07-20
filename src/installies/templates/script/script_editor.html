@@ -88,7 +88,7 @@
       addDistroButton.onclick = addDistroOnClick
 
       {% if default_form_script %}
-        {% set supported_distros = default_form_script.script_data.get_all_supported_distros() %}
+        {% set supported_distros = default_form_script.script_data.supported_distros.get_as_dict() %}
         {% for arch, distros in supported_distros.items() %}
       addDistro("{{ ', '.join(distros) }}", "{{ arch }}")
         {% endfor %}

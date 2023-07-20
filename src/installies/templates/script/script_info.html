@@ -34,7 +34,7 @@
       <th class="bold">Supported Distros:</th>
       <td>
 	<table>
-	  {% set distros = script.script_data.get_all_supported_distros() %}
+	  {% set distros = script.script_data.supported_distros.get_as_dict() %}
 	  {% for architecture in distros %}
 	  <tr class="initial-font-size">
 	    <td class="no-height-padding">{{ architecture }}:</td>

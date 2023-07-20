@@ -263,7 +263,7 @@ class ScriptDetailView(AppMixin, DetailView):
     model_name = 'script'
 
     def get_object(self, **kwargs):
-        return AppScript.get_by_id(kwargs['script_id'])
+        return Script.get_by_id(kwargs['script_id'])
 
 
 class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -298,7 +298,7 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     form_class = EditScriptForm
 
     def on_request(self, **kwargs):
-        kwargs['script'] = AppScript.get_by_id(kwargs['script_id'])
+        kwargs['script'] = Script.get_by_id(kwargs['script_id'])
         return super().on_request(**kwargs)
     
     def get_context_data(self, **kwargs):
