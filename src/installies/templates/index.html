@@ -27,10 +27,17 @@
 </div>
 {% endif %}
 
-<div class="container black" style="max-width:1150px">
-  <h2>Recently Updated Apps</h2>
+<div class="container" style="max-width:1150px">
+  <h3>Recently Updated Apps</h3>
   {% set apps = recently_updated_apps %}
   {% include "app_table.html" %}
   <a href="{{ url_for('app_library.apps', **{'sort-by':'last_modified'}) }}">Search for more</a>
+</div>
+
+<div class="container" style="max-width:1150px">
+  <h3>Newest Apps</h3>
+  {% set apps = newest_apps %}
+  {% include "app_table.html" %}
+  <a href="{{ url_for('app_library.apps', **{'sort-by':'creation_date'}) }}">Search for more</a>
 </div>
 {% endblock %}
