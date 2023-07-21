@@ -26,4 +26,11 @@
   <a href="{{ url_for('app_library.apps', **{'search-in':'maintainers','k':g.user.username}) }}">Search for apps I maintain</a>
 </div>
 {% endif %}
+
+<div class="container black" style="max-width:1150px">
+  <h2>Recently Updated Apps</h2>
+  {% set apps = recently_updated_apps %}
+  {% include "app_table.html" %}
+  <a href="{{ url_for('app_library.apps', **{'sort-by':'last_modified'}) }}">Search for more</a>
+</div>
 {% endblock %}

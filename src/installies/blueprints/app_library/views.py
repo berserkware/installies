@@ -25,6 +25,13 @@ class IndexView(TemplateView):
             )
             kwargs['user_maintained_apps'] = user_maintained_apps
 
+        recently_updated_apps = (
+            AppGroup
+            .get(**{'sort-by': 'last_modified'})
+            .paginate(1, 10)
+        )
+        kwargs['recently_updated_apps'] = recently_updated_apps
+
         return kwargs
 
 app_library.add_url_rule('/', 'index', view_func=IndexView.as_view())
