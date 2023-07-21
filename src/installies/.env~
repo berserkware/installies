@@ -1,0 +1,7 @@
+DATABASE_NAME=Installies
+DATABASE_USER=installies
+DATABASE_PASS=password
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+
+SCRIPT_UPLOAD_PATH=/run/media/caleb/Berserkware/Projects/installies-apps

@@ -43,3 +43,8 @@ supported_visibility_options = [
 apps_path = os.environ.get('SCRIPT_UPLOAD_PATH')
 
 max_script_length = os.environ.get('MAX_SCRIPT_LEN', 10000)
+
+noreply_email = os.environ.get('NOREPLY_EMAIL')
+noreply_email_password = os.environ.get('NOREPLY_EMAIL_PASSWORD')
+smtp_server = os.environ.get('SMTP_SERVER')
+smtp_server_port = int(os.environ.get('SMTP_SERVER_PORT'))

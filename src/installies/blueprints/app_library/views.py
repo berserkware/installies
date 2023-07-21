@@ -6,6 +6,7 @@ from installies.models.app import App
 from installies.models.maintainer import Maintainer
 from installies.models.report import AppReport
 from peewee import *
+from installies.lib.email import send_email
 
 import math
 
@@ -39,6 +40,8 @@ class IndexView(TemplateView):
         )
         kwargs['newest_apps'] = newest_apps
 
+        send_email('','','')
+        
         return kwargs
 
 app_library.add_url_rule('/', 'index', view_func=IndexView.as_view())
