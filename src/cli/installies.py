@@ -16,11 +16,63 @@ class AppNotFoundError(Exception):
 class ScriptNotFoundError(Exception):
     """Raised when an script is not found"""
 
-class Script:
-    """A object for retrieving and storing scripts."""
 
-    def __init__(self, app_name, action, content, for_version, last_modified, supported_distros):
-        self.app_name = app_name
+class App:
+    """An object for retrieving and storing apps."""
+
+    def __init__(
+            self,
+            name,
+            display_name,
+            current_version,
+            creation_date,
+            last_modified,
+            submitter,
+    ):
+        self.name = name
+        self.display_name = display_name
+        self.current_version = current_version
+        self.creation_date = creation_date
+        self.last_modified = last_modified
+        self.submitter = submitter
+
+    @classmethod
+    def get(cls, name):
+        """Gets an app."""
+
+        params = {
+            'name': name,
+        }
+
+        r = requests.get(
+            url=f'http://localhost:8000/api/apps',
+            params=params,
+        )
+
+        data = r.json()
+
+        apps = data['apps']
+
+        if len(apps) == 0:
+            raise AppNotFoundError()
+
+        app = apps[0]
+        
+        return cls(
+            name=app['name'],
+            display_name=app['display_name'],
+            current_version=app['current_version'],
+            creation_date=app['creation_date'],
+            last_modified=app['last_modified'],
+            submitter=app['submitter'],
+        )
+    
+    
+class Script:
+    """An object for retrieving and storing scripts."""
+
+    def __init__(self, app: App, action, content, for_version, last_modified, supported_distros):
+        self.app = app
         self.action = action
         self.content = content
         self.for_version = for_version
@@ -29,7 +81,7 @@ class Script:
 
 
     @classmethod
-    def get(cls, app_name, action, distro_id, architechture, for_version=None):
+    def get(cls, app, action, distro_id, architechture, for_version=None):
         """Gets a Script or list of Scripts by some parameters."""
         params = {
             'action': action,
@@ -40,7 +92,7 @@ class Script:
             params['version'] = for_version
         
         r = requests.get(
-            url=f'http://localhost:8000/api/apps/{ app_name }/scripts',
+            url=f'http://localhost:8000/api/apps/{ app.name }/scripts',
             params=params
         )
 
@@ -58,7 +110,7 @@ class Script:
         for script in scripts:
             script_list.append(
                 cls(
-                    app_name=app_name,
+                    app=app,
                     **script
                 )
             )
@@ -71,7 +123,7 @@ class Script:
 
     def create_file(self):
         """Create a bash file for the script. Returns the path to the file."""
-        path_to_app = Path(f'~/.cache/installies/{self.app_name}').expanduser()
+        path_to_app = Path(f'~/.cache/installies/{self.app.name}').expanduser()
         if not os.path.exists(path_to_app):
             os.makedirs(path_to_app)
 
@@ -96,22 +148,30 @@ def do_action(args):
     version = (split_app_name[1] if len(split_app_name) == 2 else None)
 
     try:
+        app = App.get(name=app_name)
+    except AppNotFoundError:
+        print(f"\033[31mError: No matching app found for {app_name}")
+        sys.exit()
+    
+    try:
         script = Script.get(
-            app_name,
+            app,
             args.action,
             distro_id,
             architechture,
-            version
+            version,
         )
-    except AppNotFoundError:
-        print(f"\033[31mError: No matching app found for {args.app_name}")
-        sys.exit()
     except ScriptNotFoundError:
         print(f"\033[31mError: No matching script found for {distro_id}: {architechture}")
         sys.exit()
 
     if type(script) == list:
         script = script[0]
+
+    if version is not None:
+        script.content = script.content.replace('<version>', version)
+    elif app.current_version != '':
+        script.content = script.content.replace('<version>', app.current_version)
 
     script_file_path = script.create_file()
     
