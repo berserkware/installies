@@ -20,11 +20,6 @@
     <label for="app-current-version">Current Version</label><br>
     <input type="text" name="app-current-version" id="app-current-version" class="textbox" {% if default_form_app %}value="{{ default_form_app.current_version }}"{% endif %}><br>
   </div>
-  
-  <div class="form-input-container">
-    <label for="app-version-regex">Version Regex</label></br>
-    <input type="text" name="app-version-regex" id="app-version-regex" class="textbox" {% if default_form_app %}value="{{ default_form_app.version_regex }}"{% endif %}><br>
-  </div>
       
   <div class="form-input-container">
     <input type="submit" value="Submit" class="button">

@@ -5,7 +5,6 @@ from installies.blueprints.app_manager.validate import (
     AppDisplayNameValidator,
     AppDescriptionValidator,
     AppCurrentVersionValidator,
-    AppVersionRegexValidator,
     AppVisibilityValidator,
     ScriptActionValidator,
     ScriptDistroValidator,
@@ -33,7 +32,6 @@ class CreateAppForm(Form):
         FormInput('app-display-name', AppDisplayNameValidator, default=None),
         FormInput('app-desc', AppDescriptionValidator, default=''),
         FormInput('app-current-version', AppCurrentVersionValidator, default=None),
-        FormInput('app-version-regex', AppVersionRegexValidator, default=None),
     ]
     model = App
 
@@ -44,7 +42,6 @@ class CreateAppForm(Form):
             display_name=self.data['app-display-name'],
             description=self.data['app-desc'],
             current_version=self.data['app-current-version'],
-            version_regex=self.data['app-version-regex'],
             submitter=g.user,
         )
 
@@ -58,7 +55,6 @@ class EditAppForm(Form):
         FormInput('app-display-name', AppDisplayNameValidator, default=None),
         FormInput('app-desc', AppDescriptionValidator, default=''),
         FormInput('app-current-version', AppCurrentVersionValidator, default=None),
-        FormInput('app-version-regex', AppVersionRegexValidator, default=None),
     ]
     model = App
 
@@ -68,7 +64,6 @@ class EditAppForm(Form):
             display_name=self.data['app-display-name'],
             description=self.data['app-desc'],
             current_version=self.data['app-current-version'],
-            version_regex=self.data['app-version-regex'],
         )
     
 

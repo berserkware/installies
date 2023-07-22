@@ -16,9 +16,6 @@ class AppNotFoundError(Exception):
 class ScriptNotFoundError(Exception):
     """Raised when an script is not found"""
 
-class VersionDoesNotMatchRegexError(Exception):
-    """Raised when a version does not match an app's versioning regex."""
-
 class Script:
     """A object for retrieving and storing scripts."""
 
@@ -51,10 +48,7 @@ class Script:
             raise AppNotFoundError()
 
         data = r.json()
-        
-        if 'error' in data.keys() and data['error'] == 'VersionDoesNotMatchRegex':
-            raise VersionDoesNotMatchRegexError()
-
+    
         scripts = data['scripts']
 
         if len(scripts) == 0:
@@ -114,9 +108,6 @@ def do_action(args):
         sys.exit()
     except ScriptNotFoundError:
         print(f"\033[31mError: No matching script found for {distro_id}: {architechture}")
-        sys.exit()
-    except VersionDoesNotMatchRegexError:
-        print(f"\033[31mError: Version \"{version}\" does not match app's versioning regex.")
         sys.exit()
 
     if type(script) == list:

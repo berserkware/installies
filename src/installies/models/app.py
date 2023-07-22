@@ -31,7 +31,6 @@ class App(BaseModel):
     display_name = CharField(255, null=True)
     description = TextField()
     current_version = CharField(255, null=True)
-    version_regex = CharField(255, null=True)
     creation_date = DateTimeField(default=datetime.now)
     last_modified = DateTimeField(default=datetime.now)
     submitter = ForeignKeyField(User, backref='apps')
@@ -68,7 +67,6 @@ class App(BaseModel):
             submitter: User,
             display_name: str=None,
             current_version: str=None,
-            version_regex: str=None,
     ):
         """
         Create a App object, and adds it to the database.
@@ -80,7 +78,6 @@ class App(BaseModel):
         :param description: The app's description.
         :param submitter: The app's submitter.
         :param current_version: The app's current version.
-        :param version_regex: The regex to check user-submitted app versions.
         """
         name = bleach.clean(name)
         description = bleach.clean(description)
@@ -94,7 +91,6 @@ class App(BaseModel):
             submitter=submitter,
             maintainers=maintainers,
             current_version=current_version,
-            version_regex=version_regex,
         )
 
         maintainers.add_maintainer(submitter)
@@ -109,7 +105,6 @@ class App(BaseModel):
         data['display_name'] = self.display_name
         data['description'] = self.description
         data['current_version'] = self.current_version
-        data['version_regex'] = self.version_regex
         data['creation_date'] = str(self.creation_date)
         data['last_modified'] = str(self.last_modified)
         data['submitter'] = self.submitter.username
@@ -130,13 +125,12 @@ class App(BaseModel):
 
         return app_path
 
-    def edit(self, description: str, current_version: str, version_regex: str, display_name: str):
+    def edit(self, description: str, current_version: str, display_name: str):
         """
         Edits the app.
 
         :param description: The new description for the app.
         :param current_version: The new current version.
-        :param version_regex: The new version regex for the the app.
         :param display_name: The new display name.
         """
 
@@ -144,7 +138,6 @@ class App(BaseModel):
         
         self.description = description
         self.current_version = current_version
-        self.version_regex = version_regex
         self.display_name = display_name
 
         self.last_modified = datetime.today()

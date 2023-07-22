@@ -39,8 +39,6 @@ class IndexView(TemplateView):
             .paginate(1, 10)
         )
         kwargs['newest_apps'] = newest_apps
-
-        send_email('','','')
         
         return kwargs
 

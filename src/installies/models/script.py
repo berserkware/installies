@@ -189,7 +189,7 @@ class Script(BaseModel):
         data = {}
 
         data['action'] = self.action
-        data['supported_distros'] = self.get_all_supported_distros()
+        data['supported_distros'] = self.script_data.supported_distros.get_as_dict()
         data['last_modified'] = str(self.last_modified)
         data['for_version'] = self.version
         with self.script_data.open_content() as c:

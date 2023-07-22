@@ -82,21 +82,6 @@ class AppCurrentVersionValidator(VersionValidator):
     data_name = "App current version"
 
 
-class AppVersionRegexValidator(Validator):
-    """A class to validate app version regex validator"""
-
-    checkers = [
-        LengthChecker(max_len=256),
-        AllowedCharactersChecker(
-            allow_extra=[
-                '.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '(', ')', '\\', '|', '/', '-', ':', '<', '>'
-            ]
-        )
-    ]
-
-    data_name = 'App version regex'
-    
-
 class AppVisibilityValidator(Validator):
     """A class for validating visibility options submitted by the user."""
 

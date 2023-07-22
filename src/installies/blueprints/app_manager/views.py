@@ -279,9 +279,6 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         return kwargs
 
     def form_valid(self, form, **kwargs):
-        if re.fullmatch(kwargs['app'].version_regex, form.data['for-version']) is None and form.data['for-version'] != '':
-            flash('Version does not match app\'s version regex.', 'error')
-            return self.get(**kwargs)
         
         form.save(app=kwargs['app'])
         

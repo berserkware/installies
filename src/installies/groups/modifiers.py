@@ -1,7 +1,7 @@
 from peewee import Query
 from installies.models.app import App
-from installies.models.script import Script
-from installies.models.supported_distros import Distro, SupportedDistro
+from installies.models.script import Script, ScriptData
+from installies.models.supported_distros import Distro, SupportedDistro, SupportedDistrosJunction
 from functools import reduce
 
 import typing as t
@@ -232,7 +232,13 @@ class BySupportedDistro(Modifier):
         if supported_distros == {}:
             return query
 
-        query = query.switch(query.model).join(SupportedDistro)
+        query = (
+            query
+            .switch(query.model)
+            .join(ScriptData)
+            .join(SupportedDistrosJunction)
+            .join(SupportedDistro)
+        )
 
         for distro in supported_distros.keys():
             for arch in supported_distros[distro]:
