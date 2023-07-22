@@ -8,7 +8,7 @@ from installies.blueprints.auth.validate import (
     EmailValidator,
     PasswordConfirmValidator,
 )
-from installies.models.user import User
+from installies.models.user import User, Session
 from installies.blueprints.auth.decorators import (
     unauthenticated_required,
     authenticated_required,
@@ -48,9 +48,11 @@ def signup():
 
         new_user = User.create(username, email, password)
 
-        # If success, return response with cookie
         res = redirect('/')
-        res.set_cookie('user-token', new_user.token)
+
+        session = Session.create(new_user)
+        res.set_cookie('user-token', session.token)
+        
         flash('Account successfully created.')
         return res
     else:
@@ -93,8 +95,10 @@ def login():
         if referer is not None:
             referer = bleach.clean(referer)
             res = redirect(referer)
+
+        session = Session.create(user=user)
+        res.set_cookie('user-token', session.token)
         
-        res.set_cookie('user-token', user.token)
         flash('You are now logged in.', 'success')
         return res
     else:
@@ -105,6 +109,11 @@ def login():
 @authenticated_required()
 def logout():
     res = redirect('/')
+
+    token = request.cookies.get('user-token')
+    session = Session.get(Session.token == token)
+    session.delete_instance()
+    
     res.set_cookie('user-token', 'deleted', '/', '-1')
     flash('You are now logged out.', 'success')
     return res

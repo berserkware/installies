@@ -4,7 +4,7 @@ from installies.blueprints.app_manager.blueprint import app_manager
 from installies.blueprints.auth.views import auth
 from installies.blueprints.admin.views import admin
 from installies.config import database
-from installies.models.user import User
+from installies.models.user import User, Session
 from installies.config import (
     supported_script_actions,
     supported_visibility_options,
@@ -28,21 +28,20 @@ def before_request():
     g.supported_visibility_options = supported_visibility_options
     g.supported_distros = Distro.get_all_distro_slugs()
     g.supported_architectures = Architecture.get_all_architecture_names()
-    
+
+    g.is_authed = False
+    g.user = None
+
     token = request.cookies.get('user-token')
 
-    # Checks that cookie exists
-    if token is None:
-        g.is_authed = False
-        g.user = None
-    
-    try:
-        user = User.get(User.token == token)
-        g.is_authed = True
-        g.user = user
-    except DoesNotExist:
-        g.is_authed = False
-        g.user = None
+    if token is not None:
+        session = Session.select().where(Session.token == token)
+
+        if session.exists():
+            session = session.get()
+            
+            g.is_authed = True
+            g.user = session.user
 
 
 @app.after_request

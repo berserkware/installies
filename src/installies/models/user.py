@@ -4,6 +4,7 @@ from peewee import (
     DateField,
     BooleanField,
     DateTimeField,
+    ForeignKeyField,
 )
 from installies.models.base import BaseModel
 from installies.config import database, apps_path
@@ -24,7 +25,6 @@ class User(BaseModel):
     email = CharField(255, unique=True)
     password = CharField(255)
     creation_date = DateTimeField(default=datetime.now)
-    token = CharField(255, unique=True)
     admin = BooleanField(default=False)
 
     def match_password(self, password: str) -> bool:
@@ -63,12 +63,6 @@ class User(BaseModel):
         return password.decode('utf-8')
 
     @classmethod
-    def make_token(cls):
-        """Create a 50 letter long string of random letters and numbers."""
-        letters = string.ascii_letters + string.digits
-        return ''.join(random.choice(letters) for i in range(50))
-
-    @classmethod
     def create(cls, username: str, email: str, password: str, admin: bool=False):
         """
         Create a User, and saves it to the database.
@@ -79,14 +73,39 @@ class User(BaseModel):
         :param admin: The user's admin status.
         """
 
-        token = cls.make_token()
-
         hashed_pass = cls.hash_password(password)
 
         return super().create(
             username=username,
             email=email,
             password=hashed_pass,
-            token=token,
             admin=admin
         )
+
+
+class Session(BaseModel):
+    """A model for storing session data."""
+
+    user = ForeignKeyField(User, backref="sessions")
+    token = CharField(255, unique=True)
+
+    @classmethod
+    def create(cls, user):
+        while True:
+            token = cls.make_token()
+
+            if Session.select().where(Session.token == token).exists():
+                continue
+
+            break
+
+        return super().create(
+            user=user,
+            token=token
+        )
+
+    @classmethod
+    def make_token(cls):
+        """Create a 50 letter long string of random letters and numbers."""
+        letters = string.ascii_letters + string.digits
+        return ''.join(random.choice(letters) for i in range(50))
