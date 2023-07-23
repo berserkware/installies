@@ -25,6 +25,7 @@ class User(BaseModel):
     email = CharField(255, unique=True)
     password = CharField(255)
     creation_date = DateTimeField(default=datetime.now)
+    verified = BooleanField(default=False)
     admin = BooleanField(default=False)
 
     def match_password(self, password: str) -> bool:

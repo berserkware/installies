@@ -49,11 +49,7 @@ def signup():
         new_user = User.create(username, email, password)
 
         res = redirect('/')
-
-        session = Session.create(new_user)
-        res.set_cookie('user-token', session.token)
-        
-        flash('Account successfully created.')
+        flash('Account successfully created. Check your email for a verification link.', 'success')
         return res
     else:
         return render_template('signup.html')
@@ -87,6 +83,10 @@ def login():
         if user.match_password(password) is False:
             flash('Password is incorrect.', 'error')
             return render_template('login.html')
+
+        if user.verified is False:
+            flash('You have to verify your email to login.', 'error')
+            return redirect('/')
 
         res = redirect('/')
         
