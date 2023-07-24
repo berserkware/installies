@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <p>Click the following link to verify your email for the account {{ user.username }}. Ignore this email if the account isn't yours.</p>
+    
+    <a href="http://localhost:8000/{{ url_for('auth.verify_user', verify_string=user.verify_string) }}">Verify your email</a>
+</div>
+
+  </body>
+</html>
+

@@ -25,6 +25,7 @@ class User(BaseModel):
     email = CharField(255, unique=True)
     password = CharField(255)
     creation_date = DateTimeField(default=datetime.now)
+    verify_string = CharField(255)
     verified = BooleanField(default=False)
     admin = BooleanField(default=False)
 
@@ -76,12 +77,28 @@ class User(BaseModel):
 
         hashed_pass = cls.hash_password(password)
 
+        # creates a verify string, goes untill a unique one is generated
+        verify_string = cls.generate_verify_string()
+        while True:
+            user = User.select().where(User.verify_string)
+            if user.exists() is False:
+                break
+            verify_string = cls.generate_verify_string()
+
         return super().create(
             username=username,
             email=email,
             password=hashed_pass,
+            verify_string=verify_string,
             admin=admin
         )
+
+
+    @classmethod
+    def generate_verify_string(cls):
+        """Generates a verify string."""
+
+        return ''.join(random.choice(string.ascii_letters) for i in range(50))
 
 
 class Session(BaseModel):

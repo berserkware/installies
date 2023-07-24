@@ -13,6 +13,7 @@ from installies.blueprints.auth.decorators import (
     unauthenticated_required,
     authenticated_required,
 )
+from installies.lib.email import send_email
 from peewee import *
 from datetime import date
 import calendar
@@ -47,6 +48,12 @@ def signup():
         username = bleach.clean(username)
 
         new_user = User.create(username, email, password)
+
+        send_email(
+            new_user.email,
+            render_template('email/verify_user.html', user=new_user),
+            'Verify Email',
+        )
 
         res = redirect('/')
         flash('Account successfully created. Check your email for a verification link.', 'success')
@@ -117,6 +124,23 @@ def logout():
     res.set_cookie('user-token', 'deleted', '/', '-1')
     flash('You are now logged out.', 'success')
     return res
+
+
+@auth.route('/verify/<verify_string>', methods=['GET'])
+@unauthenticated_required()
+def verify_user(verify_string):
+    user = User.select().where(User.verify_string == verify_string)
+
+    if user.exists() is False:
+        abort(404)
+
+    user = user.get()
+        
+    user.verified = True
+    user.save()
+
+    flash('Account successfully verified', 'success')
+    return redirect('/login')
 
 
 @auth.route('/profile/<username>')
