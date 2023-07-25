@@ -17,6 +17,20 @@ class ScriptNotFoundError(Exception):
     """Raised when an script is not found"""
 
 
+class AppRequest:
+    """
+    A class to store data the user has given about the app they want to get scripts of.
+    """
+
+    def __init__(self, app_name: str):
+        split_app_name = args.app_name.split('==')
+        
+        self.name = split_app_name[0]
+
+        #if the user specifies a version of the app to get
+        self.version = (split_app_name[1] if len(split_app_name) == 2 else None)
+    
+
 class App:
     """An object for retrieving and storing apps."""
 
@@ -134,23 +148,64 @@ class Script:
         os.system(f'chmod +x {path}')
         return path
 
+
+def get_or_create_installed_file():
+    """
+    Creates the folder and file for installed.json if it doesn't exist.
+
+    Returns the path.
+    """
+
+    cache_folder = Path(f'~/.config/installies').expanduser()
+    if not os.path.exists(cache_folder):
+        os.makedirs(cache_folder)
+
+    installed_apps_file = os.path.join(cache_folder, 'installed.json')
+    try:
+        f = open(installed_apps_file, 'x')
+        f.close()
+    except FileExistsError:
+        pass
+
+    # if file cannot be loaded into json, it is marked as empty
+    empty = False
+    with open(installed_apps_file, 'r') as f:
+        content = f.read()
+        try:
+            json.loads(content)
+        except json.JSONDecodeError:
+            empty = True
+
+    # if file is empty, write empty json data to it
+    if empty:
+        with open(installed_apps_file, 'w') as f:
+            f.write('{}')
+    
+    return installed_apps_file
+
+    
 def do_action(args):
     """Does a action like install, remove, or update"""
+    installed_file = get_or_create_installed_file()
+
+    installed = {}
+    with open(installed_file, 'r') as f:
+        installed = json.loads(f.read())
+
+    if 'installed_apps' not in installed.keys():
+        installed['installed_apps'] = {}
+    
     distro_id = distro.id()
     architechture = platform.machine()
     if architechture == 'x86_64':
         architechture = 'amd64'
 
-    split_app_name = args.app_name.split('==')
-    app_name = split_app_name[0]
-
-    #if the user specifies a version of the app to get
-    version = (split_app_name[1] if len(split_app_name) == 2 else None)
+    app_request = AppRequest(args.app_name)
 
     try:
-        app = App.get(name=app_name)
+        app = App.get(name=app_request.name)
     except AppNotFoundError:
-        print(f"\033[31mError: No matching app found for {app_name}")
+        print(f"\033[31mError: No matching app found for {app_request.name}")
         sys.exit()
     
     try:
@@ -159,22 +214,25 @@ def do_action(args):
             args.action,
             distro_id,
             architechture,
-            version,
+            app_request.version,
         )
+
+        # if more than one scripts are returned, use the first one
+        if type(script) == list:
+            script = script[0]
+            
     except ScriptNotFoundError:
         print(f"\033[31mError: No matching script found for {distro_id}: {architechture}")
         sys.exit()
 
-    if type(script) == list:
-        script = script[0]
-
-    if version is not None:
-        script.content = script.content.replace('<version>', version)
-    elif app.current_version != '':
-        script.content = script.content.replace('<version>', app.current_version)
-
+    version = app.current_version
+    if app_request.version is not None:
+        version = app_request.version
+    script.content = script.content.replace('<version>', version)
+        
     script_file_path = script.create_file()
-    
+
+    # warns user if cli is running in sudo mode
     if os.getuid() == 0:
         answer = input('\033[38;5;214mWarning: You are running the script in sudo mode, do you want to continue? [Y,n] ')
         if answer != 'Y':
@@ -192,6 +250,16 @@ def do_action(args):
             
     print(f'-- Executing {args.action} script. --')
     subprocess.run([script_file_path], shell=True)
+
+    if args.action.lower() == 'install':
+        installed['installed_apps'][app_request.name] = version
+
+    if args.action.lower() == 'remove':
+        if app_request.app_name in installed['installed_apps'].keys():
+            del installed['installed_apps'][app_request.name]
+
+    with open(installed_file, 'w') as f:
+        f.write(json.dumps(installed))
 
 
 if __name__ == '__main__':
