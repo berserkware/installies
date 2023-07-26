@@ -183,7 +183,44 @@ def get_or_create_installed_file():
     
     return installed_apps_file
 
+
+class ActionHander:
+    """Handles actions like install, remove, compile or update."""
+
+    def handle(self, action: str, args):
+        """Handles an action."""
+
+        try:
+            function = getattr(f'handle_{action}', self)
+        except AttibuteError:
+            print('Unsupported action.')
+            sys.exit()
+
+        return function(self, args)
+
+    def handle_install(self, args):
+        """Handles installing apps."""
+
+    def handle_remove(self, args):
+        """Handles removing apps."""
+
+    def handle_compile(self, args):
+        """Handles compiling apps."""
+
+    def handle_update(self, args):
+        """Handles updating apps."""
+
+    def get_or_create_installed(self):
+        """Gets or creates the installed apps from the ~/.config/installies/installed.json."""
+
+    def save_installed(self, data):
+        """
+        Saves the new data to the ~/.config/installies/installed.json.
+
+        :param data: The data to save back to the file.
+        """
     
+
 def do_action(args):
     """Does a action like install, remove, or update"""
     installed_file = get_or_create_installed_file()
