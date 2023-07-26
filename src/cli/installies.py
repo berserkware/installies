@@ -149,155 +149,242 @@ class Script:
         return path
 
 
-def get_or_create_installed_file():
+class ActionHandler:
     """
-    Creates the folder and file for installed.json if it doesn't exist.
+    Handles actions like install, remove, compile or update.
 
-    Returns the path.
+    :param app_request: The AppRequest.
     """
 
-    cache_folder = Path(f'~/.config/installies').expanduser()
-    if not os.path.exists(cache_folder):
-        os.makedirs(cache_folder)
-
-    installed_apps_file = os.path.join(cache_folder, 'installed.json')
-    try:
-        f = open(installed_apps_file, 'x')
-        f.close()
-    except FileExistsError:
-        pass
-
-    # if file cannot be loaded into json, it is marked as empty
-    empty = False
-    with open(installed_apps_file, 'r') as f:
-        content = f.read()
-        try:
-            json.loads(content)
-        except json.JSONDecodeError:
-            empty = True
-
-    # if file is empty, write empty json data to it
-    if empty:
-        with open(installed_apps_file, 'w') as f:
-            f.write('{}')
-    
-    return installed_apps_file
-
-
-class ActionHander:
-    """Handles actions like install, remove, compile or update."""
+    def __init__(self, app_request):
+        self.app_request = app_request
 
     def handle(self, action: str, args):
         """Handles an action."""
 
         try:
-            function = getattr(f'handle_{action}', self)
-        except AttibuteError:
+            function = getattr(self, f'handle_{action}')
+        except AttributeError:
             print('Unsupported action.')
             sys.exit()
 
-        return function(self, args)
+        return function(args)
 
     def handle_install(self, args):
         """Handles installing apps."""
 
+        app = self.get_app()
+
+        script = self.get_script(app, action='install')
+
+        installed = self.get_or_create_installed()
+
+        if app.name in installed['installed_apps'].keys():
+            answer = input(f':: {app.name} is already installed, run script anyway?  [Y,n] ')
+            if answer != 'Y':
+                sys.exit()
+
+        self.run_script('install', script)
+
+        version = script.app.current_version
+        if self.app_request.version is not None:
+            version = self.app_request.version
+        
+        installed['installed_apps'][self.app_request.name] = version 
+        
+        self.save_installed(installed)
+
     def handle_remove(self, args):
         """Handles removing apps."""
+
+        app = self.get_app()
+
+        script = self.get_script(app, action='remove')
+
+        installed = self.get_or_create_installed()
+
+        if app.name not in installed['installed_apps'].keys():
+            answer = input(f':: {app.name} isn\'t installed, run script anyway?  [Y,n] ')
+            if answer != 'Y':
+                sys.exit()
+        
+        self.run_script('remove', script)
+
+        if app_request.name in installed['installed_apps'].keys():
+            del installed['installed_apps'][app_request.name]
+
+        self.save_installed(installed)
 
     def handle_compile(self, args):
         """Handles compiling apps."""
 
+        app = self.get_app()
+
+        script = self.get_script(app, action='compile')
+
+        installed = self.get_or_create_installed()
+
+        if app.name in installed['installed_apps'].keys():
+            answer = input(f':: {app.name} is already installed, run script anyway?  [Y,n] ')
+            if answer != 'Y':
+                sys.exit()
+
+        self.run_script('compile', script)
+
+        version = script.app.current_version
+        if self.app_request.version is not None:
+            version = self.app_request.version
+        
+        installed['installed_apps'][self.app_request.name] = version
+
+        self.save_installed(installed)
+
     def handle_update(self, args):
         """Handles updating apps."""
 
-    def get_or_create_installed(self):
-        """Gets or creates the installed apps from the ~/.config/installies/installed.json."""
+        app = self.get_app()
 
+        script = self.get_script(app, action='update')
+
+        installed = self.get_or_create_installed()
+
+        if app.name not in installed['installed_apps'].keys():
+            answer = input(f':: {app.name} isn\'t installed, run script anyway?  [Y,n] ')
+            if answer != 'Y':
+                sys.exit()
+
+        self.run_script('update', script)
+
+        version = script.app.current_version
+        if self.app_request.version is not None:
+            version = self.app_request.version
+        
+        installed['installed_apps'][self.app_request.name] = version
+
+        self.save_installed(installed)
+
+    def run_script(self, action: str, script: Script):
+        """
+        Runs a script.
+
+        :param action: The action the script is doing.
+        :param script: The script to run.
+        """
+        version = script.app.current_version
+        if self.app_request.version is not None:
+            version = self.app_request.version
+        script.content = script.content.replace('<version>', version)
+        
+        script_file_path = script.create_file()
+        
+        # warns user if cli is running in sudo mode
+        if os.getuid() == 0:
+            answer = input(
+                '\033[38;5;214mWarning: You are running the script in sudo mode, do you want to continue? [Y,n] '
+            )
+            if answer != 'Y':
+                sys.exit()
+
+        if args.output_script:
+            print(':: Script Content Start')
+            print(script.content)
+            print(':: Script Content End')
+            print('')
+            
+        answer = input(':: Proceed? [Y,n] ')
+        if answer != 'Y':
+            sys.exit()
+            
+        print(f'-- Executing {action} script. --')
+        subprocess.run([script_file_path], shell=True)
+        
+    def get_app(self):
+        """Gets an App object."""
+        try:
+            app = App.get(name=self.app_request.name)
+        except AppNotFoundError:
+            print(f"\033[31mError: No matching app found for {self.app_request.name}")
+            sys.exit()
+
+        return app
+
+    def get_script(self, app, **args):
+        """
+        Gets a Script object.
+
+        :param app: The app to get the script of.
+        :param args: The extra args for Script.get.
+        """
+
+        distro_id = distro.id()
+        architechture = platform.machine()
+        if architechture == 'x86_64':
+            architechture = 'amd64'
+
+        try:
+            script = Script.get(
+                app=app,
+                distro_id=distro_id,
+                architechture=architechture,
+                for_version=self.app_request.version,
+                **args,
+            )
+
+        except ScriptNotFoundError:
+            print(f"\033[31mError: No matching script found for {distro_id}: {architechture}")
+            sys.exit()
+
+        return script
+
+    def get_or_create_installed(self):
+        """
+        Gets or creates the installed apps from the ~/.config/installies/installed.json.
+
+        Returns a dictionary containing the data.
+        """
+        cache_folder = Path(f'~/.config/installies').expanduser()
+        if not os.path.exists(cache_folder):
+            os.makedirs(cache_folder)
+
+        installed_apps_file = os.path.join(cache_folder, 'installed.json')
+        try:
+            f = open(installed_apps_file, 'x')
+            f.close()
+        except FileExistsError:
+            pass
+        
+        # if file cannot be loaded into json, it is marked as empty
+        empty = False
+        with open(installed_apps_file, 'r') as f:
+            content = f.read()
+            try:
+                json.loads(content)
+            except json.JSONDecodeError:
+                empty = True
+                
+        # if file is empty, write empty json data to it
+        if empty:
+            with open(installed_apps_file, 'w') as f:
+                f.write(json.dumps({'installed_apps': {}}))
+
+        data = {}
+        with open(installed_apps_file, 'r') as f:
+            data = json.loads(f.read())
+            if 'installed_apps' not in data.keys():
+                data['installed_apps'] = {}
+            
+        return data
+        
     def save_installed(self, data):
         """
         Saves the new data to the ~/.config/installies/installed.json.
 
         :param data: The data to save back to the file.
         """
+        installed_apps_file = Path(f'~/.config/installies/installed.json').expanduser()
+        with open(installed_apps_file, 'w') as f:
+            f.write(json.dumps(data))
     
-
-def do_action(args):
-    """Does a action like install, remove, or update"""
-    installed_file = get_or_create_installed_file()
-
-    installed = {}
-    with open(installed_file, 'r') as f:
-        installed = json.loads(f.read())
-
-    if 'installed_apps' not in installed.keys():
-        installed['installed_apps'] = {}
-    
-    distro_id = distro.id()
-    architechture = platform.machine()
-    if architechture == 'x86_64':
-        architechture = 'amd64'
-
-    app_request = AppRequest(args.app_name)
-
-    try:
-        app = App.get(name=app_request.name)
-    except AppNotFoundError:
-        print(f"\033[31mError: No matching app found for {app_request.name}")
-        sys.exit()
-    
-    try:
-        script = Script.get(
-            app,
-            args.action,
-            distro_id,
-            architechture,
-            app_request.version,
-        )
-
-        # if more than one scripts are returned, use the first one
-        if type(script) == list:
-            script = script[0]
-            
-    except ScriptNotFoundError:
-        print(f"\033[31mError: No matching script found for {distro_id}: {architechture}")
-        sys.exit()
-
-    version = app.current_version
-    if app_request.version is not None:
-        version = app_request.version
-    script.content = script.content.replace('<version>', version)
-        
-    script_file_path = script.create_file()
-
-    # warns user if cli is running in sudo mode
-    if os.getuid() == 0:
-        answer = input('\033[38;5;214mWarning: You are running the script in sudo mode, do you want to continue? [Y,n] ')
-        if answer != 'Y':
-            sys.exit()
-
-    if args.output_script:
-        print(':: Script Content Start')
-        print(script.content)
-        print(':: Script Content End')
-        print('')
-            
-    answer = input(':: Proceed with installation? [Y,n] ')
-    if answer != 'Y':
-        sys.exit()
-            
-    print(f'-- Executing {args.action} script. --')
-    subprocess.run([script_file_path], shell=True)
-
-    if args.action.lower() == 'install':
-        installed['installed_apps'][app_request.name] = version
-
-    if args.action.lower() == 'remove':
-        if app_request.app_name in installed['installed_apps'].keys():
-            del installed['installed_apps'][app_request.name]
-
-    with open(installed_file, 'w') as f:
-        f.write(json.dumps(installed))
-
 
 if __name__ == '__main__':
     main_parser = argparse.ArgumentParser(
@@ -356,7 +443,9 @@ if __name__ == '__main__':
 
     try:
         if hasattr(args, 'action'):
-            do_action(args)
+            app_request = AppRequest(args.app_name)
+            handler = ActionHandler(app_request)
+            handler.handle(args.action, args)
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt, Aborting.')
         sys.exit()
