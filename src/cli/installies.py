@@ -16,7 +16,59 @@ class AppNotFoundError(Exception):
 class ScriptNotFoundError(Exception):
     """Raised when an script is not found"""
 
+class Installed:
+    """An object to get and save the data from ~/.cache/installies/installed.json."""
 
+    def __init__(self, data: dict):
+        self.data = data
+    
+    @classmethod
+    def get_or_create(cls):
+        """
+        Gets the data from the installed.json file.
+
+        If the file doesn't exist, it is created.
+        """
+        cache_folder = Path(f'~/.config/installies').expanduser()
+        if not os.path.exists(cache_folder):
+            os.makedirs(cache_folder)
+
+        installed_apps_file = os.path.join(cache_folder, 'installed.json')
+        try:
+            f = open(installed_apps_file, 'x')
+            f.close()
+        except FileExistsError:
+            pass
+        
+        # if file cannot be loaded into json, it is marked as empty
+        empty = False
+        with open(installed_apps_file, 'r') as f:
+            content = f.read()
+            try:
+                json.loads(content)
+            except json.JSONDecodeError:
+                empty = True
+                
+        # if file is empty, write empty json data to it
+        if empty:
+            with open(installed_apps_file, 'w') as f:
+                f.write(json.dumps({'installed_apps': {}}))
+
+        data = {}
+        with open(installed_apps_file, 'r') as f:
+            data = json.loads(f.read())
+            if 'installed_apps' not in data.keys():
+                data['installed_apps'] = {}
+            
+        return cls(data)
+
+    def save(self):
+        """Saves the data."""
+        installed_apps_file = Path(f'~/.config/installies/installed.json').expanduser()
+        with open(installed_apps_file, 'w') as f:
+            f.write(json.dumps(self.data))
+
+    
 class AppRequest:
     """
     A class to store data the user has given about the app they want to get scripts of.
@@ -38,7 +90,7 @@ class App:
             self,
             name,
             display_name,
-            current_version,
+            current_version, 
             creation_date,
             last_modified,
             submitter,
@@ -158,6 +210,7 @@ class ActionHandler:
 
     def __init__(self, app_request):
         self.app_request = app_request
+        self.installed = Installed.get_or_create()
 
     def handle(self, action: str, args):
         """Handles an action."""
@@ -168,18 +221,19 @@ class ActionHandler:
             print('Unsupported action.')
             sys.exit()
 
-        return function(args)
-
-    def handle_install(self, args):
-        """Handles installing apps."""
-
         app = self.get_app()
 
         script = self.get_script(app, action='install')
 
-        installed = self.get_or_create_installed()
+        function(app, script, args)
 
-        if app.name in installed['installed_apps'].keys():
+        self.installed.save()
+        
+
+    def handle_install(self, app, script, args):
+        """Handles installing apps."""
+
+        if app.name in self.installed.data['installed_apps'].keys():
             answer = input(f':: {app.name} is already installed, run script anyway?  [Y,n] ')
             if answer != 'Y':
                 sys.exit()
@@ -190,20 +244,12 @@ class ActionHandler:
         if self.app_request.version is not None:
             version = self.app_request.version
         
-        installed['installed_apps'][self.app_request.name] = version 
-        
-        self.save_installed(installed)
+        self.installed.data['installed_apps'][self.app_request.name] = version 
 
-    def handle_remove(self, args):
+    def handle_remove(self, app, script, args):
         """Handles removing apps."""
-
-        app = self.get_app()
-
-        script = self.get_script(app, action='remove')
-
-        installed = self.get_or_create_installed()
-
-        if app.name not in installed['installed_apps'].keys():
+        
+        if app.name not in self.installed.data['installed_apps'].keys():
             answer = input(f':: {app.name} isn\'t installed, run script anyway?  [Y,n] ')
             if answer != 'Y':
                 sys.exit()
@@ -211,20 +257,12 @@ class ActionHandler:
         self.run_script('remove', script)
 
         if app_request.name in installed['installed_apps'].keys():
-            del installed['installed_apps'][app_request.name]
+            del self.installed.data['installed_apps'][app_request.name]
 
-        self.save_installed(installed)
-
-    def handle_compile(self, args):
+    def handle_compile(self, app, script, args):
         """Handles compiling apps."""
 
-        app = self.get_app()
-
-        script = self.get_script(app, action='compile')
-
-        installed = self.get_or_create_installed()
-
-        if app.name in installed['installed_apps'].keys():
+        if app.name in self.installed.data['installed_apps'].keys():
             answer = input(f':: {app.name} is already installed, run script anyway?  [Y,n] ')
             if answer != 'Y':
                 sys.exit()
@@ -235,20 +273,12 @@ class ActionHandler:
         if self.app_request.version is not None:
             version = self.app_request.version
         
-        installed['installed_apps'][self.app_request.name] = version
+        self.installed.data['installed_apps'][self.app_request.name] = version
 
-        self.save_installed(installed)
-
-    def handle_update(self, args):
+    def handle_update(self, app, script,args):
         """Handles updating apps."""
 
-        app = self.get_app()
-
-        script = self.get_script(app, action='update')
-
-        installed = self.get_or_create_installed()
-
-        if app.name not in installed['installed_apps'].keys():
+        if app.name not in self.installed.data['installed_apps'].keys():
             answer = input(f':: {app.name} isn\'t installed, run script anyway?  [Y,n] ')
             if answer != 'Y':
                 sys.exit()
@@ -259,9 +289,7 @@ class ActionHandler:
         if self.app_request.version is not None:
             version = self.app_request.version
         
-        installed['installed_apps'][self.app_request.name] = version
-
-        self.save_installed(installed)
+        self.installed.data['installed_apps'][self.app_request.name] = version
 
     def run_script(self, action: str, script: Script):
         """
@@ -335,55 +363,6 @@ class ActionHandler:
             sys.exit()
 
         return script
-
-    def get_or_create_installed(self):
-        """
-        Gets or creates the installed apps from the ~/.config/installies/installed.json.
-
-        Returns a dictionary containing the data.
-        """
-        cache_folder = Path(f'~/.config/installies').expanduser()
-        if not os.path.exists(cache_folder):
-            os.makedirs(cache_folder)
-
-        installed_apps_file = os.path.join(cache_folder, 'installed.json')
-        try:
-            f = open(installed_apps_file, 'x')
-            f.close()
-        except FileExistsError:
-            pass
-        
-        # if file cannot be loaded into json, it is marked as empty
-        empty = False
-        with open(installed_apps_file, 'r') as f:
-            content = f.read()
-            try:
-                json.loads(content)
-            except json.JSONDecodeError:
-                empty = True
-                
-        # if file is empty, write empty json data to it
-        if empty:
-            with open(installed_apps_file, 'w') as f:
-                f.write(json.dumps({'installed_apps': {}}))
-
-        data = {}
-        with open(installed_apps_file, 'r') as f:
-            data = json.loads(f.read())
-            if 'installed_apps' not in data.keys():
-                data['installed_apps'] = {}
-            
-        return data
-        
-    def save_installed(self, data):
-        """
-        Saves the new data to the ~/.config/installies/installed.json.
-
-        :param data: The data to save back to the file.
-        """
-        installed_apps_file = Path(f'~/.config/installies/installed.json').expanduser()
-        with open(installed_apps_file, 'w') as f:
-            f.write(json.dumps(data))
     
 
 if __name__ == '__main__':
