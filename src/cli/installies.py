@@ -120,7 +120,8 @@ class App:
         apps = data['apps']
 
         if len(apps) == 0:
-            raise AppNotFoundError()
+             print(f"\033[31mError: No matching app found for {self.app_request.name}")
+             sys.exit()
 
         app = apps[0]
         
@@ -170,8 +171,9 @@ class Script:
         scripts = data['scripts']
 
         if len(scripts) == 0:
-            raise ScriptNotFoundError()
-
+            print(f"\033[31mError: No matching script found for {distro_id}: {architechture}")
+            sys.exit()
+            
         script_list = []
         for script in scripts:
             script_list.append(
@@ -205,11 +207,15 @@ class ActionHandler:
     """
     Handles actions like install, remove, compile or update.
 
-    :param app_request: The AppRequest.
+    :param app_request: The app request.
+    :param app: The app to do the action for.
+    :param script: The script to use.
     """
 
-    def __init__(self, app_request):
+    def __init__(self, app_request, app, script):
         self.app_request = app_request
+        self.app = app
+        self.script = script
         self.installed = Installed.get_or_create()
 
     def handle(self, action: str, args):
@@ -221,89 +227,85 @@ class ActionHandler:
             print('Unsupported action.')
             sys.exit()
 
-        app = self.get_app()
-
-        script = self.get_script(app, action='install')
-
-        function(app, script, args)
+        function(args)
 
         self.installed.save()
         
 
-    def handle_install(self, app, script, args):
+    def handle_install(self, args):
         """Handles installing apps."""
 
-        if app.name in self.installed.data['installed_apps'].keys():
-            answer = input(f':: {app.name} is already installed, run script anyway?  [Y,n] ')
+        if self.app.name in self.installed.data['installed_apps'].keys():
+            answer = input(f':: {self.app.name} is already installed, run script anyway?  [Y,n] ')
             if answer != 'Y':
                 sys.exit()
 
-        self.run_script('install', script)
+        self.run_script('install')
 
-        version = script.app.current_version
+        version = self.script.app.current_version
         if self.app_request.version is not None:
             version = self.app_request.version
         
-        self.installed.data['installed_apps'][self.app_request.name] = version 
+        self.installed.data['installed_apps'][self.app.name] = version 
 
-    def handle_remove(self, app, script, args):
+    def handle_remove(self, args):
         """Handles removing apps."""
         
-        if app.name not in self.installed.data['installed_apps'].keys():
-            answer = input(f':: {app.name} isn\'t installed, run script anyway?  [Y,n] ')
+        if self.app.name not in self.installed.data['installed_apps'].keys():
+            answer = input(f':: {self.app.name} isn\'t installed, run script anyway?  [Y,n] ')
             if answer != 'Y':
                 sys.exit()
         
-        self.run_script('remove', script)
+        self.run_script('remove')
 
-        if app_request.name in installed['installed_apps'].keys():
-            del self.installed.data['installed_apps'][app_request.name]
+        if self.app_request.name in installed['installed_apps'].keys():
+            del self.installed.data['installed_apps'][self.app_request.name]
 
-    def handle_compile(self, app, script, args):
+    def handle_compile(self, args):
         """Handles compiling apps."""
 
-        if app.name in self.installed.data['installed_apps'].keys():
-            answer = input(f':: {app.name} is already installed, run script anyway?  [Y,n] ')
+        if self.app.name in self.installed.data['installed_apps'].keys():
+            answer = input(f':: {self.app.name} is already installed, run script anyway?  [Y,n] ')
             if answer != 'Y':
                 sys.exit()
 
-        self.run_script('compile', script)
+        self.run_script('compile')
 
-        version = script.app.current_version
+        version = self.script.app.current_version
         if self.app_request.version is not None:
             version = self.app_request.version
         
         self.installed.data['installed_apps'][self.app_request.name] = version
 
-    def handle_update(self, app, script,args):
+    def handle_update(self, args):
         """Handles updating apps."""
 
-        if app.name not in self.installed.data['installed_apps'].keys():
-            answer = input(f':: {app.name} isn\'t installed, run script anyway?  [Y,n] ')
+        if self.app.name not in self.installed.data['installed_apps'].keys():
+            answer = input(f':: {self.app.name} isn\'t installed, run script anyway?  [Y,n] ')
             if answer != 'Y':
                 sys.exit()
 
-        self.run_script('update', script)
+        self.run_script('update')
 
-        version = script.app.current_version
+        version = self.script.app.current_version
         if self.app_request.version is not None:
             version = self.app_request.version
         
         self.installed.data['installed_apps'][self.app_request.name] = version
 
-    def run_script(self, action: str, script: Script):
+    def run_script(self, action: str):
         """
         Runs a script.
 
         :param action: The action the script is doing.
         :param script: The script to run.
         """
-        version = script.app.current_version
+        version = self.script.app.current_version
         if self.app_request.version is not None:
             version = self.app_request.version
         script.content = script.content.replace('<version>', version)
         
-        script_file_path = script.create_file()
+        script_file_path = self.script.create_file()
         
         # warns user if cli is running in sudo mode
         if os.getuid() == 0:
@@ -315,9 +317,8 @@ class ActionHandler:
 
         if args.output_script:
             print(':: Script Content Start')
-            print(script.content)
-            print(':: Script Content End')
-            print('')
+            print(self.script.content)
+            print(':: Script Content End\n')
             
         answer = input(':: Proceed? [Y,n] ')
         if answer != 'Y':
@@ -325,47 +326,9 @@ class ActionHandler:
             
         print(f'-- Executing {action} script. --')
         subprocess.run([script_file_path], shell=True)
-        
-    def get_app(self):
-        """Gets an App object."""
-        try:
-            app = App.get(name=self.app_request.name)
-        except AppNotFoundError:
-            print(f"\033[31mError: No matching app found for {self.app_request.name}")
-            sys.exit()
 
-        return app
-
-    def get_script(self, app, **args):
-        """
-        Gets a Script object.
-
-        :param app: The app to get the script of.
-        :param args: The extra args for Script.get.
-        """
-
-        distro_id = distro.id()
-        architechture = platform.machine()
-        if architechture == 'x86_64':
-            architechture = 'amd64'
-
-        try:
-            script = Script.get(
-                app=app,
-                distro_id=distro_id,
-                architechture=architechture,
-                for_version=self.app_request.version,
-                **args,
-            )
-
-        except ScriptNotFoundError:
-            print(f"\033[31mError: No matching script found for {distro_id}: {architechture}")
-            sys.exit()
-
-        return script
-    
-
-if __name__ == '__main__':
+def create_parser():
+    """Creates the parser."""
     main_parser = argparse.ArgumentParser(
         prog='installies',
     )
@@ -414,17 +377,40 @@ if __name__ == '__main__':
         add_help=False
     )
     compile_parser.set_defaults(action='compile')
-    
-    args = main_parser.parse_args()
+
+    return main_parser
+        
+if __name__ == '__main__':
+    parser = create_parser()
+    args = parser.parse_args()
 
     if args.version:
         print(f'Installies CLI v{__version__}')
 
     try:
-        if hasattr(args, 'action'):
-            app_request = AppRequest(args.app_name)
-            handler = ActionHandler(app_request)
-            handler.handle(args.action, args)
+        if not hasattr(args, 'action'):
+            sys.exit()
+            
+        app_request = AppRequest(args.app_name)
+
+        app = App.get(name=app_request.name)
+
+        distro_id = distro.id()
+        architechture = platform.machine()
+        if architechture == 'x86_64':
+            architechture = 'amd64'
+
+            
+        script = Script.get(
+            app=app,
+            distro_id=distro_id,
+            architechture=architechture,
+            for_version=app_request.version,
+            action=args.action,
+        )
+        
+        handler = ActionHandler(app_request, app, script)
+        handler.handle(args.action, args)
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt, Aborting.')
         sys.exit()
