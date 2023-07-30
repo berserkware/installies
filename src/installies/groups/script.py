@@ -11,6 +11,7 @@ from installies.groups.modifiers import (
     SearchInAttributes,
     BySupportedDistro,
     Paginate,
+    BySupportedAction,
 )
 from datetime import datetime
 
@@ -23,17 +24,11 @@ class ScriptGroup(Group):
         SortBy(
             model = Script,
             allowed_attributes = [
-                'action',
                 'version',
                 'last_modified',
             ],
             default_attribute = 'last_modified',
             default_order = 'asc',
-        ),
-        ByColumn(
-            model = Script,
-            kwarg_name = 'action',
-            attribute = 'action',
         ),
         ByColumn(
             model = Script,
@@ -47,5 +42,6 @@ class ScriptGroup(Group):
             converter = datetime.fromisoformat,
         ),
         BySupportedDistro(),
+        BySupportedAction(),
     ]
     model = Script

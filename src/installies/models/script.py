@@ -72,7 +72,7 @@ class ScriptData(BaseModel):
 
 
     @classmethod
-    def create(cls, directory: str, content: str, distros: dict):
+    def create(cls, directory: str, content: str, distros: dict, actions: list[str]):
         """Creates the script data."""
 
         filepath = cls.create_script_file(directory, content)
@@ -80,16 +80,40 @@ class ScriptData(BaseModel):
         supported_distros = SupportedDistrosJunction.create()
         supported_distros.create_from_list(distros)
         
-        return super().create(
+        script_data =  super().create(
             filepath=filepath,
             supported_distros=supported_distros,
         )
+
+        actions = Action.create_from_list(script_data, actions)
+
+        return script_data
+
+    def get_supported_actions(self):
+        """Get the actions the script supports in a list."""
+        return [action.name for action in self.actions]
+
+
+class Action(BaseModel):
+    """A model for storing an action that a script supports."""
+
+    name = CharField(255)
+    script_data = ForeignKeyField(ScriptData, backref='actions')
+
+    @classmethod
+    def create_from_list(cls, script_data: ScriptData, actions: list[str]):
+        """Creates multiple action objects from a list."""
+        action_objects = []
+        
+        for action in actions:
+            action_objects.append(Action.create(name=action, script_data=script_data))
+
+        return action_objects
     
     
 class Script(BaseModel):
     """A model for storing data about scripts."""
 
-    action = CharField(255)
     last_modified = DateTimeField(default=datetime.now)
     version = CharField(64, null=True)
     script_data = ForeignKeyField(ScriptData)
@@ -119,10 +143,10 @@ class Script(BaseModel):
     @classmethod
     def create(
             cls,
-            action: str,
             supported_distros: list,
             content: str,
             app: App,
+            actions: list[str],
             version: str=None,
     ):
         """
@@ -136,10 +160,9 @@ class Script(BaseModel):
         """
         app_dir = app.create_or_get_folder()
         
-        script_data = ScriptData.create(app_dir, content, supported_distros)
+        script_data = ScriptData.create(app_dir, content, supported_distros, actions)
         
         created_script = super().create(
-            action=action,
             version=version,
             script_data=script_data,
             app=app,
@@ -150,21 +173,22 @@ class Script(BaseModel):
 
         return created_script
 
-    def edit(self, action: str, supported_distros: list, content: str, version: str=None):
+    def edit(self, supported_distros: list, content: str, actions, version: str=None):
         """
         Edits the script.
 
-        :param action: The new action for the script.
         :param supported_distros: The new supported distros.
         :param content: The new content.
         """
 
-        self.action = action
         self.last_modified = datetime.today()
         self.version = version
 
         self.script_data.supported_distros.delete_all_distros()
         self.script_data.supported_distros.create_from_list(supported_distros)
+
+        Action.delete().where(Action.script_data == self.script_data).execute()
+        Action.create_from_list(self.script_data, actions)
         
         with self.script_data.open_content('w') as f:
             f.write(content)
@@ -179,16 +203,17 @@ class Script(BaseModel):
         
         super().delete_instance()
 
+        Action.delete().where(Action.script_data == self.script_data).execute()
+
         self.script_data.delete_instance()
 
         self.script_data.supported_distros.delete_instance()
-
 
     def serialize(self):
         """Turns the Script into a json serializable dict."""
         data = {}
 
-        data['action'] = self.action
+        data['actions'] = [action.name for action in self.script_data.actions]
         data['supported_distros'] = self.script_data.supported_distros.get_as_dict()
         data['last_modified'] = str(self.last_modified)
         data['for_version'] = self.version

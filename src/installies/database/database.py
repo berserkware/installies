@@ -1,6 +1,6 @@
 from installies.config import database
 from installies.models.app import App
-from installies.models.script import Script, ScriptData
+from installies.models.script import Script, ScriptData, Action
 from installies.models.supported_distros import SupportedDistrosJunction, Distro, SupportedDistro, Architecture, AlternativeArchitectureName
 from installies.models.user import User, Session
 from installies.models.report import AppReport
@@ -13,6 +13,7 @@ tables =  [
     App,
     ScriptData,
     Script,
+    Action,
     SupportedDistrosJunction,
     Distro,
     SupportedDistro,

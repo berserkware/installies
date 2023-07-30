@@ -1,6 +1,6 @@
 from peewee import Query
 from installies.models.app import App
-from installies.models.script import Script, ScriptData
+from installies.models.script import Script, ScriptData, Action
 from installies.models.supported_distros import Distro, SupportedDistro, SupportedDistrosJunction
 from functools import reduce
 
@@ -284,3 +284,27 @@ class Paginate(Modifier):
             per_page = max_per_page
 
         return query.paginate(page, per_page)
+
+
+class BySupportedAction(Modifier):
+    """"
+    A modifier class for getting by supported actions.
+
+    This only works on Script objects. It uses the 'actions' param in the url.
+    """
+
+    def modify(self, query: Query, **kwargs):
+        if 'actions' not in kwargs.keys():
+            return query
+        
+        actions = [action.strip() for action in kwargs['actions'].split(',')]
+
+        query = query.join(ScriptData)
+        query = query.join(Action)
+        
+        for action in actions:
+            query = query.where(
+                Action.name.contains(action)
+            )
+
+        return query

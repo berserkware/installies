@@ -28,13 +28,8 @@
 	</select>
       </div>
       <div>
-	<label for="action">Action:</label>
-	<select name="action" id="action">
-	  <option value="">Any</option>
-	  {% for action in g.supported_script_actions %}
-	  <option value="{{ action }}" {% if request.args.get('action') == action %}selected=""{% endif %}>{{ action.capitalize() }}</option>
-	  {% endfor %}
-	</select>
+	<label for="actions">Supported Actions:</label>
+	<input type="text" name="actions" id="actions" value="{{ request.args.get('actions', '') }}">
       </div>
       <div>
 	<label for="page">Page:</label>
@@ -61,7 +56,7 @@
         {% if app.can_user_edit(g.user) %}
         <th>Options</th>
         {% endif %}
-        <th>Action</th>
+        <th>Actions</th>
         <th>Supports</th>
         <th>For Version</th>
         <th>Last Modified</th>
@@ -71,7 +66,7 @@
       {% for script in scripts %}
       <tr class="underline">
         <td>[<a href="{{ url_for('app_manager.script_view', app_name=app.name, script_id=script.id) }}">View</a>] {% if app.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>]{% endif %}</td>
-        <td>{{ script.action }}</td>
+        <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
         <td>
 	  <table class="initial-font-size">
 	    {% set distros = script.script_data.supported_distros.get_as_dict() %}

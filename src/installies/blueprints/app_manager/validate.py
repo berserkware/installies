@@ -101,10 +101,12 @@ class ScriptActionValidator(Validator):
 
     checkers = [
         EmptyChecker(),
-        NotInContainerChecker(
-            container=supported_script_actions,
-            container_name='the supported script actions'
+        AllowedCharactersChecker(
+            allow_spaces=False,
+            allow_uppercase=False,
+            allow_extra=['-']
         ),
+        LengthChecker(max_len=32),
     ]
 
     data_name = 'Script action'

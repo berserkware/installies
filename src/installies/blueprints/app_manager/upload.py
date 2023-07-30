@@ -29,5 +29,3 @@ def get_distros_from_string(distro_string: str):
         distros[distro_name] = architectures
 
     return distros
-            
-        

@@ -91,7 +91,12 @@ class ModifyScriptForm(Form):
     """
 
     inputs = [
-        FormInput('script-action', ScriptActionValidator, default=''),
+        FormInput(
+            'script-actions',
+            ScriptActionValidator,
+            lambda action_string: [x.strip() for x in action_string.split(',')],
+            default='',
+        ),
         FormInput(
             'script-supported-distros',
             ScriptDistroDictionaryValidator,
@@ -109,11 +114,11 @@ class AddScriptForm(ModifyScriptForm):
 
     def save(self, app: App):
         return Script.create(
-            action=self.data['script-action'],
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
             app=app,
-            version=self.data['for-version']
+            version=self.data['for-version'],
+            actions=self.data['script-actions'],
         )
 
 
@@ -122,7 +127,7 @@ class EditScriptForm(ModifyScriptForm):
 
     def save(self, script: Script):
         return script.edit(
-            action=self.data['script-action'],
+            actions=self.data['script-actions'],
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
             version=self.data['for-version'],
