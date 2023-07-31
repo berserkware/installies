@@ -5,7 +5,6 @@ from installies.blueprints.app_manager.validate import (
     AppDisplayNameValidator,
     AppDescriptionValidator,
     AppCurrentVersionValidator,
-    AppVisibilityValidator,
     ScriptActionValidator,
     ScriptDistroValidator,
     ScriptContentValidator,
@@ -65,24 +64,6 @@ class EditAppForm(Form):
             description=self.data['app-desc'],
             current_version=self.data['app-current-version'],
         )
-    
-
-
-class ChangeAppVisibilityForm(Form):
-    """
-    A form for changing the visibility of apps.
-    """
-
-    inputs = [
-        FormInput('visibility', AppVisibilityValidator)
-    ]
-    model = App
-
-    def save(self, app: App):
-        """Changes the app visibility."""
-        app.visibility = self.data['visibility']
-        app.save()
-        return app
 
 
 class ModifyScriptForm(Form):

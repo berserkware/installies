@@ -4,7 +4,6 @@ from installies.blueprints.app_manager.views import (
     AppDetailView,
     AppDeleteView,
     AppEditView,
-    AppChangeVisibilityView,
     AddMaintainerView,
     RemoveMaintainerView,
     ScriptListView,
@@ -28,7 +27,6 @@ app_manager.add_url_rule('/create-app', 'create_app', CreateAppFormView.as_view(
 app_manager.add_url_rule('/apps/<app_name>', 'app_view', AppDetailView.as_view())
 app_manager.add_url_rule('/apps/<app_name>/delete', 'app_delete', AppDeleteView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/edit', 'app_edit', AppEditView.as_view(), methods=['GET', 'POST'])
-app_manager.add_url_rule('/apps/<app_name>/change-visibility', 'change_visibility', AppChangeVisibilityView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/add-mantainer', 'add_maintainer', AddMaintainerView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/maintainer/<username>/remove', 'remove_maintainer', RemoveMaintainerView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/report', 'report_app', ReportAppView.as_view(), methods=['GET', 'POST'])

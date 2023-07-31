@@ -21,7 +21,6 @@ from installies.lib.validate import ValidationError
 from installies.blueprints.app_manager.validate import (
     AppNameValidator,
     AppDescriptionValidator,
-    AppVisibilityValidator,
     ScriptActionValidator,
     ScriptDistroValidator,
     ScriptContentValidator
@@ -41,7 +40,6 @@ from installies.blueprints.auth.decorators import authenticated_required
 from installies.blueprints.app_manager.form import (
     CreateAppForm,
     EditAppForm,
-    ChangeAppVisibilityForm,
     AddScriptForm,
     EditScriptForm,
     ReportAppForm,
@@ -68,8 +66,7 @@ class AppMixin:
 
     It gets the app slug from the app_slug kwarg.
     """
-
-    public_only = False
+    
     maintainer_only = False
     
     def on_request(self, **kwargs):
@@ -84,9 +81,6 @@ class AppMixin:
             abort(404)
 
         app = app.get()
-        
-        if self.public_only and app.visibility != 'public' and app.can_user_edit(g.user) is False:
-            abort(404)
 
         if app.can_user_edit(g.user) is False and self.maintainer_only:
             flash(
@@ -123,14 +117,12 @@ class AppDetailView(AppMixin, TemplateView):
     """A view to get an app."""
 
     template_path = 'app/info.html'
-    public_only = True
 
 
 class AppDeleteView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     """A view to delete apps."""
 
     template_path = 'app/delete.html'
-    public_only = True
     maintainer_only = True
 
     def post(self, **kwargs):
@@ -145,7 +137,6 @@ class AppEditView(AuthenticationRequiredMixin, AppMixin, FormView):
 
     template_path = 'app/edit.html'
     form_class = EditAppForm
-    public_only = True
     maintainer_only = True
 
     def form_valid(self, form, **kwargs):
@@ -155,32 +146,10 @@ class AppEditView(AuthenticationRequiredMixin, AppMixin, FormView):
         return self.get_app_view_redirect(**kwargs)
 
 
-class AppChangeVisibilityView(AuthenticationRequiredMixin, AppMixin, FormView):
-    """A view to change visibility."""
-
-    template_path = 'app/change_visibility.html'
-    public_only = True
-    maintainer_only = True
-    form_class = ChangeAppVisibilityForm
-
-    def form_valid(self, form, **kwargs):
-        app = kwargs['app']
-        # if app has no scripts, dont allow to make public
-        if form.data['visibility'] != 'private' and len(app.scripts) == 0:
-            flash('App must have at least one script to be made public', 'error')
-            return self.get_app_view_redirect(**kwargs)
-
-        form.save(app=app)
-
-        flash(f'App visibility successfully changed to {form.data["visibility"]}.', 'success')
-        return self.get_app_view_redirect(**kwargs)
-
-
 class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     """A view for adding maintainers."""
 
     template_path = 'app/add_maintainer.html'
-    public_only = True
     maintainer_only = True
 
     def post(self, **kwargs):
@@ -209,7 +178,6 @@ class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     """A view for removing maintainer"""
 
     template_path = 'app/remove_maintainer.html'
-    public_only = True
     maintainer_only = True
 
     def on_request(self, **kwargs):
@@ -244,7 +212,6 @@ class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""
 
     template_path = 'script/scripts.html'
-    public_only = True
     group_name = 'scripts'
     paginator = Paginate(
         default_per_page = 10,
@@ -259,7 +226,6 @@ class ScriptDetailView(AppMixin, DetailView):
     """A view for getting the details of a script."""
 
     template_path = 'script/script_info.html'
-    public_only = True
     model_name = 'script'
 
     def get_object(self, **kwargs):
@@ -270,7 +236,6 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for adding apps."""
 
     template_path = 'script/add_script.html'
-    public_only = True
     maintainer_only = True
     form_class = AddScriptForm
 
@@ -290,7 +255,6 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for editing scripts."""
 
     template_path = 'script/edit_script.html'
-    public_only = True
     maintainer_only = True
     form_class = EditScriptForm
 
@@ -313,7 +277,6 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     """A view for deleting scripts."""
 
     template_path = 'script/delete_script.html'
-    public_only = True
     maintainer_only = True
 
     def on_request(self, **kwargs):
@@ -331,7 +294,6 @@ class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for reporting apps."""
 
     template_path = 'app/report_app.html'
-    public_only = True
     form_class = ReportAppForm
 
     def form_valid(self, form, **kwargs):
@@ -345,7 +307,6 @@ class CreateThreadView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for creating discussion threads."""
 
     template_path = 'discussion/create_thread.html'
-    public_only = True
     form_class = CreateThreadForm
 
     def form_valid(self, form, **kwargs):
@@ -379,7 +340,6 @@ class DeleteThreadView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, FormV
     """A view for deleting threads."""
 
     template_path = 'discussion/delete_thread.html'
-    public_only = True
 
     def post(self, **kwargs):
         if kwargs['thread'].creator != g.user:
@@ -406,7 +366,6 @@ class DeleteThreadView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, FormV
 class CreateCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, FormView):
     """A view for creating comments"""
 
-    public_only = True
     form_class = CreateCommentForm
 
     def form_invaid(self, form, **kwargs):
@@ -456,7 +415,6 @@ class EditCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Commen
     """A view for editing comments."""
 
     template_path = 'discussion/edit_comment.html'
-    public_only = True
     form_class = EditCommentForm
     
     def form_valid(self, form, **kwargs):
@@ -477,7 +435,6 @@ class DeleteCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Comm
     """A view for deleting comments."""
 
     template_path = 'discussion/delete_comment.html'
-    public_only = True
 
     def post(self, **kwargs):
         kwargs['comment'].delete_instance()
@@ -497,7 +454,6 @@ class CommentListView(AppMixin, ThreadMixin, ListView):
     """A view for listing comments."""
 
     template_path = 'discussion/comments.html'
-    public_only = True
     group_name = 'comments'
     paginator = Paginate(
         default_per_page = 10,
@@ -512,7 +468,6 @@ class ThreadListView(AppMixin, ListView):
     """A view for listing threads."""
 
     template_path = 'discussion/threads.html'
-    public_only = True
     group_name = 'threads'
     paginator = Paginate(
         default_per_page = 10,

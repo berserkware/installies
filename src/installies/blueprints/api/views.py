@@ -13,7 +13,7 @@ api = Blueprint('api', __name__)
 
 @api.route('/api/apps')
 def apps():
-    apps = AppGroup().get(**request.args).where(App.visibility == 'public')
+    apps = AppGroup().get(**request.args)
 
     data = {
         'apps': []

@@ -46,9 +46,7 @@ app_library.add_url_rule('/', 'index', view_func=IndexView.as_view())
     
 @app_library.route('/apps')
 def apps():
-    apps = AppGroup.get(**request.args).where(
-        ((Maintainer.user == g.user) & (App.visibility != 'public')) | (App.visibility == 'public')
-    )
+    apps = AppGroup.get(**request.args)
 
     paginator = Paginate(
         default_per_page = 10,

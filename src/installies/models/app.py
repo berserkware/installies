@@ -35,7 +35,6 @@ class App(BaseModel):
     last_modified = DateTimeField(default=datetime.now)
     submitter = ForeignKeyField(User, backref='apps')
     maintainers = ForeignKeyField(Maintainers)
-    visibility = CharField(255, default='private')
 
     @classmethod
     def get_by_name(cls, name: str):

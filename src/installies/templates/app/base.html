@@ -27,7 +27,6 @@
       <li><a href="{{ url_for("app_manager.app_delete", app_name=app.name) }}">Delete</a></li>
       <li><a href="{{ url_for("app_manager.add_script", app_name=app.name) }}">Add Script</a></li>
       <li><a href="{{ url_for("app_manager.add_maintainer", app_name=app.name) }}">Add Maintainer</a></li>
-      <li><a href="{{ url_for("app_manager.change_visibility", app_name=app.name) }}">Change Visibility</a></li>
       {% endif %}
       <li><a href="{{ url_for("app_manager.create_thread", app_name=app.name) }}">Create Thread</a></li>
       <li><a href="{{ url_for("app_manager.report_app", app_name=app.name) }}" class="red">Report</a></li>

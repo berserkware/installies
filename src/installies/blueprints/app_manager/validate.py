@@ -81,20 +81,6 @@ class AppCurrentVersionValidator(VersionValidator):
 
     data_name = "App current version"
 
-
-class AppVisibilityValidator(Validator):
-    """A class for validating visibility options submitted by the user."""
-
-    checkers = [
-        EmptyChecker(),
-        NotInContainerChecker(
-            container=supported_visibility_options,
-            container_name='the supported visibility options'
-        ),
-    ]
-
-    data_name = 'Visibility option'
-
     
 class ScriptActionValidator(Validator):
     """A class for validating script actions submitted by the user."""
