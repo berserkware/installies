@@ -38,7 +38,6 @@ body {
     margin-top: 0;
     margin-left: 0;
     margin-right: 0;
-    max-width: 1400px;
     margin: auto;
     background-color: var(--dark-grey);
     color: white;
@@ -207,7 +206,7 @@ th {
 
 .container {
     margin: auto;
-    margin-bottom: 10px;
+    margin-top: 10px;
     text-align: left;
     padding: 10px;
 }

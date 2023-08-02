@@ -26,6 +26,7 @@ class ScriptGroup(Group):
             allowed_attributes = [
                 'version',
                 'last_modified',
+                'creation_date',
             ],
             default_attribute = 'last_modified',
             default_order = 'asc',
@@ -38,6 +39,12 @@ class ScriptGroup(Group):
         ByColumn(
             model = Script,
             kwarg_name = 'last_modified',
+            attribute = 'last_modified',
+            converter = datetime.fromisoformat,
+        ),
+        ByColumn(
+            model = Script,
+            kwarg_name = 'creation_date',
             attribute = 'last_modified',
             converter = datetime.fromisoformat,
         ),

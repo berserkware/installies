@@ -208,6 +208,37 @@ class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
         return self.get_app_view_redirect(**kwargs)
 
 
+class ScriptMixin:
+    """
+    A mixin to get scripts by url params.
+
+    Its gets the script's id from the script_id kwarg.
+    """
+
+    script_maintainer_only = False
+
+    def on_request(self, **kwargs):
+        script_id = kwargs['script_id']
+
+        script = Script.select().where(Script.id == script_id)
+
+        if script.exists() is False:
+            abort(404)
+
+        script = script.get()
+
+        if script.can_user_edit(g.user) is False and self.script_maintainer_only:
+            flash(
+                'You do not have permission to do that.',
+                'error'
+            )
+            return redirect(url_for('app_manager.app_scripts', app_name=app.name), 303)
+
+        kwargs['script'] = script
+
+        return super().on_request(**kwargs)
+    
+
 class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""
 
@@ -222,7 +253,7 @@ class ScriptListView(AppMixin, ListView):
         return ScriptGroup.get(**request.args).where(Script.app == kwargs['app'])
 
 
-class ScriptDetailView(AppMixin, DetailView):
+class ScriptDetailView(AppMixin, ScriptMixin, DetailView):
     """A view for getting the details of a script."""
 
     template_path = 'script/script_info.html'
@@ -236,7 +267,6 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for adding apps."""
 
     template_path = 'script/add_script.html'
-    maintainer_only = True
     form_class = AddScriptForm
 
     def get_context_data(self, **kwargs):
@@ -245,17 +275,18 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
 
     def form_valid(self, form, **kwargs):
         
-        form.save(app=kwargs['app'])
+        script = form.save(app=kwargs['app'])
         
         flash('Script successfully created.', 'success')
+        return redirect(url_for('script_view', app_name=app.name, script_id=script.id), 303)
         return self.get_app_view_redirect(**kwargs)
 
 
-class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
+class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):
     """A view for editing scripts."""
 
     template_path = 'script/edit_script.html'
-    maintainer_only = True
+    script_maintainer_only = True
     form_class = EditScriptForm
 
     def on_request(self, **kwargs):
@@ -273,12 +304,12 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         return self.get_app_view_redirect(**kwargs)
 
 
-class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
+class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, TemplateView):
     """A view for deleting scripts."""
 
     template_path = 'script/delete_script.html'
-    maintainer_only = True
-
+    script_maintainer_only = True
+    
     def on_request(self, **kwargs):
         kwargs['script'] = Script.get_by_id(kwargs['script_id'])
         return super().on_request(**kwargs)
@@ -290,7 +321,7 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, TemplateView):
         return self.get_app_view_redirect(**kwargs)
 
 
-class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
+class ReportAppView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):
     """A view for reporting apps."""
 
     template_path = 'app/report_app.html'

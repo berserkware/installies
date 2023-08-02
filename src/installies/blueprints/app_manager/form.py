@@ -100,6 +100,7 @@ class AddScriptForm(ModifyScriptForm):
             app=app,
             version=self.data['for-version'],
             actions=self.data['script-actions'],
+            submitter=g.user,
         )
 
 
@@ -112,6 +113,7 @@ class EditScriptForm(ModifyScriptForm):
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
             version=self.data['for-version'],
+            submitter=g.user,
         )
 
 

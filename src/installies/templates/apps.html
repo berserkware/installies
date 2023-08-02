@@ -3,7 +3,7 @@
 {% block title %}Apps{% endblock %}
 
 {% block body %}
-<div class="container black">
+<div class="container black" style="max-width: 1200px">
   <h2>Refine Apps</h2>
   
   <form action="{{ url_for('app_library.apps') }}" method="get">
@@ -58,7 +58,7 @@
   </form>
 </div>
 
-<div class="container black">
+<div class="container black" style="max-width: 1200px">
   <p class="no-margin">{{ total_app_count }} app{% if total_app_count > 1 %}s{% endif%} found. Page {{ request.args.get('page', '1') }} of {{ page_count }}.</p>
   {% if apps|length == 0 %}
   <p class="no-margin">No Apps Found</p>

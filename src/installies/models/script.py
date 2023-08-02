@@ -10,6 +10,7 @@ from peewee import (
 from installies.models.base import BaseModel
 from installies.models.user import User
 from installies.models.app import App
+from installies.models.maintainer import Maintainers
 from installies.models.supported_distros import SupportedDistrosJunction
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
@@ -114,9 +115,12 @@ class Action(BaseModel):
 class Script(BaseModel):
     """A model for storing data about scripts."""
 
+    creation_date = DateTimeField(default=datetime.now)
     last_modified = DateTimeField(default=datetime.now)
     version = CharField(64, null=True)
     script_data = ForeignKeyField(ScriptData)
+    submitter = ForeignKeyField(User, backref='scripts')
+    maintainers = ForeignKeyField(Maintainers)
     app = ForeignKeyField(App, backref='scripts')
     
     @classmethod
@@ -147,6 +151,7 @@ class Script(BaseModel):
             content: str,
             app: App,
             actions: list[str],
+            submitter: User,
             version: str=None,
     ):
         """
@@ -156,17 +161,24 @@ class Script(BaseModel):
         :param supported_distros: A list of distros that the script supports.
         :param content: The content of the script.
         :param version: The version of the app the script is for.
+        :param submitter: The submitter.
         :param app: The app the script is for.
         """
         app_dir = app.create_or_get_folder()
         
         script_data = ScriptData.create(app_dir, content, supported_distros, actions)
+
+        maintainers = Maintainers.create()
         
         created_script = super().create(
             version=version,
             script_data=script_data,
+            maintainers=maintainers,
+            submitter=submitter,
             app=app,
         )
+
+        maintainers.add_maintainer(submitter)
 
         app.last_modified = datetime.today()
         app.save()
@@ -219,5 +231,21 @@ class Script(BaseModel):
         data['for_version'] = self.version
         with self.script_data.open_content() as c:
             data['content'] = c.read()
+        data['submitter'] = self.submitter.username
 
         return data
+
+    def can_user_edit(self, user: User):
+        """
+        Check if the given user is allowed to edit the script.
+        """
+        if user is None:
+            return False
+
+        if user.admin is True:
+            return True
+
+        if self.maintainers.is_maintainer(user):
+            return True
+
+        return False
