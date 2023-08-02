@@ -1,0 +1,13 @@
+{% extends "app/base.html" %}
+
+{% block app_page_title %}Remove Maintainer of a script of {% endblock %}
+
+{% block content %}
+<div class="container black" style="width:auto">
+  <h2>Remove {{ user.username }} from maintainers of script?</h2>
+  
+  <form action="{{ url_for('app_manager.remove_script_maintainer', app_name=app.name, script_id=script.id, username=user.username) }}" method="post">
+    <input type="submit" value="Remove" class="button">
+  </form>
+</div>
+{% endblock %}

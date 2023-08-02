@@ -16,7 +16,7 @@
   <table>
     {% if app.can_user_edit(g.user) %}
     <td class="bold">Options:</td>
-    <td>[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>]</td>
+    <td>[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>] [<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, script_id=script.id) }}">Add Maintainer</a>]</td>
     {% endif %}
     <tr>
       <th class="bold">Actions:</th>
@@ -42,7 +42,7 @@
       <th class="bold">Maintainers:</th>
       <td>
        {% for maintainer in script.maintainers.get_maintainers() %}
-       <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if app.can_user_edit(g.user) %} [<a class='red' href="{{ url_for("app_manager.remove_maintainer", app_name=app.name, username=maintainer.user.username) }}">Remove</a>]{% endif %}{% if loop.index != app.maintainers.get_maintainers()|length %}, {% endif %}
+       <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if app.can_user_edit(g.user) %} [<a class='red' href="{{ url_for("app_manager.remove_script_maintainer", app_name=app.name, script_id=script.id, username=maintainer.user.username) }}">Remove</a>]{% endif %}{% if loop.index != app.maintainers.get_maintainers()|length %}, {% endif %}
        {% endfor %}
      </td>
     </tr>

@@ -168,14 +168,14 @@ class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
             flash(f'{user.username} is already a maintainer.', 'error')
             return redirect(url_for('app_manager.add_maintainer', app_name=app.name), 303)
 
-        maintainer = app.maintainers.add_mainatainer(user)
+        maintainer = app.maintainers.add_maintainer(user)
 
         flash(f'{user.username} successfully added as a maintainer.', 'success')
         return self.get_app_view_redirect(**kwargs)
         
 
 class RemoveMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
-    """A view for removing maintainer"""
+    """A view for removing a maintainer."""
 
     template_path = 'app/remove_maintainer.html'
     maintainer_only = True
@@ -237,7 +237,14 @@ class ScriptMixin:
         kwargs['script'] = script
 
         return super().on_request(**kwargs)
-    
+
+    def get_script_view_redirect(self, **kwargs):
+        """Gets the redirect to the script view page."""
+        script = kwargs['script']
+        return redirect(
+            url_for('app_manager.script_view', app_name=kwargs['app'].name, script_id=script.id),
+            303
+        )
 
 class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""
@@ -260,7 +267,7 @@ class ScriptDetailView(AppMixin, ScriptMixin, DetailView):
     model_name = 'script'
 
     def get_object(self, **kwargs):
-        return Script.get_by_id(kwargs['script_id'])
+        return kwargs['script']
 
 
 class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -278,8 +285,7 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         script = form.save(app=kwargs['app'])
         
         flash('Script successfully created.', 'success')
-        return redirect(url_for('script_view', app_name=app.name, script_id=script.id), 303)
-        return self.get_app_view_redirect(**kwargs)
+        return self.get_script_view_redirect(**kwargs)
 
 
 class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):
@@ -289,10 +295,6 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, For
     script_maintainer_only = True
     form_class = EditScriptForm
 
-    def on_request(self, **kwargs):
-        kwargs['script'] = Script.get_by_id(kwargs['script_id'])
-        return super().on_request(**kwargs)
-    
     def get_context_data(self, **kwargs):
         kwargs['possible_script_actions'] = supported_script_actions
         return kwargs
@@ -309,10 +311,6 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, Templ
 
     template_path = 'script/delete_script.html'
     script_maintainer_only = True
-    
-    def on_request(self, **kwargs):
-        kwargs['script'] = Script.get_by_id(kwargs['script_id'])
-        return super().on_request(**kwargs)
 
     def post(self, **kwargs):
         script = kwargs['script']
@@ -321,6 +319,75 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, Templ
         return self.get_app_view_redirect(**kwargs)
 
 
+class AddScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, TemplateView):
+    """A view for adding maintainers to scripts."""
+
+    template_path = 'script/add_maintainer.html'
+    script_maintainer_only = True
+
+    def post(self, **kwargs):
+        username = request.form.get('username').strip()
+
+        user = User.select().where(User.username == username)
+
+        if user.exists() is False:
+            flash(f'{username} is not a user.', 'error')
+            return self.get(**kwargs)
+
+        user = user.get()
+        script = kwargs['script']
+        
+        if script.maintainers.is_maintainer(user):
+            flash(f'{user.username} is already a maintainer.', 'error')
+            return redirect(
+                url_for(
+                    'app_manager.add_script_maintainer',
+                    app_name=app.name,
+                    script_id=script.id,
+                ),
+                303
+            )
+
+        maintainer = script.maintainers.add_maintainer(user)
+
+        flash(f'{user.username} successfully added as a maintainer.', 'success')
+        return self.get_script_view_redirect(**kwargs)
+
+
+class RemoveScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, TemplateView):
+    """A view for removing a maintainer."""
+
+    template_path = 'script/remove_maintainer.html'
+    maintainer_only = True
+
+    def on_request(self, **kwargs):
+        user = User.select().where(User.username == kwargs['username'])
+
+        if user.exists() is False:
+            abort(404)
+
+        user = user.get()
+
+        kwargs['user'] = user
+
+        return super().on_request(**kwargs)
+    
+    def post(self, **kwargs):
+        script = kwargs['script']
+
+        if len(script.maintainers.get_maintainers()) == 1:
+            flash(f'You cannot remove the last maintainer.', 'error')
+            return self.get_script_view_redirect(**kwargs)
+
+        if script.maintainers.is_maintainer(kwargs['user']) is False:
+            abort(404)
+            
+        script.maintainers.delete_maintainer(kwargs['user'])
+        
+        flash(f'Maintainer successfully removed.', 'success')
+        return self.get_script_view_redirect(**kwargs)
+
+    
 class ReportAppView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):
     """A view for reporting apps."""
 
