@@ -31,6 +31,7 @@ class ScriptData(BaseModel):
     """A model for storing the path to the script content."""
 
     filepath = CharField(255)
+    method = CharField(255)
     supported_distros = ForeignKeyField(SupportedDistrosJunction)
 
     def open_content(self, mode='r'):
@@ -73,7 +74,7 @@ class ScriptData(BaseModel):
 
 
     @classmethod
-    def create(cls, directory: str, content: str, distros: dict, actions: list[str]):
+    def create(cls, directory: str, content: str, method: str, distros: dict, actions: list[str]):
         """Creates the script data."""
 
         filepath = cls.create_script_file(directory, content)
@@ -83,6 +84,7 @@ class ScriptData(BaseModel):
         
         script_data =  super().create(
             filepath=filepath,
+            method=method,
             supported_distros=supported_distros,
         )
 
@@ -149,6 +151,7 @@ class Script(BaseModel):
             cls,
             supported_distros: list,
             content: str,
+            method: str,
             app: App,
             actions: list[str],
             submitter: User,
@@ -157,16 +160,17 @@ class Script(BaseModel):
         """
         Create a Script object, and adds it to the database.
 
-        :param action: The action that the script preforms.
         :param supported_distros: A list of distros that the script supports.
         :param content: The content of the script.
-        :param version: The version of the app the script is for.
-        :param submitter: The submitter.
+        :param method: The method the script uses.
         :param app: The app the script is for.
+        :param actions: The actions that the script supportes
+        :param submitter: The submitter.
+        :param version: The version of the app the script is for.
         """
         app_dir = app.create_or_get_folder()
         
-        script_data = ScriptData.create(app_dir, content, supported_distros, actions)
+        script_data = ScriptData.create(app_dir, content, method, supported_distros, actions)
 
         maintainers = Maintainers.create()
         
@@ -185,7 +189,7 @@ class Script(BaseModel):
 
         return created_script
 
-    def edit(self, supported_distros: list, content: str, actions, version: str=None):
+    def edit(self, supported_distros: list, content: str, method: str, actions: str, version: str=None):
         """
         Edits the script.
 
@@ -204,6 +208,8 @@ class Script(BaseModel):
         
         with self.script_data.open_content('w') as f:
             f.write(content)
+
+        self.script_data.method = method
 
         self.app.last_modified = datetime.today()
         self.app.save()
@@ -232,6 +238,7 @@ class Script(BaseModel):
         with self.script_data.open_content() as c:
             data['content'] = c.read()
         data['submitter'] = self.submitter.username
+        data['method'] = self.script_data.method
 
         return data
 
