@@ -299,8 +299,7 @@ class BySupportedAction(Modifier):
         
         actions = [action.strip() for action in kwargs['actions'].split(',')]
 
-        query = query.join(ScriptData)
-        query = query.join(Action)
+        query = query.switch(query.model).join(ScriptData).join(Action)
         
         for action in actions:
             query = query.where(
