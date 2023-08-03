@@ -23,6 +23,10 @@
       <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
     </tr>
     <tr>
+      <th class="bold">Method:</th>
+      <td>{{ script.script_data.method }}</td>
+    </tr>
+    <tr>
       <th class="bold">For Version:</th>
       <td>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</td>
     </tr>

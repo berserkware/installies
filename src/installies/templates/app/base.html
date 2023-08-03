@@ -3,7 +3,7 @@
 {% block title %}{% block app_page_title %}{% endblock %}{{ app.name }}{% endblock %}
 
 {% block body %}
-<div class="side-options-grid container" style="max-width:1200px;">
+<div class="side-options-grid container" style="{% block app_container_style %}max-width:1200px;{% endblock %}">
   <div class="grid-column-span-2">
     <h2>{% if app.display_name %}{{ app.display_name }} ({{ app.name }}){% else %}{{ app.name }}{% endif %}</h2>
   </div>

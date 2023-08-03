@@ -9,6 +9,7 @@ from installies.blueprints.app_manager.validate import (
     ScriptDistroValidator,
     ScriptContentValidator,
     ScriptDistroDictionaryValidator,
+    ScriptMethodValidator,
     ScriptVersionValidator,
     ReportTitleValidator,
     ReportBodyValidator,
@@ -85,6 +86,7 @@ class ModifyScriptForm(Form):
             '',
         ),
         FormInput('script-content', ScriptContentValidator),
+        FormInput('script-method', ScriptMethodValidator),
         FormInput('for-version', ScriptVersionValidator, default=None)
     ]
     model = Script
@@ -100,6 +102,7 @@ class AddScriptForm(ModifyScriptForm):
             app=app,
             version=self.data['for-version'],
             actions=self.data['script-actions'],
+            method=self.data['script-method'],
             submitter=g.user,
         )
 
@@ -113,6 +116,7 @@ class EditScriptForm(ModifyScriptForm):
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
             version=self.data['for-version'],
+            method=self.data['script-method'],
             submitter=g.user,
         )
 

@@ -285,7 +285,10 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         script = form.save(app=kwargs['app'])
         
         flash('Script successfully created.', 'success')
-        return self.get_script_view_redirect(**kwargs)
+        return redirect(
+            url_for('app_manager.script_view', app_name=kwargs['app'].name, script_id=script.id),
+            303
+        )
 
 
 class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):

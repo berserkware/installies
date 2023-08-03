@@ -1,7 +1,12 @@
 <form action="{{ form_url }}" method="post" id="script-form">
   <div class="form-input-container">
     <label for="script-actions">Actions</label><br>
-    <input type="text" name="script-actions" id="script-actions" class"textbox" value="{% if default_form_script %}{{ ", ".join(default_form_script.script_data.get_supported_actions()) }}{% endif %}">
+    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ", ".join(default_form_script.script_data.get_supported_actions()) }}{% endif %}">
+  </div>
+
+  <div class="form-input-container">
+    <label for="script-method">Method</label><br>
+    <input type="text" name="script-method" id="script-method" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.method }}{% endif %}" style="width: 50%">
   </div>
   
   <div class="form-input-container">
@@ -62,7 +67,7 @@
 	  const distroArchs = document.createElement('td');
 	  const distroArchsInput = document.createElement('input');
 	  distroArchsInput.classList.add('textbox');
-	  distroArchsInput.placeholder = "arch1, arch2, arch3";
+	  distroArchsInput.placeholder = "arch1, arch2, arch3...";
 	  distroArchsInput.name = tablerowId + "-archs";
 	  distroArchsInput.id = tablerowId + "-archs";
 	  if (archs != '') {
@@ -147,7 +152,7 @@
 
   <div class="form-input-container">
     <label for="for-version">For App Version</label><br>
-    <input type="text" name="for-version" id="for-version" class"textbox" value="{% if default_form_script %}{{ default_form_script.version }}{% endif %}">
+    <input type="text" name="for-version" id="for-version" class="textbox" placeholder="e.g. 3.11.3" value="{% if default_form_script %}{{ default_form_script.version }}{% endif %}">
   </div>
   
   <div class="form-input-container">

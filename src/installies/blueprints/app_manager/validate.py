@@ -153,6 +153,18 @@ class ScriptContentValidator(Validator):
     data_name = 'Script content'
 
 
+class ScriptMethodValidator(Validator):
+    """A class for validating script methods."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=255),
+        AllowedCharactersChecker(allow_extra=['_', '-', ',', '.']),
+    ]
+
+    data_name = 'Script method'
+
+
 class ScriptVersionValidator(VersionValidator):
     """A class for validating script version strings"""
 

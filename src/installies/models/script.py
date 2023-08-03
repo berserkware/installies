@@ -92,6 +92,11 @@ class ScriptData(BaseModel):
 
         return script_data
 
+    def delete_instance(self):
+        Action.delete().where(Action.script_data == self).execute()
+        super().delete_instance()
+        self.supported_distros.delete_instance()
+
     def get_supported_actions(self):
         """Get the actions the script supports in a list."""
         return [action.name for action in self.actions]
@@ -152,9 +157,9 @@ class Script(BaseModel):
             supported_distros: list,
             content: str,
             method: str,
-            app: App,
             actions: list[str],
             submitter: User,
+            app: App,
             version: str=None,
     ):
         """
@@ -163,9 +168,9 @@ class Script(BaseModel):
         :param supported_distros: A list of distros that the script supports.
         :param content: The content of the script.
         :param method: The method the script uses.
-        :param app: The app the script is for.
-        :param actions: The actions that the script supportes
+        :param actions: The actions that the script supports.
         :param submitter: The submitter.
+        :param app: The app the script is for.
         :param version: The version of the app the script is for.
         """
         app_dir = app.create_or_get_folder()
@@ -189,12 +194,22 @@ class Script(BaseModel):
 
         return created_script
 
-    def edit(self, supported_distros: list, content: str, method: str, actions: str, version: str=None):
+    def edit(
+            self,
+            supported_distros: list,
+            content: str,
+            method: str,
+            actions: str,
+            version: str=None
+    ):
         """
         Edits the script.
 
         :param supported_distros: The new supported distros.
         :param content: The new content.
+        :param method: The script's method.
+        :param actions: The sctions that the script supports.
+        :param version: The version of the app the script is for.
         """
 
         self.last_modified = datetime.today()
@@ -221,11 +236,7 @@ class Script(BaseModel):
         
         super().delete_instance()
 
-        Action.delete().where(Action.script_data == self.script_data).execute()
-
         self.script_data.delete_instance()
-
-        self.script_data.supported_distros.delete_instance()
 
     def serialize(self):
         """Turns the Script into a json serializable dict."""
