@@ -6,7 +6,7 @@
 
   <div class="form-input-container">
     <label for="script-method">Method</label><br>
-    <input type="text" name="script-method" id="script-method" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.method }}{% endif %}" style="width: 50%">
+    <input type="text" name="script-method" id="script-method" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.script_data.method }}{% endif %}" style="width: 50%">
   </div>
   
   <div class="form-input-container">

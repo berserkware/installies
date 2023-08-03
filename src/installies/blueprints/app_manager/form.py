@@ -117,7 +117,6 @@ class EditScriptForm(ModifyScriptForm):
             content=self.data['script-content'],
             version=self.data['for-version'],
             method=self.data['script-method'],
-            submitter=g.user,
         )
 
 
