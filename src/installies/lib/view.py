@@ -115,6 +115,9 @@ class ListView(ListMixin, TemplateMixin, View):
                 per_page = int(request.args.get('per-page', 10))
             except ValueError:
                 per_page = 10
+
+            if per_page < 1:
+                per_page = 10
     
             page_count = math.ceil(total_object_count / per_page)
 
