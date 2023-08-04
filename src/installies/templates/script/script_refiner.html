@@ -1,0 +1,55 @@
+<div class="container black">
+  <h2>Refine Scripts</h2>
+  
+  <form action="{{ url_for(url_for_route, **url_for_arguments) }}" method="get">
+    <fieldset>
+      <div>
+	<label for="search-in">Search In:</label>
+	<select name="search-in" id="search-in">
+	  <option value="method" {% if request.args.get('search-in') == 'method' %}selected=""{% endif %}>Method</option>
+	  <option value="maintainers" {% if request.args.get('search-in') == 'maintainers' %}selected=""{% endif %}>Maintainers</option>
+	  <option value="submitter" {% if request.args.get('search-in') == 'submitter' %}selected=""{% endif %}>Submitter</option>
+	</select>
+      </div>
+      <div>
+	<label for="keywords">Keywords:</label>
+	<input type="text" name="k" id="keywords" value="{{ request.args.get('k', '') }}">
+      </div>
+      
+      <div>
+	<label for="supports">Supports:</label>
+	<input type="text" name="supports" id="supports" value="{{ request.args.get('supports', '') }}">
+      </div>
+      <div>
+	<label for="sort-by">Sort By:</label>
+	<select name="sort-by" id="sort-by">
+	  <option value="last_modified" {% if request.args.get('sort-by') == 'last_modified' %}selected=""{% endif %}>Last Modified</option>
+	  <option value="creation_date" {% if request.args.get('sort-by') == 'creation_date' %}selected=""{% endif %}>Creation Date</option>
+	  <option value="version" {% if request.args.get('sort-by') == 'version' %}selected=""{% endif %}>Version</option>
+	</select>
+      </div>
+      <div>
+	<label for="order-by">Order By:</label>
+	<select name="order-by" id="order-by">
+	  <option value="asc" {% if request.args.get('order-by') == 'asc' %}selected=""{% endif %}>Ascending</option>
+	  <option value="desc" {% if request.args.get('order-by') == 'desc' %}selected=""{% endif %}>Descending</option>
+	</select>
+      </div>
+      <div>
+	<label for="actions">Supported Actions:</label>
+	<input type="text" name="actions" id="actions" value="{{ request.args.get('actions', '') }}">
+      </div>
+      <div>
+	<label for="page">Page:</label>
+	<input type="text" name="page" id="page" size="4" value="{{ request.args.get('page', 1) }}">
+      </div>
+      <div>
+	<label for="per-page">Per Page:</label>
+	<input type="text" name="per-page" id="per-page" size="2" value="{{ request.args.get('per-page', 10) }}">
+      </div>
+      <div>
+	<input type="submit" value="Go" class="button">
+      </div>
+    </fieldset>
+  </form>
+</div>
