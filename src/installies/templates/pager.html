@@ -1,4 +1,8 @@
 <p>
+  {% if not url_for_arguments %}
+  {% set url_for_arguments = {} %}
+  {% endif %}
+  
   {% set new_request_args = remove_value_from_dictionary(request.args.to_dict(), 'page') %}
   {% if request.args.get('page', '1')|int > 1 %}
   <a href="{{ url_for(url_for_route, **join_dictionaries(url_for_arguments, new_request_args, {'page': 1})) }}">&lt;&lt; First</a>

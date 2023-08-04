@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Scripts - {% endblock %}
+
+
+{% block body %}
+<div class="auto-margin" style="max-width: 1400px">
+{% set url_for_route = 'app_library.scripts' %}
+{% include "script/script_refiner.html" %}
+
+<div class="container black">
+{% set show_script_app = True %}
+{% include "script/script_table.html" %}
+</div>
+
+{% set url_for_route = 'app_library.scripts' %}
+{% include "pager.html" %}
+</div>
+{% endblock %}

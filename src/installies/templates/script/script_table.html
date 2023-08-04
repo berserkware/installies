@@ -1,58 +1,55 @@
-<div class="container black">
-  {% if scripts|length == 0 %}
-  <p class="no-margin">No Scripts Found</p>
-  {% else %}
-  <table class="max-width">
-    <thead>
-      <tr class="underline">
-        {% if app.can_user_edit(g.user) %}
-        <th>Options</th>
-        {% endif %}
-	{% if show_script_app %}
-	<th>App</th>
-	{% endif %}
-        <th>Actions</th>
-	<th>Method</th>
-        <th>Supports</th>
-        <th>For Version</th>
-	<th>Submitter</th>
-	<th>Maintainers</th>
-	<th>Creation Date</th>
-        <th>Last Modified</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for script in scripts %}
-      <tr class="underline">
-        <td>[<a href="{{ url_for('app_manager.script_view', app_name=app.name, script_id=script.id) }}">View</a>]</td>
-	{% if show_script_app %}
-	<td><a href="url_for('app_manager.app_view', app_name=script.app.name)">{{ script.app.name }}</a></td>
-	{% endif %}
-        <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
-	<td>{{ script.script_data.method }}</td>
-        <td>
-	  <table class="initial-font-size">
-	    {% set distros = script.script_data.supported_distros.get_as_dict() %}
-	    {% for architechture in distros %}
-	    <tr>
-	      <td class="no-height-padding">{{ architechture }}:</td>
-	      <td class="no-height-padding">{{ ', '.join(distros[architechture]) }}</td>
-	    </tr>
-	    {% endfor %}
-	  </table>
-        </td>
-        <td>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</td>
-	<td><a href="{{ url_for('auth.profile', username=app.submitter.username) }}">{{ app.submitter.username }}</a></td>
-        <td>
-	  {% for maintainer in app.maintainers.get_maintainers() %}
-         <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if app.can_user_edit(g.user) %}{% endif %}{% if loop.index != app.maintainers.get_maintainers()|length %}, {% endif %}
-         {% endfor %}
-        </td>
-        <td>{{ script.creation_date.day }}-{{ script.creation_date.month }}-{{ script.creation_date.year }} {{ script.creation_date.hour }}:{{ script.creation_date.minute }} (UTC)</td>
-        <td>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% endif %}
-</div>
+
+{% if scripts|length == 0 %}
+<p class="no-margin">No Scripts Found</p>
+{% else %}
+<table class="max-width">
+  <thead>
+    <tr class="underline">
+      <th>Options</th>
+      {% if show_script_app %}
+      <th>App</th>
+      {% endif %}
+      <th>Actions</th>
+      <th>Method</th>
+      <th>Supports</th>
+      <th>For Version</th>
+      <th>Submitter</th>
+      <th>Maintainers</th>
+      <th>Creation Date</th>
+      <th>Last Modified</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for script in scripts %}
+    <tr class="underline">
+      <td>[<a href="{{ url_for('app_manager.script_view', app_name=script.app.name, script_id=script.id) }}">View</a>]</td>
+      {% if show_script_app %}
+      <td><a href="{{ url_for('app_manager.app_view', app_name=script.app.name) }}">{{ script.app.name }}</a></td>
+      {% endif %}
+      <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
+      <td>{{ script.script_data.method }}</td>
+      <td>
+	<table class="initial-font-size">
+	  {% set distros = script.script_data.supported_distros.get_as_dict() %}
+	  {% for architechture in distros %}
+	  <tr>
+	    <td class="no-height-padding">{{ architechture }}:</td>
+	    <td class="no-height-padding">{{ ', '.join(distros[architechture]) }}</td>
+	  </tr>
+	  {% endfor %}
+	</table>
+      </td>
+      <td>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</td>
+      <td><a href="{{ url_for('auth.profile', username=script.submitter.username) }}">{{ script.submitter.username }}</a></td>
+      <td>
+	{% for maintainer in script.maintainers.get_maintainers() %}
+        <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if script.can_user_edit(g.user) %}{% endif %}{% if loop.index != script.maintainers.get_maintainers()|length %}, {% endif %}
+        {% endfor %}
+      </td>
+      <td>{{ script.creation_date.day }}-{{ script.creation_date.month }}-{{ script.creation_date.year }} {{ script.creation_date.hour }}:{{ script.creation_date.minute }} (UTC)</td>
+      <td>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}

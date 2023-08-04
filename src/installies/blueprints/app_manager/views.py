@@ -249,7 +249,7 @@ class ScriptMixin:
 class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""
 
-    template_path = 'script/scripts.html'
+    template_path = 'script/app_scripts.html'
     group_name = 'scripts'
     paginator = Paginate(
         default_per_page = 10,

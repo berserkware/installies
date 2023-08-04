@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-<div class="container" style="max-width:1150px;">
+<div class="container" style="max-width:1400px;">
     <h3>Welcome to installies!</h3>
     <p class="container-description">
         Installies is a website that removes all the hassle
@@ -15,7 +15,7 @@
     </p>
 </div>
 {% if g.is_authed %}
-<div class="container black" style="max-width:1150px">
+<div class="container black" style="max-width:1400px">
   <h2>My Apps</h2>
   {% if user_maintained_apps|length == 0 %}
   <p class="no-margin">You maintain no apps.</p>
@@ -25,16 +25,28 @@
   {% endif %}
   <a href="{{ url_for('app_library.apps', **{'search-in':'maintainers','k':g.user.username}) }}">Search for apps I maintain</a>
 </div>
+
+<div class="container black" style="max-width:1400px">
+  <h2>My Scripts</h2>
+  {% if user_maintained_scripts|length == 0 %}
+  <p class="no-margin">You maintain no apps.</p>
+  {% else %}
+  {% set show_script_app = True %}
+  {% set scripts = user_maintained_scripts %}
+  {% include "script/script_table.html" %}
+  {% endif %}
+  <a href="{{ url_for('app_library.scripts', **{'search-in':'maintainers','k':g.user.username}) }}">Search for scripts I maintain</a>
+</div>
 {% endif %}
 
-<div class="container" style="max-width:1150px">
+<div class="container" style="max-width:1400px">
   <h3>Recently Updated Apps</h3>
   {% set apps = recently_updated_apps %}
   {% include "app_table.html" %}
   <a href="{{ url_for('app_library.apps', **{'sort-by':'last_modified'}) }}">Search for more</a>
 </div>
 
-<div class="container" style="max-width:1150px">
+<div class="container" style="max-width:1400px">
   <h3>Newest Apps</h3>
   {% set apps = newest_apps %}
   {% include "app_table.html" %}

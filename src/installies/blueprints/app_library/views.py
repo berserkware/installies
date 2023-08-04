@@ -1,6 +1,7 @@
 from flask import render_template, Blueprint, request, g, Response
 from installies.lib.view import TemplateView
 from installies.groups.app import AppGroup
+from installies.groups.script import ScriptGroup
 from installies.groups.modifiers import Paginate
 from installies.models.app import App
 from installies.models.maintainer import Maintainer
@@ -24,7 +25,15 @@ class IndexView(TemplateView):
                 .paginate(1, 10)
                 .distinct()
             )
+            user_maintained_scripts = (
+                 ScriptGroup
+                .get()
+                .where(Maintainer.user == g.user)
+                .paginate(1, 10)
+                .distinct()
+            )
             kwargs['user_maintained_apps'] = user_maintained_apps
+            kwargs['user_maintained_scripts'] = user_maintained_scripts
 
         recently_updated_apps = (
             AppGroup
@@ -68,4 +77,30 @@ def apps():
         apps=paginated_apps,
         total_app_count=total_app_count,
         page_count=page_count,
+    )
+
+
+@app_library.route('/scripts')
+def scripts():
+    scripts = ScriptGroup.get(**request.args)
+
+    paginator = Paginate(
+        default_per_page = 10,
+        max_per_page = 50,
+    )
+
+    paginated_scripts = paginator.modify(scripts, **request.args)
+
+    total_script_count = scripts.count()
+    try:
+        per_page = int(request.args.get('per-page', 10))
+    except ValueError:
+        per_page = 10
+
+    page_count = math.ceil(total_script_count / per_page)
+
+    return render_template(
+        'scripts.html',
+        page_count=page_count,
+        scripts=paginated_scripts,
     )

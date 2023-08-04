@@ -1,6 +1,8 @@
 <div class="container black">
   <h2>Refine Scripts</h2>
-  
+  {% if not url_for_arguments %}
+  {% set url_for_arguments = {} %}
+  {% endif %}
   <form action="{{ url_for(url_for_route, **url_for_arguments) }}" method="get">
     <fieldset>
       <div>
