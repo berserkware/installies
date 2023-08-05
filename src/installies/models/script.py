@@ -292,7 +292,7 @@ class Script(BaseModel):
         for action in self.script_data.actions:
             action_name = action.name
             if_statement = f"""
-if [$1 == \"{action_name}\"]; then
+if [ \"$1\" == \"{action_name}\" ]; then
     {action_name}
 fi\n"""
             action_switcher += if_statement

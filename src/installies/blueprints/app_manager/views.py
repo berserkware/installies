@@ -3,6 +3,7 @@ import json
 import os
 import re
 import math
+import io
 
 from flask import (
     Blueprint,
@@ -12,7 +13,8 @@ from flask import (
     g,
     abort,
     flash,
-    url_for
+    url_for,
+    send_file,
 )
 from installies.blueprints.app_manager.upload import (
     get_distros_from_string,
@@ -269,6 +271,21 @@ class ScriptDetailView(AppMixin, ScriptMixin, DetailView):
     def get_object(self, **kwargs):
         return kwargs['script']
 
+
+class ScriptDownloadView(AppMixin, ScriptMixin, View):
+    """A view for getting the content of scripts."""
+
+    def get(self, **kwargs):
+        script = kwargs['script']
+        content = script.complete_content(request.args.get('version'))
+        script_file = io.BytesIO(content.encode('utf-8'))
+        return send_file(
+            script_file,
+            mimetype='application/x-shellscript',
+            download_name=f'{script.app.name}.sh',
+            as_attachment=True
+        )
+    
 
 class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for adding apps."""

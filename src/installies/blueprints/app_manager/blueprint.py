@@ -8,6 +8,7 @@ from installies.blueprints.app_manager.views import (
     RemoveMaintainerView,
     ScriptListView,
     ScriptDetailView,
+    ScriptDownloadView,
     AddScriptFormView,
     EditScriptFormView,
     DeleteScriptView,
@@ -35,6 +36,7 @@ app_manager.add_url_rule('/apps/<app_name>/report', 'report_app', ReportAppView.
 
 app_manager.add_url_rule('/apps/<app_name>/scripts', 'app_scripts', ScriptListView.as_view())
 app_manager.add_url_rule('/apps/<app_name>/scripts/<int:script_id>', 'script_view', ScriptDetailView.as_view())
+app_manager.add_url_rule('/apps/<app_name>/scripts/<int:script_id>/download', 'script_download', ScriptDownloadView.as_view())
 app_manager.add_url_rule('/apps/<app_name>/add-script', 'add_script', AddScriptFormView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/scripts/<int:script_id>/edit', 'edit_script', EditScriptFormView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/scripts/<int:script_id>/delete', 'delete_script', DeleteScriptView.as_view(), methods=['GET', 'POST'])
