@@ -45,6 +45,7 @@ from installies.blueprints.app_manager.form import (
     AddScriptForm,
     EditScriptForm,
     ReportAppForm,
+    ReportScriptForm,
     CreateThreadForm,
     CreateCommentForm,
     EditCommentForm,
@@ -64,7 +65,7 @@ from installies.groups.modifiers import Paginate
 
 class AppMixin:
     """
-    A mixin for getting apps by url params.
+    A mixin for getting apclass="link-button"ps by url params.
 
     It gets the app slug from the app_slug kwarg.
     """
@@ -419,6 +420,19 @@ class ReportAppView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView
 
         flash('App successfully reported.', 'success')
         return self.get_app_view_redirect(**kwargs)
+
+
+class ReportScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):
+    """A view for reporting scripts."""
+
+    template_path = 'script/report_script.html'
+    form_class = ReportScriptForm
+
+    def form_valid(self, form, **kwargs):
+        form.save(script=kwargs['script'])
+
+        flash('Script successfully reported.', 'success')
+        return self.get_script_view_redirect(**kwargs)
 
 
 class CreateThreadView(AuthenticationRequiredMixin, AppMixin, FormView):

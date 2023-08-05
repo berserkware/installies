@@ -25,3 +25,9 @@ class AppReport(ReportBase):
     """A model for reporting apps."""
 
     app = ForeignKeyField(App, backref="reports")
+
+
+class ScriptReport(ReportBase):
+    """A model for reporting scripts."""
+
+    script = ForeignKeyField(Script, backref="reports")

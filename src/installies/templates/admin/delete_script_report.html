@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Delete Report{% endblock %}
+
+{% block content %}
+<div class="container black" style="width:auto">
+    <h2>Delete Report</h2>
+    
+    <form action="{{ url_for('admin.delete_script_report', report_id=report.id) }}" method="post">
+        <div class="form-input-container">
+            <input type="submit" value="Delete Report" class="button">
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -15,6 +15,7 @@ from installies.blueprints.app_manager.views import (
     AddScriptMaintainerView,
     RemoveScriptMaintainerView,
     ReportAppView,
+    ReportScriptView,
     CreateThreadView,
     CreateCommentView,
     EditCommentView,
@@ -42,6 +43,7 @@ app_manager.add_url_rule('/apps/<app_name>/scripts/<int:script_id>/edit', 'edit_
 app_manager.add_url_rule('/apps/<app_name>/scripts/<int:script_id>/delete', 'delete_script', DeleteScriptView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/scripts/<int:script_id>/add-mantainer', 'add_script_maintainer', AddScriptMaintainerView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/scripts/<int:script_id>/maintainer/<username>/remove', 'remove_script_maintainer', RemoveScriptMaintainerView.as_view(), methods=['GET', 'POST'])
+app_manager.add_url_rule('/apps/<app_name>/scripts/<int:script_id>/report', 'report_script', ReportScriptView.as_view(), methods=['GET', 'POST'])
 
 app_manager.add_url_rule('/apps/<app_name>/discussion/create-thread', 'create_thread', CreateThreadView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/discussion/thread/<int:thread_id>/create-comment', 'create_comment', CreateCommentView.as_view(), methods=['POST'])

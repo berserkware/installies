@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, g
+from flask import Blueprint, render_template, request, flash, redirect, url_for, g, abort
 from installies.models.supported_distros import Distro
-from installies.models.report import ReportBase, AppReport
+from installies.models.report import ReportBase, AppReport, ScriptReport
 from installies.lib.validate import ValidationError
 from installies.blueprints.admin.validate import DistroSlugValidator, DistroNameValidatior
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView, ListView
@@ -93,7 +93,7 @@ class AppReportDetailView(
 ):
     """A view to get app reports."""
 
-    template_path = 'admin/report_view.html'
+    template_path = 'admin/app_report_view.html'
     public_only = True
     report_class = AppReport
 
@@ -147,12 +147,81 @@ class AppReportListView(AuthenticationRequiredMixin, AdminRequiredMixin, ListVie
     def get_group(self, **kwargs):
         return AppReport.select()
 
+
+
+class ScriptReportDetailView(
+        AuthenticationRequiredMixin,
+        AdminRequiredMixin,
+        ReportMixin,
+        TemplateView
+):
+    """A view to get script reports."""
+
+    template_path = 'admin/script_report_view.html'
+    public_only = True
+    report_class = ScriptReport
+
+
+class DeleteScriptReportView(
+        AuthenticationRequiredMixin,
+        AdminRequiredMixin,
+        ReportMixin,
+        TemplateView
+):
+    """A view for deleting script reports."""
+
+    template_path = 'admin/delete_script_report.html'
+    public_only = True
+    report_class = ScriptReport
+    
+    def post(self, **kwargs):
+        report = kwargs['report']
+        report.delete_instance()
+        flash('Report successfully removed.', 'success')
+        return redirect(url_for('admin.admin_options'), 303)
+
+
+class ResolveScriptReportView(
+        AuthenticationRequiredMixin,
+        AdminRequiredMixin,
+        ReportMixin,
+        TemplateView
+):
+    """A view for resolving script reports."""
+    
+    template_path = 'admin/resolve_script_report.html'
+    public_only = True
+    report_class = ScriptReport
+
+    def post(self, **kwargs):
+        report = kwargs['report']
+        report.resolved = True
+        report.save()
+        flash('Report successfully resolved.', 'success')
+        return redirect(url_for('admin.admin_options'), 303)
+
+
+class ScriptReportListView(AuthenticationRequiredMixin, AdminRequiredMixin, ListView):
+    """A view for listing script reports."""
+
+    template_path = 'admin/script_reports.html'
+    public_only = True
+    group_name = 'reports'
+
+    def get_group(self, **kwargs):
+        return ScriptReport.select()
+    
     
 admin.add_url_rule('/admin', 'admin_options', AdminOptions.as_view())    
 admin.add_url_rule('/admin/add-distro', 'add_distro', AddDistroView.as_view(), methods=['get', 'post'])
 admin.add_url_rule('/admin/add-architecture', 'add_architecture', AddArchitectureView.as_view(), methods=['get', 'post'])
 
-admin.add_url_rule('/admin/reports/<int:report_id>/delete', 'delete_app_report', DeleteAppReportView.as_view(), methods=['GET', 'POST'])
-admin.add_url_rule('/admin/reports/<int:report_id>', 'app_report_view', AppReportDetailView.as_view())
-admin.add_url_rule('/admin/reports/<int:report_id>/resolve', 'resolve_app_report', ResolveAppReportView.as_view(), methods=['GET', 'POST'])
-admin.add_url_rule('/admin/reports', 'app_reports', AppReportListView.as_view())
+admin.add_url_rule('/admin/app-reports/<int:report_id>/delete', 'delete_app_report', DeleteAppReportView.as_view(), methods=['GET', 'POST'])
+admin.add_url_rule('/admin/app-reports/<int:report_id>', 'app_report_view', AppReportDetailView.as_view())
+admin.add_url_rule('/admin/app-reports/<int:report_id>/resolve', 'resolve_app_report', ResolveAppReportView.as_view(), methods=['GET', 'POST'])
+admin.add_url_rule('/admin/app-reports', 'app_reports', AppReportListView.as_view())
+
+admin.add_url_rule('/admin/script-reports/<int:report_id>/delete', 'delete_script_report', DeleteScriptReportView.as_view(), methods=['GET', 'POST'])
+admin.add_url_rule('/admin/script-reports/<int:report_id>', 'script_report_view', ScriptReportDetailView.as_view())
+admin.add_url_rule('/admin/script-reports/<int:report_id>/resolve', 'resolve_script_report', ResolveScriptReportView.as_view(), methods=['GET', 'POST'])
+admin.add_url_rule('/admin/script-reports', 'script_reports', ScriptReportListView.as_view())

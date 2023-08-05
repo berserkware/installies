@@ -3,7 +3,7 @@ from installies.models.app import App
 from installies.models.script import Script, ScriptData, Action
 from installies.models.supported_distros import SupportedDistrosJunction, Distro, SupportedDistro, Architecture, AlternativeArchitectureName
 from installies.models.user import User, Session
-from installies.models.report import AppReport
+from installies.models.report import AppReport, ScriptReport
 from installies.models.discussion import Thread, Comment
 from installies.models.maintainer import Maintainers, Maintainer
 
@@ -22,6 +22,7 @@ tables =  [
     Architecture,
     AlternativeArchitectureName,
     AppReport,
+    ScriptReport,
     Thread,
     Comment,
 ]
