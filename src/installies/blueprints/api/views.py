@@ -40,9 +40,6 @@ def scripts(app_name):
 
     app = app.get()
 
-    if app.visibility == 'private' and app.submitter != g.user:
-        abort(404)
-
     scripts = ScriptGroup.get(**request.args).where(Script.app == app)
 
     paginator = Paginate(
@@ -55,9 +52,10 @@ def scripts(app_name):
     data = {
         'scripts': []
     }
-        
+
     for script in scripts:
         serialized_script = script.serialize()
+        serialized_script['content'] = script.complete_content(request.args.get('version'))
         data['scripts'].append(serialized_script)
 
     return data

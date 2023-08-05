@@ -267,3 +267,39 @@ class Script(BaseModel):
             return True
 
         return False
+
+
+    def complete_content(self, version=None):
+        """
+        Adds the stuff to the script's content to make it working, returns the content.
+
+        It replaces <version> with the given version. If the version is None, it uses the
+        app's current_version. Adds the action function matcher to the end of the content.
+
+        :param version: The version of the script to install.
+        """
+        with self.script_data.open_content() as f:
+            new_content = f.read()
+
+        #replaces the version
+        if version is not None:
+            new_content = new_content.replace('<version>', version)
+        elif self.app.current_version is not None:
+            new_content = new_content.replace('<version>', self.app.current_version)
+
+        action_switcher = """\n"""
+        # adds the action function matcher
+        for action in self.script_data.actions:
+            action_name = action.name
+            if_statement = f"""
+if [$1 == \"{action_name}\"]; then
+    {action_name}
+fi\n"""
+            action_switcher += if_statement
+
+        new_content += action_switcher
+
+        return new_content
+
+            
+        
