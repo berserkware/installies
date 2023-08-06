@@ -238,6 +238,9 @@ class BySupportedDistro(Modifier):
         if supported_distros == {}:
             return query
 
+        if query.model == App:
+            query = query.join(Script)
+        
         query = (
             query
             .join(ScriptData)

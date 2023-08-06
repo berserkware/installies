@@ -21,7 +21,6 @@ class AppGroup(Group):
     """
 
     modifiers = [
-        JoinModifier(models=[Maintainers, Maintainer, User]),
         SortBy(
             model = App,
             allowed_attributes = [
@@ -64,10 +63,12 @@ class AppGroup(Group):
                 SearchableAttribute(
                     'maintainers',
                     lambda model, name, data: Maintainer.user.username.contains(data),
+                    models=[Maintainers, Maintainer, User],
                 ),
                 SearchableAttribute(
                     'submitter',
                     lambda model, name, data: getattr(model, name).username.contains(data),
+                    models=[User],
                 ),
             ],
             default_attribute = 'name',

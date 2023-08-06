@@ -404,7 +404,7 @@ def create_parser():
         '-o',
         '--output-script',
         action='store_true',
-        help="shows the script before exectuting"
+        help="shows the script before executing"
     )
     action_parser.add_argument('app_name')
     
