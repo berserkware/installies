@@ -100,6 +100,7 @@ class App(BaseModel):
         """Turn the App into a json serializable dict."""
         data = {}
 
+        data['id'] = self.id
         data['name'] = self.name
         data['display_name'] = self.display_name
         data['description'] = self.description

@@ -23,14 +23,12 @@ class IndexView(TemplateView):
                 .get()
                 .where(Maintainer.user == g.user)
                 .paginate(1, 10)
-                .distinct()
             )
             user_maintained_scripts = (
                  ScriptGroup
                 .get()
                 .where(Maintainer.user == g.user)
                 .paginate(1, 10)
-                .distinct()
             )
             kwargs['user_maintained_apps'] = user_maintained_apps
             kwargs['user_maintained_scripts'] = user_maintained_scripts

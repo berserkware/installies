@@ -1,3 +1,5 @@
+from installies.config import database
+
 class Group:
     """
     A class for getting multiple objects from the database.
@@ -24,9 +26,14 @@ class Group:
 
         query = cls.model.select()
 
+        new_queries = []
         for modifier in cls.modifiers:
-            query = modifier.modify(query, **kwargs)
+            new_query = modifier.modify(query, **kwargs)
+            
+            new_queries.append(new_query)
 
-        return query.distinct()
+        for q in new_queries:
+            query = query & q
 
+        return query
         

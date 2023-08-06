@@ -131,11 +131,13 @@ class SearchableAttribute:
     
     :param name: The name of the attribute.
     :param check_contains: A function to check if the attribute contains the search.
+    :param models: A list of models to join when searching.
     """
 
-    def __init__(self, name: str, check_contains: t.Callable=None):
+    def __init__(self, name: str, check_contains: t.Callable=None, models=[]):
         self.name = name
         self.check_contains = check_contains
+        self.models = models
         
     def contains(self, model, data: str):
         """Check if the attribute contains the data."""
@@ -185,7 +187,11 @@ class SearchInAttributes(Modifier):
 
         if search_in_attributes == []:
             search_in_attributes = [default_attribute]
-            
+
+        for attr in search_in_attributes:
+            for model in attr.models:
+                query = query.join(model)
+
         keywords = keywords.split()
         for keyword in keywords:
             query = query.where(
@@ -234,7 +240,6 @@ class BySupportedDistro(Modifier):
 
         query = (
             query
-            .switch(query.model)
             .join(ScriptData)
             .join(SupportedDistrosJunction)
             .join(SupportedDistro)
@@ -299,7 +304,7 @@ class BySupportedAction(Modifier):
         
         actions = [action.strip() for action in kwargs['actions'].split(',')]
 
-        query = query.switch(query.model).join(ScriptData).join(Action)
+        query = query.join(ScriptData).join(Action)
         
         for action in actions:
             query = query.where(

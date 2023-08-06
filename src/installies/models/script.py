@@ -242,6 +242,7 @@ class Script(BaseModel):
         """Turns the Script into a json serializable dict."""
         data = {}
 
+        data['id'] = self.id
         data['actions'] = [action.name for action in self.script_data.actions]
         data['supported_distros'] = self.script_data.supported_distros.get_as_dict()
         data['last_modified'] = str(self.last_modified)
