@@ -2,13 +2,22 @@
 
 {% block app_page_title %}Delete Script for {% endblock %}
 
+{% block header %}
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
+<script src="/static/js/codemirror/mode/shell/shell.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container black" style="width:auto">
   <h2>Delete Script</h2>
-  <p>Are you sure you want to delete the script? This action is not reversable.</p>
+  <p>Are you sure you want to delete the following script? This action is not reversable.</p>
 
   <form class="delete-script-form" action="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}" method="post">
     <input type="submit" value="Delete Script" class="button">
   </form>
 </div>
+
+{% include "script/script_info_container.html" %}
 {% endblock %}

@@ -2,6 +2,13 @@
 
 {% block app_page_title %}Report Script of {% endblock %}
 
+{% block header %}
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
+<script src="/static/js/codemirror/mode/shell/shell.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container black" style="width:auto">
     <h2>Report Script</h2>
@@ -22,4 +29,6 @@
         </div>
     </form>
 </div>
+
+{% include "script/script_info_container.html" %}
 {% endblock %}

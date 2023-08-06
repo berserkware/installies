@@ -1,0 +1,74 @@
+<div class="container black auto-width" style="width:auto">
+  <h2>Script Info</h2>
+
+  <table>
+    {% if app.can_user_edit(g.user) %}
+    <td class="bold">Options:</td>
+    <td>[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>] [<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, script_id=script.id) }}">Add Maintainer</a>] [<a class="red" href="{{ url_for('app_manager.report_script', app_name=app.name, script_id=script.id) }}">Report</a>]</td>
+    {% endif %}
+    <tr>
+      <th class="bold">Actions:</th>
+      <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
+    </tr>
+    <tr>
+      <th class="bold">Method:</th>
+      <td>{{ script.script_data.method }}</td>
+    </tr>
+    <tr>
+      <th class="bold">For Version:</th>
+      <td>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</td>
+    </tr>
+    <tr>
+      <th class="bold">Creation Date:</th>
+      <td>{{ script.creation_date.day }}-{{ script.creation_date.month }}-{{ script.creation_date.year }} {{ script.creation_date.hour }}:{{ script.creation_date.minute }} (UTC)</td>
+    </tr>
+    <tr>
+      <th class="bold">Last Modified:</th>
+      <td>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</td>
+    </tr>
+    <tr>
+      <th class="bold">Original Submitter:</th>
+      <td><a class="link" href="{{ url_for("auth.profile", username=script.submitter.username) }}">{{ script.submitter.username }}</a></td>
+    </tr>
+    <tr>
+      <th class="bold">Maintainers:</th>
+      <td>
+       {% for maintainer in script.maintainers.get_maintainers() %}
+       <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if app.can_user_edit(g.user) %} [<a class='red' href="{{ url_for("app_manager.remove_script_maintainer", app_name=app.name, script_id=script.id, username=maintainer.user.username) }}">Remove</a>]{% endif %}{% if loop.index != app.maintainers.get_maintainers()|length %}, {% endif %}
+       {% endfor %}
+     </td>
+    </tr>
+    <tr>
+      <th class="bold">Supported Distros:</th>
+      <td>
+	<table>
+	  {% set distros = script.script_data.supported_distros.get_as_dict() %}
+	  {% for architecture in distros %}
+	  <tr class="initial-font-size">
+	    <td class="no-height-padding">{{ architecture }}:</td>
+	    <td class="no-height-padding">{{ ', '.join(distros[architecture]) }}</td>
+	  </tr>
+	  {% endfor %}
+	</table>
+      </td>
+    </tr>
+  </table>
+  <p>Content</p>
+  <textarea name="script-content" id="script-content">
+    {% with f = script.script_data.open_content() %}{{ f.read() }}{% endwith %}</textarea>
+  <script>
+    mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
+	lineNumbers: true,
+	mode: "shell",
+	theme: "monokai",
+	readOnly: true,
+    });
+  </script>
+  <br>
+  <h3>Download Script</h3>
+  <form action="{{ url_for('app_manager.script_download', app_name=script.app.name, script_id=script.id) }}" method="get">
+    <label for="version">Version:</label><br>
+    <input type="text" name="version" id="version" class="textbox" placeholder="{{ script.app.current_version }}">
+    <input type="submit" value="Download">
+  </form>
+</div>

@@ -2,6 +2,13 @@
 
 {% block app_page_title %}Remove Maintainer of a script of {% endblock %}
 
+{% block header %}
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
+<script src="/static/js/codemirror/mode/shell/shell.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container black" style="width:auto">
   <h2>Remove {{ user.username }} from maintainers of script?</h2>
@@ -10,4 +17,6 @@
     <input type="submit" value="Remove" class="button">
   </form>
 </div>
+
+{% include "script/script_info_container.html" %}
 {% endblock %}
