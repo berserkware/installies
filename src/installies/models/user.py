@@ -93,12 +93,19 @@ class User(BaseModel):
             admin=admin
         )
 
-
     @classmethod
     def generate_verify_string(cls):
         """Generates a verify string."""
 
         return ''.join(random.choice(string.ascii_letters) for i in range(50))
+
+    def is_banned(self):
+        """Returns true if user is banned, else False."""
+        if len(self.bans) > 0:
+            return True
+
+        return False
+    
 
 
 class Session(BaseModel):
@@ -127,3 +134,11 @@ class Session(BaseModel):
         """Create a 50 letter long string of random letters and numbers."""
         letters = string.ascii_letters + string.digits
         return ''.join(random.choice(letters) for i in range(50))
+
+
+class Ban(BaseModel):
+    """A model for storing ban data."""
+
+    user = ForeignKeyField(User, backref="bans")
+    reason = CharField(255)
+    date = DateTimeField(default=datetime.now)

@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container black auto-width">
+  <form action="{{ url_for('admin.ban_user', username=user.username) }}" method="post">
+  <h2>Ban user "{{ user.username }}"</h2>
+ 
+    <div class="form-input-container">
+      <label for"reason">Reason</label><br>
+      <input type="text" name="reason" id="reason" class="textbox" style="width:50%;">
+    </div>
+    
+    <div class="form-input-container">
+      <input type="submit" value="Submit" class="button">
+    </div>
+  </form>
+</div>
+{% endblock content %}

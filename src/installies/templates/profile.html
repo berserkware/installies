@@ -4,22 +4,34 @@
 
 {% block body %}
     <div class="container" style="width:800px;">
-        <h2>{{ user.username }}'s Profile</h2>
+        <h2>{{ user.username }}'s Profile{% if user.is_banned() %} <span class="red">[BANNED]</span>{% endif %}</h2>
         
         <table>
-            <tr>
-                <th>Join Date:</th>
-                <td>{{ user.creation_date.day }}-{{ user.creation_date.month }}-{{ user.creation_date.year }} {{ user.creation_date.hour }}:{{ user.creation_date.minute }} (UTC)</td>
-            </tr>
-	    <tr>
-	      <th>Links:</th>
-	      <td>
-		<ul class="no-margin no-padding no-list-style-type">
-		  <li><a href="{{ url_for('app_library.apps', **{'search-in':'maintainers','k':user.username}) }}">View this user's apps</a></li>
-		  <li><a href="{{ url_for('app_library.scripts', **{'search-in':'maintainers','k':user.username}) }}">View this user's scripts</a></li>
+	  {% if g.user.admin %}
+	  <tr>
+	    <th>Options:</th>
+            <td>{% if user.is_banned() %}[<a href="{{ url_for('admin.unban_user', username=user.username) }}">Unban</a>]{% else %}[<a class="red" href="{{ url_for('admin.ban_user', username=user.username) }}">Ban</a>]{% endif %}</td>
+	  </tr>
+	  {% endif %}
+          <tr>
+            <th>Join Date:</th>
+            <td>{{ user.creation_date.day }}-{{ user.creation_date.month }}-{{ user.creation_date.year }} {{ user.creation_date.hour }}:{{ user.creation_date.minute }} (UTC)</td>
+          </tr>
+	  {% if user.is_banned() %}
+	  <tr>
+            <th>Ban Reason:</th>
+            <td>{{ user.bans[0].reason }}</td>
+          </tr>
+	  {% endif %}
+	  <tr>
+	    <th>Links:</th>
+	    <td>
+	      <ul class="no-margin no-padding no-list-style-type">
+		<li><a href="{{ url_for('app_library.apps', **{'search-in':'maintainers','k':user.username}) }}">View this user's apps</a></li>
+		<li><a href="{{ url_for('app_library.scripts', **{'search-in':'maintainers','k':user.username}) }}">View this user's scripts</a></li>
 		</ul>
-	      <td>
-	    </tr>
+	    <td>
+	  </tr>
         </table>
     </div>
 {% endblock %}

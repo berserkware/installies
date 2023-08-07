@@ -1,0 +1,13 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container black auto-width">
+  <form action="{{ url_for('admin.unban_user', username=user.username) }}" method="post">
+    <h2>Unban user "{{ user.username }}"</h2>
+
+    <div class="form-input-container">
+      <input type="submit" value="Submit" class="button">
+    </div>
+  </form>
+</div>
+{% endblock content %}

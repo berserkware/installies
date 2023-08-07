@@ -95,6 +95,10 @@ def login():
             flash('You have to verify your email to login.', 'error')
             return redirect('/')
 
+        if user.is_banned():
+            flash('You are banned. You cannot login.', 'error')
+            return redirect('/')
+
         res = redirect('/')
         
         # if a referer is sent in the params, redirect to there instead

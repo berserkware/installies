@@ -20,14 +20,12 @@ class IndexView(TemplateView):
         if g.is_authed:
             user_maintained_apps = (
                 AppGroup
-                .get()
-                .where(Maintainer.user == g.user)
+                .get(**{'search-in': 'maintainers', 'k': g.user.username})
                 .paginate(1, 10)
             )
             user_maintained_scripts = (
                  ScriptGroup
-                .get()
-                .where(Maintainer.user == g.user)
+                .get(**{'search-in': 'maintainers', 'k': g.user.username})
                 .paginate(1, 10)
             )
             kwargs['user_maintained_apps'] = user_maintained_apps

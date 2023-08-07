@@ -1,10 +1,15 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g, abort
 from installies.models.supported_distros import Distro
 from installies.models.report import ReportBase, AppReport, ScriptReport
+from installies.models.user import User
 from installies.lib.validate import ValidationError
 from installies.blueprints.admin.validate import DistroSlugValidator, DistroNameValidatior
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView, ListView
-from installies.blueprints.admin.form import CreateDistroForm, CreateArchitectureForm
+from installies.blueprints.admin.form import (
+    CreateDistroForm,
+    CreateArchitectureForm,
+    BanUserForm,
+)
 
 admin = Blueprint('admin', __name__)
 
@@ -210,6 +215,67 @@ class ScriptReportListView(AuthenticationRequiredMixin, AdminRequiredMixin, List
 
     def get_group(self, **kwargs):
         return ScriptReport.select()
+
+
+class BanUserFormView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
+    """A view for banning users."""
+
+    template_path = 'admin/ban_user.html'
+    form_class = BanUserForm
+
+    def on_request(self, **kwargs):
+        user = User.select().where(User.username == kwargs['username'])
+
+        if user.exists() is False:
+            abort(404)
+
+        user = user.get()
+
+        if len(user.bans) > 0:
+            flash('User already banned.', 'error')
+            return redirect(url_for('app_library.index'))
+
+        kwargs['user'] = user
+        return super().on_request(**kwargs)
+    
+    def form_valid(self, form, **kwargs):
+        form.save(user=kwargs['user'])
+
+        for session in kwargs['user'].sessions:
+            session.delete_instance()
+        
+        flash('User successfully banned.', 'success')
+        return redirect(url_for('app_library.index'))
+
+
+class UnbanUserFormView(AuthenticationRequiredMixin, AdminRequiredMixin, TemplateView):
+    """A view for unbanning users."""
+
+    template_path = 'admin/unban_user.html'
+
+    def on_request(self, **kwargs):
+        user = User.select().where(User.username == kwargs['username'])
+
+        if user.exists() is False:
+            abort(404)
+
+        user = user.get()
+
+        if len(user.bans) == 0:
+            flash('User not banned.', 'error')
+            return redirect(url_for('app_library.index'))
+        
+        kwargs['user'] = user
+        return super().on_request(**kwargs)
+
+    def post(self, **kwargs):
+        user = kwargs['user']
+
+        for ban in user.bans:
+            ban.delete_instance()
+
+        flash('User successfully unbanned.', 'success')
+        return redirect(url_for('app_library.index'))
     
     
 admin.add_url_rule('/admin', 'admin_options', AdminOptions.as_view())    
@@ -225,3 +291,7 @@ admin.add_url_rule('/admin/script-reports/<int:report_id>/delete', 'delete_scrip
 admin.add_url_rule('/admin/script-reports/<int:report_id>', 'script_report_view', ScriptReportDetailView.as_view())
 admin.add_url_rule('/admin/script-reports/<int:report_id>/resolve', 'resolve_script_report', ResolveScriptReportView.as_view(), methods=['GET', 'POST'])
 admin.add_url_rule('/admin/script-reports', 'script_reports', ScriptReportListView.as_view())
+
+admin.add_url_rule('/profile/<username>/ban', 'ban_user', BanUserFormView.as_view(), methods=['get', 'post'])
+admin.add_url_rule('/profile/<username>/unban', 'unban_user', UnbanUserFormView.as_view(), methods=['get', 'post'])
+

@@ -3,8 +3,10 @@ from installies.blueprints.admin.validate import (
     DistroSlugValidator,
     DistroNameValidatior,
     ArchitectureNameValidator,
+    BanReasonValidator,
 )
 from installies.models.supported_distros import Distro, Architecture, AlternativeArchitectureName
+from installies.models.user import Ban
 from installies.blueprints.admin.converter import get_other_architecture_names_from_string
 
 class CreateDistroForm(Form):
@@ -57,4 +59,21 @@ class CreateArchitectureForm(Form):
                 architecture=architecture,
             )
 
-        return Architecture
+        return architecture
+
+
+class BanUserForm(Form):
+    """A form for banning users."""
+
+    inputs = [
+        FormInput('reason', BanReasonValidator),
+    ]
+    model = Ban
+
+    def save(self, user):
+        """Creates the Ban."""
+
+        return Ban.create(
+            user=user,
+            reason=self.data['reason'],
+        )

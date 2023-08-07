@@ -1,5 +1,5 @@
 from installies.lib.validate import Validator
-from installies.lib.check import InContainerChecker, AllowedCharactersChecker, EmptyChecker
+from installies.lib.check import InContainerChecker, AllowedCharactersChecker, EmptyChecker, LengthChecker
 from installies.models.supported_distros import Distro
 
 class DistroSlugValidator(Validator):
@@ -42,3 +42,12 @@ class ArchitectureNameValidator(Validator):
     ]
 
     data_name = 'Architecture name'
+
+
+class BanReasonValidator(Validator):
+    """A class for validating ban reasons."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=255),
+    ]
