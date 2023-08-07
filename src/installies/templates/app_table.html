@@ -14,8 +14,8 @@
       {% for app in apps %}
       <tr class="underline">
         <td><a href="{{ url_for('app_manager.app_view', app_name=app.name) }}" >{{ app.name }}</a></td>
-        <td>{{ app.creation_date.day }}-{{ app.creation_date.month }}-{{ app.creation_date.year }} {{ app.creation_date.hour }}:{{ app.creation_date.minute }} (UTC)</td>
-        <td>{{ app.last_modified.day }}-{{ app.last_modified.month }}-{{ app.last_modified.year }} {{ app.last_modified.hour }}:{{ app.last_modified.minute }} (UTC)</td>
+	<td>{{ app.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
+	<td>{{ app.last_modified.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
         <td>{{ app.description }}</td>
         <td>{{ app.current_version }}</td>
         <td><a href="{{ url_for('auth.profile', username=app.submitter.username) }}">{{ app.submitter.username }}</a></td>

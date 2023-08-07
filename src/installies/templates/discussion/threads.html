@@ -23,7 +23,7 @@
       <tr class="underline">
 	<td><a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id) }}">{{ thread.title }}</a></td>
 	<td><a href="url_for('auth.profile', username=thread.creator.username)">{{ thread.creator.username }}</a></td>
-	<td>{{ thread.creation_date.day }}-{{ thread.creation_date.month }}-{{ thread.creation_date.year }} {{ thread.creation_date.hour }}:{{ thread.creation_date.minute }} (UTC)</td>
+	<td>{{ thread.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
 	<td>{{ thread.comments|length }}</td>
       </tr>
       {% endfor %}

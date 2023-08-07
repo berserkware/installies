@@ -16,7 +16,7 @@
       <td>{{ report.title}}</td>
       <td><a href="{{ url_for('auth.profile', username=report.submitter.username) }}">{{ report.submitter.username }}</a></td>
       <td><a href="{{ url_for('app_manager.app_view', app_name=report.app.name) }}">{{ report.app.name }}</a></td>
-      <td>{{ report.creation_date.day }}-{{ report.creation_date.month }}-{{ report.creation_date.year }} {{ report.creation_date.hour }}:{{ report.creation_date.minute }} (UTC)</td>
+      <td>{{ report.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
       <td>{% if report.resolved %}True{% else %}False{% endif %}</td>
     </tr>
   {% endfor %}

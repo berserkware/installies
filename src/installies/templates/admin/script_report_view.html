@@ -21,7 +21,7 @@
      </tr>
     <tr>
       <th>Creation Date:</th>
-      <td>{{ report.creation_date.day }}-{{ report.creation_date.month }}-{{ report.creation_date.year }} {{ report.creation_date.hour }}:{{ report.creation_date.minute }} (UTC)</td>
+      <td>{{ report.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
     </tr>
     <tr>
       <th>Resolved:</th>

@@ -6,7 +6,7 @@
 
 <div class="container black">
   <h1 class="no-underline no-padding no-margin">{{ thread.title }}</h1>
-  <p>By <a href="{{ url_for('auth.profile', username=thread.creator.username) }}">{{ thread.creator.username }}</a> on {{ thread.creation_date.day }}-{{ thread.creation_date.month }}-{{ thread.creation_date.year }} {{ thread.creation_date.hour }}:{{ thread.creation_date.minute }} (UTC) [<a class="red" href="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}">Delete</a>]</p>
+  <p>By <a href="{{ url_for('auth.profile', username=thread.creator.username) }}">{{ thread.creator.username }}</a> on {{ thread.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC) [<a class="red" href="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}">Delete</a>]</p>
 </div>
 
 {% if g.is_authed %}
@@ -23,7 +23,7 @@
 <p>{{ total_object_count }} comment{% if total_object_count > 1 %}s{% endif%} found. Page {{ request.args.get('page', '1') }} of {{ page_count }}.</p>
 {% for comment in comments %}
 <div class="container black">
-  <p class="no-margin">By <a href="{{ url_for('auth.profile', username=comment.creator.username) }}">{{ comment.creator.username }}</a> {% if comment.creator == thread.creator %}(OP) {% endif %}on {{ comment.creation_date.day }}-{{ comment.creation_date.month }}-{{ comment.creation_date.year }} {{ comment.creation_date.hour }}:{{ comment.creation_date.minute }} (UTC) {% if comment.edited %}(edited){% endif %}<p>
+  <p class="no-margin">By <a href="{{ url_for('auth.profile', username=comment.creator.username) }}">{{ comment.creator.username }}</a> {% if comment.creator == thread.creator %}(OP) {% endif %}on {{ comment.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC) {% if comment.edited %}(edited){% endif %}<p>
   <p class="white-text">{{ comment.content }}</p>
   {% if g.user == comment.creator %}
   <p>[<a href="{{ url_for('app_manager.edit_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) }}">Edit</a>][<a class="red" href="{{ url_for('app_manager.delete_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) }}">Delete</a>]</p>

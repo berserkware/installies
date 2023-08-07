@@ -46,8 +46,8 @@
         <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if script.can_user_edit(g.user) %}{% endif %}{% if loop.index != script.maintainers.get_maintainers()|length %}, {% endif %}
         {% endfor %}
       </td>
-      <td>{{ script.creation_date.day }}-{{ script.creation_date.month }}-{{ script.creation_date.year }} {{ script.creation_date.hour }}:{{ script.creation_date.minute }} (UTC)</td>
-      <td>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</td>
+      <td>{{ script.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
+      <td>{{ script.last_modified.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
     </tr>
     {% endfor %}
   </tbody>

@@ -20,11 +20,11 @@
     </tr>
     <tr>
       <th class="bold">Creation Date:</th>
-      <td>{{ script.creation_date.day }}-{{ script.creation_date.month }}-{{ script.creation_date.year }} {{ script.creation_date.hour }}:{{ script.creation_date.minute }} (UTC)</td>
+      <td>{{ script.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
     </tr>
     <tr>
       <th class="bold">Last Modified:</th>
-      <td>{{ script.last_modified.day }}-{{ script.last_modified.month }}-{{ script.last_modified.year }} {{ script.last_modified.hour }}:{{ script.last_modified.minute }} (UTC)</td>
+      <td>{{ script.last_modified.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
     </tr>
     <tr>
       <th class="bold">Original Submitter:</th>

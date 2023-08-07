@@ -409,7 +409,7 @@ class RemoveScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, ScriptMi
         return self.get_script_view_redirect(**kwargs)
 
     
-class ReportAppView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):
+class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for reporting apps."""
 
     template_path = 'app/report_app.html'

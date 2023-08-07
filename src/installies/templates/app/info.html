@@ -16,11 +16,11 @@
   </tr>
   <tr>
     <th>Creation Date:</th>
-    <td>{{ app.creation_date.day }}-{{ app.creation_date.month }}-{{ app.creation_date.year }} {{ app.creation_date.hour }}:{{ app.creation_date.minute }} (UTC)</td>
+    <td>{{ app.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
   </tr>
   <tr>
     <th>Last Modified:</th>
-    <td>{{ app.last_modified.day }}-{{ app.last_modified.month }}-{{ app.last_modified.year }} {{ app.last_modified.hour }}:{{ app.last_modified.minute }} (UTC)</td>
+    <td>{{ app.last_modified.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
   </tr>
   <tr>
     <th>Description:</th>

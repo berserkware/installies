@@ -15,7 +15,7 @@
 	  {% endif %}
           <tr>
             <th>Join Date:</th>
-            <td>{{ user.creation_date.day }}-{{ user.creation_date.month }}-{{ user.creation_date.year }} {{ user.creation_date.hour }}:{{ user.creation_date.minute }} (UTC)</td>
+	    <td>{{ user.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
           </tr>
 	  {% if user.is_banned() %}
 	  <tr>
