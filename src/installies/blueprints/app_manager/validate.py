@@ -9,7 +9,6 @@ from installies.lib.check import (
     DictionaryChecker,
 )
 from installies.models.app import App
-from installies.models.supported_distros import Distro
 from installies.models.discussion import Thread, Comment
 from installies.lib.url import make_slug
 from installies.config import (

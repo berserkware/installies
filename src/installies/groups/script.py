@@ -1,6 +1,6 @@
 from installies.models.app import App
 from installies.models.script import Script, ScriptData
-from installies.models.supported_distros import SupportedDistro, Distro
+from installies.models.supported_distros import SupportedDistro
 from installies.models.maintainer import Maintainer, Maintainers
 from installies.models.user import User
 from installies.groups.base import Group

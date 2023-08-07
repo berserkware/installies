@@ -1,7 +1,7 @@
 from peewee import Query
 from installies.models.app import App
 from installies.models.script import Script, ScriptData, Action
-from installies.models.supported_distros import Distro, SupportedDistro, SupportedDistrosJunction
+from installies.models.supported_distros import SupportedDistro, SupportedDistrosJunction
 from functools import reduce
 
 import typing as t

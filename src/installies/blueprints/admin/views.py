@@ -1,13 +1,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g, abort
-from installies.models.supported_distros import Distro
 from installies.models.report import ReportBase, AppReport, ScriptReport
 from installies.models.user import User
 from installies.lib.validate import ValidationError
-from installies.blueprints.admin.validate import DistroSlugValidator, DistroNameValidatior
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView, ListView
 from installies.blueprints.admin.form import (
-    CreateDistroForm,
-    CreateArchitectureForm,
     BanUserForm,
 )
 
@@ -29,44 +25,6 @@ class AdminOptions(AuthenticationRequiredMixin, AdminRequiredMixin, TemplateView
 
     template_path = 'admin/options.html'
 
-    
-class AddDistroView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
-    """A view for adding distros."""
-
-    template_path = 'admin/add_distro.html'
-    form_class = CreateDistroForm
-
-    def form_valid(self, form, **kwargs):
-        based_on = form.data['distro-based-on']
-        based_on_distro = None
-        if based_on is not None and based_on != '':
-            
-            # checks that there is a distro that exists with the based on slug
-            based_on_distro = Distro.select().where(Distro.slug == based_on)
-            if based_on_distro.exists() is False:
-                flash(f'Could not find distro to be based with the slug "{based_on}"', 'error')
-                return redirect(url_for('admin.add_distro'))
-
-            based_on_distro = based_on_distro.get()
-
-        distro = form.save(based_on=based_on_distro)
-
-        flash('Distro successfully created.', 'success')
-        return redirect(url_for('admin.admin_options'))
-
-
-class AddArchitectureView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
-    """A view for adding architechture."""
-
-    template_path = 'admin/add_architecture.html'
-    form_class = CreateArchitectureForm
-
-    def form_valid(self, form, **kwarg):
-        form.save()         
-
-        flash('Architecture successfully created.', 'success')
-        return redirect(url_for('admin.admin_options'))
-        
 
 class ReportMixin:
     """
@@ -278,9 +236,7 @@ class UnbanUserFormView(AuthenticationRequiredMixin, AdminRequiredMixin, Templat
         return redirect(url_for('app_library.index'))
     
     
-admin.add_url_rule('/admin', 'admin_options', AdminOptions.as_view())    
-admin.add_url_rule('/admin/add-distro', 'add_distro', AddDistroView.as_view(), methods=['get', 'post'])
-admin.add_url_rule('/admin/add-architecture', 'add_architecture', AddArchitectureView.as_view(), methods=['get', 'post'])
+admin.add_url_rule('/admin', 'admin_options', AdminOptions.as_view())
 
 admin.add_url_rule('/admin/app-reports/<int:report_id>/delete', 'delete_app_report', DeleteAppReportView.as_view(), methods=['GET', 'POST'])
 admin.add_url_rule('/admin/app-reports/<int:report_id>', 'app_report_view', AppReportDetailView.as_view())

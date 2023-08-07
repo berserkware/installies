@@ -77,15 +77,6 @@ class SupportedDistrosJunction(BaseModel):
                 architectures = ['*']
 
             for architecture in architectures:
-                alternate_name = (AlternativeArchitectureName
-                                  .select()
-                                  .where(AlternativeArchitectureName.name == architecture)
-                                  )
-                
-                if alternate_name.exists():
-                    # gets the main name of the architechutre
-                    architecture = alternate_name.get().architecture.name
-
                 supported_distro = SupportedDistro.create(
                     group=self,
                     distro_name=distro,
@@ -103,27 +94,6 @@ class SupportedDistrosJunction(BaseModel):
     def delete_instance(self):
         self.delete_all_distros()
         super().delete_instance()
-    
-
-class Distro(BaseModel):
-    """A model for storing data about a linux distribution."""
-
-    name = CharField(255)
-    slug = CharField(255)
-    based_on = ForeignKeyField('self', null=True, backref='derivitives')
-
-    @staticmethod
-    def get_all_distro_slugs() -> list:
-        """
-        Gets a list of slugs of all the possible distros.
-        """
-
-        slugs = []
-        
-        for distro in Distro.select():
-            slugs.append(distro.slug)
-        
-        return slugs
 
 
 class SupportedDistro(BaseModel):
@@ -132,26 +102,3 @@ class SupportedDistro(BaseModel):
     group = ForeignKeyField(SupportedDistrosJunction, backref="distros")
     distro_name = CharField(255)
     architecture_name = CharField(255)
-    
-
-class Architecture(BaseModel):
-    """A model for storing infomation about a cpu architecture."""
-
-    name = CharField(255)
-    
-    @classmethod
-    def get_all_architecture_names(cls):
-        """Gets a list of all the architechture names."""
-        names = []
-        for architecture in cls.select():
-            names.append(architecture.name)
-
-        return names
-
-
-class AlternativeArchitectureName(BaseModel):
-    """A model for storing alternative names for architectures."""
-
-    name = CharField(255)
-    architecture = ForeignKeyField(Architecture, backref='alternative_names')
-    

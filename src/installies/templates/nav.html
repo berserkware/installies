@@ -10,7 +10,10 @@
     <a class="white-link nav-link" href="{{ url_for('app_manager.create_app') }}">Create an App</a>
     <a class="white-link nav-link" href="{{ url_for('auth.profile', username=g.user.username) }}">Profile</a>
     <a class="white-link nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
-      {% else %}
+    {% if g.user.admin == True %}
+    <a class="white-link nav-link" href="{{ url_for('admin.admin_options') }}">Admin</a>
+    {% endif %}
+    {% else %}
     <a class="white-link nav-link" href="{{ url_for('auth.login') }}">Log In</a>
     <a class="white-link nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
     {% endif %}
