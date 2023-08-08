@@ -241,10 +241,23 @@ class ActionHandler:
     A class to handle actions like install, remove, update, compile, or run.
 
     :param app_request: The AppRequest to get.
+    :param install_actions: Actions that install apps.
+    :param modify_actions: Actions that modify the current installation.
+    :param remove_actions: Actions that remove the installation.
     """
 
-    def __init__(self, app_request):
+    def __init__(
+            self,
+            app_request,
+            install_actions=[],
+            modify_actions=[],
+            remove_actions=[],
+    ):
         self.app_request = app_request
+        self.install_actions = install_actions
+        self.modify_actions = modify_actions
+        self.remove_actions = remove_actions
+        
         self.distro_id = distro.id()
         
         architechture = platform.machine()
@@ -274,54 +287,31 @@ class ActionHandler:
         
     def handle(self, action, args):
         """
-        Matches a action to a function, then runs the method.
+        Handles an action.
 
         :param action: The action to match to a method.
         :param args: The args to pass to the method.
         """
 
-        if hasattr(self, action):
-            func = getattr(self, action)
-
-        func(args)
-        
-    
-    def install(self, args):
-        if self.app_request.name in self.installed.data['installed_apps'].keys():
+        # if action is an installing action and app is already installed, confirm user wants to
+        # run the script.
+        if action in self.install_actions and self.app_request.name in self.installed.data['installed_apps'].keys():
             if confirm(':: App already installed, are you sure you want to proceed?') is False:
                 sys.exit()
-        
-        script = self.get_script('install')
 
-        script.run(self.app_request.name, args.action, args)
-
-        self.installed.data['installed_apps'][self.app_request.name] = {
-            'version': script.version,
-            'script_id': script.id,
-        }
-
-        self.installed.save()
-
-    def remove(self, args):
-        if self.app_request.name not in self.installed.data['installed_apps'].keys():
-            if confirm(':: App isn\'t installed, are you sure you want to proceed?') is False:
-                sys.exit()
-
-            script = self.get_script('remove')
-
-            script.run(self.app_request.name, args.action, args)
-            return
-
-        if confirm('Do you want to use the same script you used to install the app?') is True:
-            script_id = self.installed.data['installed_apps'][self.app_request.name]['script_id']
-            
-            scripts = Script.get(
-                self.app_request,
-                args.action,
-                distro_id=self.distro_id,
-                architechture=self.architechture,
-                script_id=script_id
-            )
+        # if the action modifies the current installation, ask user if they want to use the
+        # same script they used to install. If the script no longer exists, alert the user and
+        # quit.
+        if action in self.modify_actions:
+            if confirm('Do you want to use the same script you used to install the app?') is True:
+                script_id = self.installed.data['installed_apps'][self.app_request.name]['script_id']
+                scripts = Script.get(
+                    self.app_request,
+                    args.action,
+                    distro_id=self.distro_id,
+                    architechture=self.architechture,
+                    script_id=script_id
+                )
 
             if len(scripts) == 0:
                 print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
@@ -329,64 +319,21 @@ class ActionHandler:
 
             script = scripts[0]
         else:
-            script = self.get_script('remove')
+            script = self.get_script(action)
 
-        script.run(self.app_request.name, args.action, args)
+        script.run(self.app_request.name, action, args)
 
-        del self.installed.data['installed_apps'][self.app_request.name]
-        self.installed.save()
-
-    def update(self, args):        
-        if self.app_request.name not in self.installed.data['installed_apps'].keys():
-            if confirm(':: App isn\'t installed, are you sure you want to proceed?') is False:
-                sys.exit()
-
-            script = self.get_script('update')
-
-            script.run(self.app_request.name, args.action, args)
-            return
-
-        if confirm('Do you want to use the same script you used to install the app?') is True:
-            script_id = self.installed.data['installed_apps'][self.app_request.name]['script_id']
-            
-            scripts = Script.get(
-                self.app_request,
-                args.action,
-                distro_id=self.distro_id,
-                architechture=self.architechture,
-                script_id=script_id,
-            )
-
-            if len(scripts) == 0:
-                print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
-                sys.exit()
-
-            script = scripts[0]
-        else:
-            script = self.get_script('update')
-
-        script.run(self.app_request.name, args.action, args)
-
-    def compile(self, args):
-        if self.app_request.name in self.installed.data['installed_apps'].keys():
-            if confirm(':: App already installed, are you sure you want to proceed?') is False:
-                sys.exit()
-        
-        script = self.get_script('compile')
-
-        script.run(self.app_request.name, args.action, args)
-
-        self.installed.data['installed_apps'][self.app_request.name] = {
-            'version': script.version,
-            'script_id': script.id,
-        }
-
-        self.installed.save()
-
-    def run(self, args):
-        script = self.get_script('run')
-
-        script.run(self.app_request.name, args.action, args)
+        # if the action is an install action, add the app to the installed_apps file.
+        if action in self.install_actions:
+            self.installed.data['installed_apps'][self.app_request.name] = {
+                'version': script.version,
+                'script_id': script.id,
+            }
+            self.installed.save()
+        # else if the action is a remove action, remove it from the file.
+        elif action in self.remove_actions:
+            del self.installed.data['installed_apps'][self.app_request.name]
+            self.installed.save()
 
 
 def create_parser():
@@ -461,7 +408,20 @@ if __name__ == '__main__':
     if not hasattr(args, 'action'):
         sys.exit()
 
-    action_handler = ActionHandler(AppRequest(args.app_name))
+    action_handler = ActionHandler(
+        AppRequest(args.app_name),
+        install_actions=[
+            'install',
+            'compile,'
+        ],
+        modify_actions=[
+            'update',
+            'remove',
+        ],
+        remove_actions=[
+            'remove'
+        ]
+    )
 
     try:
         action_handler.handle(args.action, args)

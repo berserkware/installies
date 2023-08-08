@@ -308,10 +308,6 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, For
     script_maintainer_only = True
     form_class = EditScriptForm
 
-    def get_context_data(self, **kwargs):
-        kwargs['possible_script_actions'] = supported_script_actions
-        return kwargs
-
     def form_valid(self, form, **kwargs):
         form.save(script=kwargs['script'])
 
