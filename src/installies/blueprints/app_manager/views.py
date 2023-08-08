@@ -262,7 +262,7 @@ class ScriptListView(AppMixin, ListView):
 class ScriptDetailView(AppMixin, ScriptMixin, DetailView):
     """A view for getting the details of a script."""
 
-    template_path = 'script/script_info.html'
+    template_path = 'script/info.html'
     model_name = 'script'
 
     def get_object(self, **kwargs):
