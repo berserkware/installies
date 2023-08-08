@@ -5,10 +5,6 @@ from installies.blueprints.auth.views import auth
 from installies.blueprints.admin.views import admin
 from installies.config import database
 from installies.models.user import User, Session
-from installies.config import (
-    supported_script_actions,
-    supported_visibility_options,
-)
 from installies.lib.dict import remove_value_from_dictionary, join_dictionaries
 from flask import Flask, request, g, render_template
 from peewee import *
@@ -22,9 +18,6 @@ app.secret_key = '(j*&J6HtfJ$&hg&^__gEj'
 @app.before_request
 def before_request():
     database.connect()
-
-    g.supported_script_actions = supported_script_actions
-    g.supported_visibility_options = supported_visibility_options
 
     g.is_authed = False
     g.user = None

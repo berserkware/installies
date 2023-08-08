@@ -12,10 +12,7 @@ from installies.models.app import App
 from installies.models.discussion import Thread, Comment
 from installies.lib.url import make_slug
 from installies.config import (
-    supported_script_actions,
-    supported_distros,
     max_script_length,
-    supported_visibility_options,
 )
 
 class AppNameValidator(Validator):

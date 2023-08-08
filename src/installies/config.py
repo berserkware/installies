@@ -16,30 +16,6 @@ database = MySQLDatabase(
     port=int(os.environ.get('DATABASE_PORT'))
 )
 
-supported_distros = [
-    'ubuntu',
-    'arch',
-    'manjaro',
-    'debian',
-    'gentoo',
-    'mint',
-    'fedora',
-    'opensuse'
-]
-
-supported_script_actions = [
-    'install',
-    'remove',
-    'update',
-    'compile',
-    'run',
-]
-
-supported_visibility_options = [
-    'public',
-    'private',
-]
-
 apps_path = os.environ.get('SCRIPT_UPLOAD_PATH')
 
 max_script_length = os.environ.get('MAX_SCRIPT_LEN', 10000)

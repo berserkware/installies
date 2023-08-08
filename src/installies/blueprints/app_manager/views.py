@@ -28,10 +28,6 @@ from installies.blueprints.app_manager.validate import (
     ScriptContentValidator
 )
 from installies.groups.script import ScriptGroup
-from installies.config import (
-    supported_script_actions,
-    supported_visibility_options,
-)
 from installies.models.app import App
 from installies.models.maintainer import Maintainer, Maintainers
 from installies.models.script import Script
@@ -293,10 +289,6 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
 
     template_path = 'script/add_script.html'
     form_class = AddScriptForm
-
-    def get_context_data(self, **kwargs):
-        kwargs['possible_script_actions'] = supported_script_actions
-        return kwargs
 
     def form_valid(self, form, **kwargs):
         
