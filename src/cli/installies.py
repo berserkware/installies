@@ -324,7 +324,7 @@ class ActionHandler:
             )
 
             if len(scripts) == 0:
-                print(f'Script no longer exists, or doesn\'t support the given action.')
+                print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
                 sys.exit()
 
             script = scripts[0]
@@ -358,7 +358,7 @@ class ActionHandler:
             )
 
             if len(scripts) == 0:
-                print(f'Script no longer exists, or doesn\'t support the given action.')
+                print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
                 sys.exit()
 
             script = scripts[0]
@@ -439,6 +439,14 @@ def create_parser():
         add_help=False
     )
     compile_parser.set_defaults(action='compile')
+
+    run_parser = subparsers.add_parser(
+        "run",
+        help="Runs a script on a app.",
+        parents=[action_parser],
+        add_help=False
+    )
+    run_parser.set_defaults(action='run')
 
     return main_parser
 
