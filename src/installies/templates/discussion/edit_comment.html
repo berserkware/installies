@@ -9,7 +9,7 @@
     <form action="{{ url_for('app_manager.edit_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) }}" method="post">
         <div class="form-input-container">
           <label for="content" >Content</label><br>
-	  <textarea name="content" id="content" class="textbox" cols="30" rows="6" required>{{ comment.content }}</textarea>
+	  <textarea name="content" id="content" class="textbox" cols="30" rows="6"  required>{{ comment.content }}</textarea>
         </div>
 
         <div class="form-input-container">

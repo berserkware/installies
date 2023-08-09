@@ -13,7 +13,7 @@
 <div class="container black">
   <form action="{{ url_for('app_manager.create_comment', app_name=app.name, thread_id=thread.id) }}" method="post">
     <label for="content" >Comment</label><br>
-    <textarea name="content" id="content" class="textbox" cols="40" rows="3" required></textarea><br>
+    <textarea name="content" id="content" class="textbox" cols="40" rows="3" placeholder="Type here to comment..." required></textarea><br>
 
     <input type="submit" value="Post" class="button">
   </form>

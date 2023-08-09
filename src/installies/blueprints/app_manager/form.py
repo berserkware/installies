@@ -31,7 +31,7 @@ class CreateAppForm(Form):
         FormInput('app-name', AppNameValidator, default=''),
         FormInput('app-display-name', AppDisplayNameValidator, default=None),
         FormInput('app-desc', AppDescriptionValidator, default=''),
-        FormInput('app-current-version', AppCurrentVersionValidator, default=None),
+        FormInput('app-current-version', AppCurrentVersionValidator, default=''),
     ]
     model = App
 

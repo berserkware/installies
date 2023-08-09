@@ -2,23 +2,23 @@
   {% if show_app_name_input %}
   <div class="form-input-container">
     <label for="app-name" >App Name</label><br>
-    <input type="text" name="app-name" id="app-name" class="textbox" required><br>
+    <input type="text" name="app-name" id="app-name" class="textbox" placeholder="my-cool-app" required><br>
   </div>
   {% endif %}
   
   <div class="form-input-container">
-    <label for="app-display-name">Display Name</label><br>
-    <input type="text" name="app-display-name" id="app-display-name" class="textbox" {% if default_form_app %}value="{{ default_form_app.display_name }}"{% endif %}><br>
+    <label for="app-display-name">Display Name <span style="color:var(--light-grey)">(optional)</span></label><br>
+    <input type="text" name="app-display-name" id="app-display-name" class="textbox" placeholder="My Cool App" {% if default_form_app %}value="{{ default_form_app.display_name }}"{% endif %}><br>
   </div>
   
   <div class="form-input-container">
     <label for="app-desc" >Description</label><br>
-    <textarea name="app-desc" id="app-desc" class="textbox" cols="30" rows="6">{% if default_form_app %}{{ default_form_app.description }}{% endif %}</textarea>
+    <textarea name="app-desc" id="app-desc" class="textbox" cols="30" rows="6" placeholder="This is my very cool app.">{% if default_form_app %}{{ default_form_app.description }}{% endif %}</textarea>
   </div>
   
   <div class="form-input-container">
     <label for="app-current-version">Current Version</label><br>
-    <input type="text" name="app-current-version" id="app-current-version" class="textbox" {% if default_form_app %}value="{{ default_form_app.current_version }}"{% endif %}><br>
+    <input type="text" name="app-current-version" id="app-current-version" class="textbox" placeholder="1.23.4" {% if default_form_app %}value="{{ default_form_app.current_version }}"{% endif %} required><br>
   </div>
       
   <div class="form-input-container">

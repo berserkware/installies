@@ -75,6 +75,8 @@ class VersionValidator(Validator):
 class AppCurrentVersionValidator(VersionValidator):
     """A class to validator app current version strings."""
 
+    checkers = VersionValidator.checkers + [EmptyChecker()]
+    
     data_name = "App current version"
 
     

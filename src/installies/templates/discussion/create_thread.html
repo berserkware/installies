@@ -9,7 +9,7 @@
     <form action="{{ url_for('app_manager.create_thread', app_name=app.name) }}" method="post">
         <div class="form-input-container">
           <label for="title" >Title</label><br>
-	  <input type="text" name="title" id="title" class="textbox" required>
+	  <input type="text" name="title" id="title" class="textbox" placeholder="Start a new thread..." required>
         </div>
 
         <div class="form-input-container">

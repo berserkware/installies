@@ -2,10 +2,8 @@
   <h2>Script Info</h2>
 
   <table>
-    {% if app.can_user_edit(g.user) %}
     <td class="bold">Options:</td>
-    <td>[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>] [<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, script_id=script.id) }}">Add Maintainer</a>] [<a class="red" href="{{ url_for('app_manager.report_script', app_name=app.name, script_id=script.id) }}">Report</a>]</td>
-    {% endif %}
+    <td>{% if script.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>] [<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, script_id=script.id) }}">Add Maintainer</a>] {% endif %}[<a class="red" href="{{ url_for('app_manager.report_script', app_name=app.name, script_id=script.id) }}">Report</a>]</td>
     <tr>
       <th class="bold">Actions:</th>
       <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
