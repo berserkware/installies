@@ -94,6 +94,7 @@ class ScriptData(BaseModel):
 
     def delete_instance(self):
         Action.delete().where(Action.script_data == self).execute()
+        os.remove(self.filepath)
         super().delete_instance()
         self.supported_distros.delete_instance()
 
