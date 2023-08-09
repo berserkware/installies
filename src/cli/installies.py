@@ -61,6 +61,14 @@ class Installed:
         installed_apps_file = Path(f'~/.config/installies/installed.json').expanduser()
         with open(installed_apps_file, 'w') as f:
             f.write(json.dumps(self.data))
+
+    def check_installed(self, app_name):
+        """Checks if the given app is installed."""
+
+        if app_name in self.data['installed_apps']:
+            return True
+
+        return False
             
 class AppRequest:
     """
@@ -149,6 +157,36 @@ class Script:
 
         return script_list
 
+    @classmethod
+    def check_content_cached(cls, app_name):
+        """Returns True if there is a no empty script present in the cache for the app, else False."""
+        path_to_cache = Path(f'~/.cache/installies').expanduser()
+        if not os.path.exists(path_to_cache):
+            os.makedirs(path_to_cache)
+
+        # checks that file exists
+        path_to_script = Path(f'{path_to_cache}/{app_name}.sh')
+        if path_to_script.is_file() is False:
+            return False
+
+        # checks if script file is empty
+        with open(path_to_script, 'r') as f:
+            content = f.read()
+            if content.strip() == '':
+                return False
+
+        return True
+    
+    @classmethod
+    def get_cached_content(cls, app_name):
+        """Gets the cached script content for the given app."""
+        path_to_cache = Path(f'~/.cache/installies').expanduser()
+        if not os.path.exists(path_to_cache):
+            os.makedirs(path_to_cache)
+
+        path = f'{path_to_cache}/{app_name}.sh'
+        with open(path, 'r') as f:
+            return f.read()
 
     def create_file(self, app_name):
         """
@@ -156,11 +194,11 @@ class Script:
 
         :param app_name: The name of the app the script is for.
         """
-        path_to_app = Path(f'~/.cache/installies/{app_name}').expanduser()
-        if not os.path.exists(path_to_app):
-            os.makedirs(path_to_app)
+        path_to_cache = Path(f'~/.cache/installies').expanduser()
+        if not os.path.exists(path_to_cache):
+            os.makedirs(path_to_cache)
 
-        path = f'{path_to_app}/{app_name}.sh'
+        path = f'{path_to_cache}/{app_name}.sh'
         with open(path, 'w') as f:
             f.write(self.content)
 
@@ -185,8 +223,9 @@ class Script:
 
         script_file_path = self.create_file(app_name)
         
-        print(f'-- Executing script. --')
+        print(f'-- Begin executing script. --')
         subprocess.run(f'{script_file_path} {action}', shell=True)
+        print(f'--  End executing script.  --')
 
         
 def confirm(prompt: str):
@@ -217,18 +256,29 @@ def script_selecter(scripts: list[Script]):
     if len(scripts) == 1:
         return scripts[0]
     
-    print(f'Please select a script to use.')
+    print(f'==> Please select a script to use.')
+
+    # gets the length of the longest script method
+    max_method_char_length = len(scripts[0].method)
+    for script in scripts:
+        if len(script.method) > max_method_char_length:
+            max_method_char_length = len(script.method)
+    
     for i, script in enumerate(scripts):
-        print(f'{i}: {script.method} - Supported Actions: {", ".join(script.actions)}')
+        # gets the amount of spacing needed to make the length of the methods equal
+        method_spacing = "".join([" " for i in range(0, max_method_char_length-len(script.method))])
+        
+        print(f'{i} {script.method}{method_spacing} - Supported Actions: {", ".join(script.actions)}')
 
     while True:
         try:
-            script_index = int(input(f'Please select a number between 0 and {len(scripts)-1}: '))
+            script_index = int(input(f'==> Please select a number between 0 and {len(scripts)-1}: '))
         except ValueError:
             print('Please enter a number.')
             continue
 
-        if script_index < len(script) and script_index > 0:
+        # checks the script index is lest than the script length, and that the index is more or equal to zero.
+        if script_index < len(scripts) and script_index >= 0:
             break
 
         print(f'Please enter a number between 0 and {len(scripts)-1}. ')
@@ -293,6 +343,10 @@ class ActionHandler:
         :param args: The args to pass to the method.
         """
 
+        if action in self.modify_actions and self.installed.check_installed(self.app_request.name) is False:
+            if confirm(':: App is not installed, are you sure you want to proceed?') is False:
+                sys.exit()
+
         # if action is an installing action and app is already installed, confirm user wants to
         # run the script.
         if action in self.install_actions and self.app_request.name in self.installed.data['installed_apps'].keys():
@@ -302,22 +356,50 @@ class ActionHandler:
         # if the action modifies the current installation, ask user if they want to use the
         # same script they used to install. If the script no longer exists, alert the user and
         # quit.
-        if action in self.modify_actions:
-            if confirm('Do you want to use the same script you used to install the app?') is True:
-                script_id = self.installed.data['installed_apps'][self.app_request.name]['script_id']
-                scripts = Script.get(
-                    self.app_request,
-                    args.action,
-                    distro_id=self.distro_id,
-                    architechture=self.architechture,
-                    script_id=script_id
-                )
+        if action in self.modify_actions and self.installed.check_installed(self.app_request.name):
+            if confirm('Do you want to use the same script used to install the app?') is True:
+                print('==> Options for scripts:')
+                print('1 Use the cached script.')
+                print('2 Get a new version of the script.')
+                while True:
+                    try:
+                        option = int(input('==> Choose Option [1/2]: '))
 
-            if len(scripts) == 0:
-                print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
-                sys.exit()
+                        if option < 1 or option > 2:
+                            print('Please enter 1 or 2.')
+                            continue
 
-            script = scripts[0]
+                        break
+                    except ValueError:
+                        print('Please enter a number.')
+                        continue
+                    
+                script_data = self.installed.data['installed_apps'][self.app_request.name]['script']
+                if option == 1:
+                    script = Script(
+                        id=script_data['id'],
+                        actions=script_data['actions'],
+                        method=script_data['method'],
+                        content=Script.get_cached_content(self.app_request.name),
+                        version=self.installed.data['installed_apps'][self.app_request.name]['version']
+                    )
+                elif option == 2:
+                    script_id = self.installed.data['installed_apps'][self.app_request.name]['script']['id']
+                    scripts = Script.get(
+                        self.app_request,
+                        args.action,
+                        distro_id=self.distro_id,
+                        architechture=self.architechture,
+                        script_id=script_id
+                    )
+                    
+                    if len(scripts) == 0:
+                        print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
+                        sys.exit()
+                            
+                    script = scripts[0]
+            else:
+                script = self.get_script(action)
         else:
             script = self.get_script(action)
 
@@ -327,13 +409,18 @@ class ActionHandler:
         if action in self.install_actions:
             self.installed.data['installed_apps'][self.app_request.name] = {
                 'version': script.version,
-                'script_id': script.id,
+                'script': {
+                    'id': script.id,
+                    'actions': script.actions,
+                    'method': script.method,
+                }
             }
             self.installed.save()
         # else if the action is a remove action, remove it from the file.
         elif action in self.remove_actions:
-            del self.installed.data['installed_apps'][self.app_request.name]
-            self.installed.save()
+            if self.app_request.name in self.installed.data['installed_apps']:
+                del self.installed.data['installed_apps'][self.app_request.name]
+                self.installed.save()
 
 
 def create_parser():
@@ -426,5 +513,5 @@ if __name__ == '__main__':
     try:
         action_handler.handle(args.action, args)
     except KeyboardInterrupt:
-        print('KeyboardInterrupt, Exiting.\n')
+        print('')
         sys.exit()
