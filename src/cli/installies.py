@@ -10,6 +10,65 @@ import subprocess
 
 __version__ = '0.1.0'
 
+        
+def confirm(prompt: str):
+    """
+    Asks the user a yes or no question.
+
+    If the user replies with anything other that "Y", False is returned, else True. The string
+    " [Y/n]" is appended to the ending of the prompt.
+
+    :param prompt: The question to ask the user.
+    """
+
+    answer = input(f'{prompt} [Y/n] ')
+    if answer != 'Y':
+        return False
+
+    return True
+
+def script_selecter(scripts: list):
+    """
+    Allows the user to select a script in the list. Returns the script the user chose.
+
+    If there is only one script in the list, it returns that.
+
+    :param scripts: The script to get the user to select from.
+    """
+
+    if len(scripts) == 1:
+        return scripts[0]
+    
+    print(f'==> Please select a script to use.')
+
+    # gets the length of the longest script method
+    max_method_char_length = len(scripts[0].method)
+    for script in scripts:
+        if len(script.method) > max_method_char_length:
+            max_method_char_length = len(script.method)
+    
+    for i, script in enumerate(scripts):
+        # gets the amount of spacing needed to make the length of the methods equal
+        method_spacing = "".join([" " for i in range(0, max_method_char_length-len(script.method))])
+        
+        print(f'{i} {script.method}{method_spacing} - Supported Actions: {", ".join(script.actions)}')
+
+    while True:
+        try:
+            script_index = int(input(f'==> Please select a number between 0 and {len(scripts)-1}: '))
+        except ValueError:
+            print('Please enter a number.')
+            continue
+
+        # checks the script index is lest than the script length, and that the index is more or equal to zero.
+        if script_index < len(scripts) and script_index >= 0:
+            break
+
+        print(f'Please enter a number between 0 and {len(scripts)-1}. ')
+
+    return scripts[script_index]
+
+
 class Installed:
     """An object to get and save the data from ~/.cache/installies/installed.json."""
 
@@ -116,7 +175,7 @@ class Script:
         
     @classmethod
     def get(cls, app_request, action, distro_id, architechture, script_id=None):
-        """Gets a list of Scripts that match the parameters."""
+        """Gets a script."""
         app = cls.get_app(app_request)
         
         params = {
@@ -155,7 +214,13 @@ class Script:
                 version=(version if version is not None else script['for_version']),
             ))
 
-        return script_list
+        if len(script_list) == 0:
+            print(f"\033[31mError: No matching script found.\033[0m")
+            sys.exit()
+
+        script = script_selecter(script_list)
+
+        return script
 
     @classmethod
     def check_content_cached(cls, app_name):
@@ -227,64 +292,6 @@ class Script:
         subprocess.run(f'{script_file_path} {action}', shell=True)
         print(f'--  End executing script.  --')
 
-        
-def confirm(prompt: str):
-    """
-    Asks the user a yes or no question.
-
-    If the user replies with anything other that "Y", False is returned, else True. The string
-    " [Y/n]" is appended to the ending of the prompt.
-
-    :param prompt: The question to ask the user.
-    """
-
-    answer = input(f'{prompt} [Y/n] ')
-    if answer != 'Y':
-        return False
-
-    return True
-
-def script_selecter(scripts: list[Script]):
-    """
-    Allows the user to select a script in the list. Returns the script the user chose.
-
-    If there is only one script in the list, it returns that.
-
-    :param scripts: The script to get the user to select from.
-    """
-
-    if len(scripts) == 1:
-        return scripts[0]
-    
-    print(f'==> Please select a script to use.')
-
-    # gets the length of the longest script method
-    max_method_char_length = len(scripts[0].method)
-    for script in scripts:
-        if len(script.method) > max_method_char_length:
-            max_method_char_length = len(script.method)
-    
-    for i, script in enumerate(scripts):
-        # gets the amount of spacing needed to make the length of the methods equal
-        method_spacing = "".join([" " for i in range(0, max_method_char_length-len(script.method))])
-        
-        print(f'{i} {script.method}{method_spacing} - Supported Actions: {", ".join(script.actions)}')
-
-    while True:
-        try:
-            script_index = int(input(f'==> Please select a number between 0 and {len(scripts)-1}: '))
-        except ValueError:
-            print('Please enter a number.')
-            continue
-
-        # checks the script index is lest than the script length, and that the index is more or equal to zero.
-        if script_index < len(scripts) and script_index >= 0:
-            break
-
-        print(f'Please enter a number between 0 and {len(scripts)-1}. ')
-
-    return scripts[script_index]
-    
 
 class ActionHandler:
     """
@@ -320,45 +327,12 @@ class ActionHandler:
     def get_script(self, action):
         """Gets a script for an action."""
 
-        scripts = Script.get(
-            self.app_request,
-            args.action,
-            distro_id=self.distro_id,
-            architechture=self.architechture,
-        )
-
-        if len(scripts) == 0:
-            print(f"\033[31mError: No matching script found.\033[0m")
-            sys.exit()
-
-        script = script_selecter(scripts)
-
-        return script
-        
-    def handle(self, action, args):
-        """
-        Handles an action.
-
-        :param action: The action to match to a method.
-        :param args: The args to pass to the method.
-        """
-
-        if action in self.modify_actions and self.installed.check_installed(self.app_request.name) is False:
-            if confirm(':: App is not installed, are you sure you want to proceed?') is False:
-                sys.exit()
-
-        # if action is an installing action and app is already installed, confirm user wants to
-        # run the script.
-        if action in self.install_actions and self.app_request.name in self.installed.data['installed_apps'].keys():
-            if confirm(':: App already installed, are you sure you want to proceed?') is False:
-                sys.exit()
-
         # if the action modifies the current installation, ask user if they want to use the
         # same script they used to install. If the script no longer exists, alert the user and
         # quit.
         if action in self.modify_actions and self.installed.check_installed(self.app_request.name):
-            if confirm('Do you want to use the same script used to install the app?') is True:
-                print('==> Options for scripts:')
+            if Script.check_content_cached(self.app_request.name) and confirm('Do you want to use the same script used to install the app?') is True:
+                print('==> Cached script found, do you want to use it?:')
                 print('1 Use the cached script.')
                 print('2 Get a new version of the script.')
                 while True:
@@ -376,7 +350,7 @@ class ActionHandler:
                     
                 script_data = self.installed.data['installed_apps'][self.app_request.name]['script']
                 if option == 1:
-                    script = Script(
+                    return Script(
                         id=script_data['id'],
                         actions=script_data['actions'],
                         method=script_data['method'],
@@ -397,11 +371,41 @@ class ActionHandler:
                         print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
                         sys.exit()
                             
-                    script = scripts[0]
+                    return scripts[0]
             else:
-                script = self.get_script(action)
+                return Script.get(
+                     self.app_request,
+                     args.action,
+                     distro_id=self.distro_id,
+                     architechture=self.architechture,
+                 )
         else:
-            script = self.get_script(action)
+            return Script.get(
+                self.app_request,
+                args.action,
+                distro_id=self.distro_id,
+                architechture=self.architechture,
+            )
+        
+    def handle(self, action, args):
+        """
+        Handles an action.
+
+        :param action: The action to match to a method.
+        :param args: The args to pass to the method.
+        """
+
+        if action in self.modify_actions and self.installed.check_installed(self.app_request.name) is False:
+            if confirm(':: App is not installed, are you sure you want to proceed?') is False:
+                sys.exit()
+
+        # if action is an installing action and app is already installed, confirm user wants to
+        # run the script.
+        if action in self.install_actions and self.app_request.name in self.installed.data['installed_apps'].keys():
+            if confirm(':: App already installed, are you sure you want to proceed?') is False:
+                sys.exit()
+
+        script = self.get_script(action)
 
         script.run(self.app_request.name, action, args)
 
