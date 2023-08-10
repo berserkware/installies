@@ -40,22 +40,15 @@ def script_selecter(scripts: list):
         return scripts[0]
     
     print(f'==> Please select a script to use.')
-
-    # gets the length of the longest script method
-    max_method_char_length = len(scripts[0].method)
-    for script in scripts:
-        if len(script.method) > max_method_char_length:
-            max_method_char_length = len(script.method)
     
     for i, script in enumerate(scripts):
-        # gets the amount of spacing needed to make the length of the methods equal
-        method_spacing = "".join([" " for i in range(0, max_method_char_length-len(script.method))])
-        
-        print(f'{i} {script.method}{method_spacing} - Supported Actions: {", ".join(script.actions)}')
+        print(f'{i} Supported Actions: {", ".join(script.actions)}')
+        print(f'    {script.method}')
 
     while True:
         try:
-            script_index = int(input(f'==> Please select a number between 0 and {len(scripts)-1}: '))
+            print(f'==> Please select a number between 0 and {len(scripts)-1}: ')
+            script_index = int(input(f'==> '))
         except ValueError:
             print('Please enter a number.')
             continue
