@@ -1,47 +1,6 @@
 @font-face {
-    font-family: "Inter Light";
-    src: url("./Inter-Light.ttf");
-}
-
-@font-face {
-    font-family: "Inter Medium";
-    src: url("./Inter-Medium.ttf");
-}
-
-@font-face {
-    font-family: "Inter Regular";
-    src: url("./Inter-Regular.ttf");
-}
-
-@font-face {
-    font-family: "Inter Bold";
-    src: url("./Inter-Bold.ttf");
-}
-
-@font-face {
     font-family: "Assurant Standard";
     src: url("./Assurant-Standard.otf");
-}
-
-:root {
-    --black: #161616;
-    --dark-grey: #222222;
-    --grey: #5e5e5e;
-    --light-grey: #c5c5c5;
-    --off-white: #e5e5e5;
-    --blue: #1c82ef;
-}
-
-body {
-    color: white;
-    background-color: var(--dark-grey);
-    font-family: Inter Regular;
-}
-
-div.body {
-    color: white;
-    background-color: var(--dark-grey);
-    font-family: Inter Regular;
 }
 
 .logo {
@@ -52,104 +11,14 @@ div.body {
     line-height: 1;
 }
 
-div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
-    color: white;
-    font-family: Inter Bold;
-}
-
-div.sphinxsidebar h3, div.sphinxsidebar h4 {
-    font-family: Inter Regular;
-}
-
-.sphinxsidebarwrapper {
-    color: white;
-    background-color: var(--black);
-}
-
-div.sphinxsidebar h3 {
-    color: white;
-}
-
-div.sphinxsidebar a {
-    color: white;
-}
-
-a {
-    color: var(--blue);
-    border-bottom-color: var(--blue);
-}
-
-a.reference {
-    color: var(--blue);
-    border-bottom-color: var(--blue);
-}
-
-a:hover {
-    color: var(--blue);
-    border-bottom-color: var(--blue);
-}
-
-a.reference:hover {
-    color: var(--blue);
-    border-bottom-color: var(--blue);
-}
-
-div.sphinxsidebar a:hover {
-    color: var(--off-white);
-}
-
-div.sphinxsidebar p {
-    color: var(--light-grey);
-}
-
-div.sphinxsidebar #searchbox input[type="text"] {
-    background-color: var(--dark-grey);
-    color: var(--off-white);
-    border-color: var(--grey);
-    border-radius: 0px;
-    border-width: 1px;
-    border-style: solid;
-    font-family: Inter Regular;
-}
-
-div.sphinxsidebar #searchbox input[type="submit"] {
-    background-color: var(--dark-grey);
-    color: var(--off-white);
-    border-color: var(--grey);
-    border-radius: 0px;
-    border-width: 1px;
-    border-style: solid;
-    font-family: Inter Regular;
-    border-left: none
-}
-
-div.sphinxsidebar #searchbox input[type="submit"]:hover {
-    background-color: var(--black);
+span.pre {
+    white-space: normal;
 }
 
 
-input[type="text"] {
-    background-color: var(--dark-grey);
-    color: var(--off-white);
-    border-color: var(--grey);
-    border-radius: 0px;
-    border-width: 1px;
-    border-style: solid;
-    font-family: Inter Regular;
-    font-size: 20px;
-}
-
-input[type="submit"] {
-    background-color: var(--dark-grey);
-    color: var(--off-white);
-    border-color: var(--grey);
-    border-radius: 0px;
-    border-width: 1px;
-    border-style: solid;
-    font-family: Inter Regular;
-    font-size: 20px;
-}
-
-input[type="submit"]:hover {
-    background-color: var(--black);
+div.body p, div.body dd, div.body li, div.body blockquote {
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  -webkit-hyphens: none;
+  hyphens: none;
 }
