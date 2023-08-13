@@ -1,20 +1,26 @@
 from flask import g
 from installies.lib.form import Form, FormInput
-from installies.blueprints.app_manager.validate import (
+from installies.validators.app import (
     AppNameValidator,
     AppDisplayNameValidator,
     AppDescriptionValidator,
     AppCurrentVersionValidator,
+)
+from installies.validators.script import (
     ScriptActionValidator,
     ScriptDistroValidator,
     ScriptContentValidator,
     ScriptDistroDictionaryValidator,
     ScriptMethodValidator,
     ScriptVersionValidator,
-    ReportTitleValidator,
-    ReportBodyValidator,
+)
+from installies.validators.discussion import (
     ThreadTitleValidator,
     CommentContentValidator,
+)
+from installies.validators.report import (
+    ReportTitleValidator,
+    ReportBodyValidator,
 )
 from installies.blueprints.app_manager.upload import get_distros_from_string
 from installies.models.app import App

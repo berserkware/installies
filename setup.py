@@ -11,11 +11,12 @@ setup(
         'installies.lib',
         'installies.models',
         'installies.groups',
+        'installies.validators',
         'installies.blueprints.api',
         'installies.blueprints.app_library',
         'installies.blueprints.app_manager',
         'installies.blueprints.auth',
-        'installies.blueprints.admin'
+        'installies.blueprints.admin',
         ],
     package_dir={'': 'src'},
     include_package_data=True,

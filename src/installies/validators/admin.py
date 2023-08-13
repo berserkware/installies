@@ -1,5 +1,5 @@
-from installies.lib.validate import Validator
-from installies.lib.check import EmptyChecker, LengthChecker
+from installies.validators.base import Validator
+from installies.validators.check import EmptyChecker, LengthChecker
 
 class BanReasonValidator(Validator):
     """A class for validating ban reasons."""

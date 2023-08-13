@@ -1,4 +1,4 @@
-from installies.lib.validate import ValidationError
+from installies.validators.base import ValidationError
 
 class FormInput:
     """

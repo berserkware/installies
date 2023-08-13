@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g, abort
 from installies.models.report import ReportBase, AppReport, ScriptReport
 from installies.models.user import User
-from installies.lib.validate import ValidationError
+from installies.validators.base import ValidationError
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView, ListView
 from installies.blueprints.admin.form import (
     BanUserForm,

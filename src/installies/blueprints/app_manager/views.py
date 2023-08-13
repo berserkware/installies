@@ -19,13 +19,15 @@ from flask import (
 from installies.blueprints.app_manager.upload import (
     get_distros_from_string,
 )
-from installies.lib.validate import ValidationError
-from installies.blueprints.app_manager.validate import (
+from installies.validators.base import ValidationError
+from installies.validators.app import (
     AppNameValidator,
     AppDescriptionValidator,
+)
+from installies.validators.script import (
     ScriptActionValidator,
     ScriptDistroValidator,
-    ScriptContentValidator
+    ScriptContentValidator,
 )
 from installies.groups.script import ScriptGroup
 from installies.models.app import App

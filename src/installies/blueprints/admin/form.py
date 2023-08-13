@@ -1,5 +1,5 @@
 from installies.lib.form import Form, FormInput
-from installies.blueprints.admin.validate import (
+from installies.validators.admin  import (
     BanReasonValidator,
 )
 from installies.models.user import Ban
