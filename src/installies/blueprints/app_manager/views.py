@@ -118,19 +118,6 @@ class AppDetailView(AppMixin, TemplateView):
     template_path = 'app/info.html'
 
 
-class AppDeleteView(AuthenticationRequiredMixin, AppMixin, TemplateView):
-    """A view to delete apps."""
-
-    template_path = 'app/delete.html'
-    maintainer_only = True
-
-    def post(self, **kwargs):
-        app = kwargs['app']
-        app.delete_instance()
-        flash('App successfully deleted!', 'success')
-        return redirect('/', 303)
-
-
 class AppEditView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view to edit apps."""
 

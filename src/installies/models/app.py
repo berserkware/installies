@@ -149,6 +149,9 @@ class App(BaseModel):
 
         for script in self.scripts:
             script.delete_instance()
+
+        for thread in self.threads:
+            thread.delete_instance()
         
         super().delete_instance()
 

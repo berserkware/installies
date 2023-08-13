@@ -19,6 +19,12 @@ class Thread(BaseModel):
     creator = ForeignKeyField(User, backref='threads')
     creation_date = DateTimeField(default=datetime.now)
 
+    def delete_instance(self):
+        for comment in self.comments:
+            comment.delete_instance()
+
+        super().delete_instance()
+
 
 class Comment(BaseModel):
     """A model for comments in dicussions."""

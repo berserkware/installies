@@ -24,7 +24,6 @@
     <ul class="no-margin no-padding no-list-style-type">
       {% if app.can_user_edit(g.user) %}
       <li><a href="{{ url_for("app_manager.app_edit", app_name=app.name) }}">Edit</a></li>
-      <li><a href="{{ url_for("app_manager.app_delete", app_name=app.name) }}" class="red">Delete</a></li>
       <li><a href="{{ url_for("app_manager.add_maintainer", app_name=app.name) }}">Add Maintainer</a></li>
       {% endif %}
       <li><a href="{{ url_for("app_manager.add_script", app_name=app.name) }}">Add Script</a></li>
