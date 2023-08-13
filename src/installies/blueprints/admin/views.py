@@ -3,7 +3,7 @@ from installies.models.report import ReportBase, AppReport, ScriptReport
 from installies.models.user import User
 from installies.validators.base import ValidationError
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView, ListView
-from installies.blueprints.admin.form import (
+from installies.forms.admin import (
     BanUserForm,
 )
 

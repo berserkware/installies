@@ -37,13 +37,19 @@ from installies.models.user import User
 from installies.models.report import ReportBase, AppReport
 from installies.models.discussion import Thread, Comment
 from installies.blueprints.auth.decorators import authenticated_required
-from installies.blueprints.app_manager.form import (
+from installies.forms.app import (
     CreateAppForm,
     EditAppForm,
+)
+from installies.forms.script import (
     AddScriptForm,
     EditScriptForm,
+)
+from installies.forms.report import (
     ReportAppForm,
     ReportScriptForm,
+)
+from installies.forms.discussion import (
     CreateThreadForm,
     CreateCommentForm,
     EditCommentForm,

@@ -12,6 +12,7 @@ setup(
         'installies.models',
         'installies.groups',
         'installies.validators',
+        'installies.forms',
         'installies.blueprints.api',
         'installies.blueprints.app_library',
         'installies.blueprints.app_manager',
