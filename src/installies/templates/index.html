@@ -9,9 +9,8 @@
 <div class="container" style="max-width:1400px;">
     <h3>Welcome to installies!</h3>
     <p class="container-description">
-        Installies is a website that removes all the hassle
-        from installing apps on Linux. Installies uses bash script to
-        install, remove and update apps with ease.
+      Installies is a site for managing, organizing, and retrieving bash scripts for use to install, remove, update or compile apps on linux. To get started
+      you can <a href="{{ url_for('app_manager.app_view', app_name='installies') }}">download the CLI</a>.
     </p>
 </div>
 {% if g.is_authed %}
