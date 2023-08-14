@@ -22,7 +22,7 @@ import bleach
 
 
 class SupportedDistrosJunction(BaseModel):
-    """A junction models between SupportedDistro models and scripts."""
+    """A junction model between SupportedDistro models and scripts."""
 
 
     def get_as_dict(self) -> dict:

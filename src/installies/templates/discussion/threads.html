@@ -24,7 +24,7 @@
 	<td><a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id) }}">{{ thread.title }}</a></td>
 	<td><a href="url_for('auth.profile', username=thread.creator.username)">{{ thread.creator.username }}</a></td>
 	<td>{{ thread.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
-	<td>{{ thread.comments|length }}</td>
+	<td>{{ thread.comments.get_all()|length }}</td>
       </tr>
       {% endfor %}
     </tbody>

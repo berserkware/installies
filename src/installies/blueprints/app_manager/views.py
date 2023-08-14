@@ -470,8 +470,6 @@ class DeleteThreadView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, FormV
 
         thread = kwargs['thread']
 
-        for comment in thread.comments:
-            comment.delete_instance()
         thread.delete_instance()
         
         flash('Thread successfully deleted.', 'success')
@@ -494,7 +492,7 @@ class CreateCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Form
         )
     
     def form_valid(self, form, **kwargs):
-        form.save(thread=kwargs['thread'])
+        form.save(group=kwargs['thread'].comments)
 
         flash('Comment successfully posted.', 'success')
         return redirect(
@@ -576,7 +574,7 @@ class CommentListView(AppMixin, ThreadMixin, ListView):
     )
 
     def get_group(self, **kwargs):
-        return kwargs['thread'].comments
+        return kwargs['thread'].comments.get_all()
 
 
 class ThreadListView(AppMixin, ListView):
