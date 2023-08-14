@@ -3,9 +3,18 @@
     src: url("./Assurant-Standard.otf");
 }
 
-.logo {
+.sidebar-brand-text {
     font-family: "Assurant Standard";
     font-size: 53px;
+    letter-spacing: 2px;
+    text-transform: lowercase;
+    line-height: 1;
+    margin: 0;
+}
+
+.brand {
+    font-family: "Assurant Standard";
+    font-size: 40px;
     letter-spacing: 2px;
     text-transform: lowercase;
     line-height: 1;
