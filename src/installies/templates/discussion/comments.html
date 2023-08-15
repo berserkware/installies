@@ -10,25 +10,17 @@
 </div>
 
 {% if g.is_authed %}
-<div class="container black">
-  <form action="{{ url_for('app_manager.create_comment', app_name=app.name, thread_id=thread.id) }}" method="post">
-    <label for="content" >Comment</label><br>
-    <textarea name="content" id="content" class="textbox" cols="40" rows="3" placeholder="Type here to comment..." required></textarea><br>
-
-    <input type="submit" value="Post" class="button">
-  </form>
-</div>
+{% set create_comment_form_route = url_for('app_manager.create_comment', app_name=app.name, thread_id=thread.id) %}
+{% include "discussion/create_comment.html" %}
 {% endif %}
 
 <p>{{ total_object_count }} comment{% if total_object_count > 1 %}s{% endif%} found. Page {{ request.args.get('page', '1') }} of {{ page_count }}.</p>
 {% for comment in comments %}
-<div class="container black">
-  <p class="no-margin">By <a href="{{ url_for('auth.profile', username=comment.creator.username) }}">{{ comment.creator.username }}</a> {% if comment.creator == thread.creator %}(OP) {% endif %}on {{ comment.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC) {% if comment.edited %}(edited){% endif %}<p>
-  <p class="white-text">{{ comment.content }}</p>
-  {% if g.user == comment.creator %}
-  <p>[<a href="{{ url_for('app_manager.edit_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) }}">Edit</a>][<a class="red" href="{{ url_for('app_manager.delete_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) }}">Delete</a>]</p>
-  {% endif %}
-</div>
+
+{% set edit_comment_route = url_for('app_manager.edit_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
+{% set delete_comment_route = url_for('app_manager.delete_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
+{% include "discussion/comment.html" %}
+
 {% endfor %}
 
 {% set url_for_route = 'app_manager.comments' %}
