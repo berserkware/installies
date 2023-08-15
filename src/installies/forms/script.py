@@ -8,7 +8,7 @@ from installies.validators.script import (
     ScriptMethodValidator,
     ScriptVersionValidator,
 )
-from installies.blueprints.app_manager.upload import get_distros_from_string
+from installies.models.supported_distros import SupportedDistrosJunction
 from installies.models.app import App
 from installies.models.script import Script
 
@@ -28,7 +28,7 @@ class ModifyScriptForm(Form):
         FormInput(
             'script-supported-distros',
             ScriptDistroDictionaryValidator,
-            get_distros_from_string,
+            SupportedDistrosJunction.get_from_string,
             '',
         ),
         FormInput('script-content', ScriptContentValidator),

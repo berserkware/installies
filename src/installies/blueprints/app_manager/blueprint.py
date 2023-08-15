@@ -1,10 +1,13 @@
 from flask import Blueprint
-from installies.blueprints.app_manager.views import (
+from installies.blueprints.app_manager.app import (
     CreateAppFormView,
     AppDetailView,
     AppEditView,
     AddMaintainerView,
+    AddMaintainerView,
     RemoveMaintainerView,
+)
+from installies.blueprints.app_manager.script import (
     ScriptListView,
     ScriptDetailView,
     ScriptDownloadView,
@@ -13,8 +16,12 @@ from installies.blueprints.app_manager.views import (
     DeleteScriptView,
     AddScriptMaintainerView,
     RemoveScriptMaintainerView,
+)
+from installies.blueprints.app_manager.report import (
     ReportAppView,
     ReportScriptView,
+)
+from installies.blueprints.app_manager.discussion import (
     CreateThreadView,
     CreateCommentView,
     EditCommentView,
