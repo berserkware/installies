@@ -12,6 +12,7 @@ from installies.models.user import User
 from installies.models.app import App
 from installies.models.maintainer import Maintainers
 from installies.models.supported_distros import SupportedDistrosJunction
+from installies.models.discussion import CommentJunction
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
@@ -129,6 +130,7 @@ class Script(BaseModel):
     script_data = ForeignKeyField(ScriptData)
     submitter = ForeignKeyField(User, backref='scripts')
     maintainers = ForeignKeyField(Maintainers)
+    comments = ForeignKeyField(CommentJunction)
     app = ForeignKeyField(App, backref='scripts')
     
     @classmethod
@@ -179,11 +181,14 @@ class Script(BaseModel):
         script_data = ScriptData.create(app_dir, content, method, supported_distros, actions)
 
         maintainers = Maintainers.create()
+
+        comments = CommentJunction.create()
         
         created_script = super().create(
             version=version,
             script_data=script_data,
             maintainers=maintainers,
+            comments=comments,
             submitter=submitter,
             app=app,
         )
@@ -238,6 +243,8 @@ class Script(BaseModel):
         super().delete_instance()
 
         self.script_data.delete_instance()
+
+        self.comments.delete_instance()
 
     def serialize(self):
         """Turns the Script into a json serializable dict."""

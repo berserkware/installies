@@ -1,5 +1,5 @@
 <div class="container black">
-  <p class="no-margin">By <a href="{{ url_for('auth.profile', username=comment.creator.username) }}">{{ comment.creator.username }}</a> {% if comment.creator == thread.creator %}(OP) {% endif %}on {{ comment.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC) {% if comment.edited %}(edited){% endif %}<p>
+  <p class="no-margin">By <a href="{{ url_for('auth.profile', username=comment.creator.username) }}">{{ comment.creator.username }}</a> {% if thread and comment.creator == thread.creator %}(OP) {% endif %}on {{ comment.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC) {% if comment.edited %}(edited){% endif %}<p>
   <p class="white-text">{{ comment.content }}</p>
   {% if g.user == comment.creator %}
   <p>[<a href="{{ edit_comment_route }}">Edit</a>][<a class="red" href="{{ delete_comment_route }}">Delete</a>]</p>

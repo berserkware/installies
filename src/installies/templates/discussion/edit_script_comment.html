@@ -1,0 +1,29 @@
+{% extends "app/base.html" %}
+
+{% block app_page_title %}Edit Comment for Script for {% endblock %}
+
+{% block header %}
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
+<script src="/static/js/codemirror/mode/shell/shell.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container black" style="width:auto">
+    <h2>Edit Comment</h2>
+    
+    <form action="{{ url_for('app_manager.edit_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) }}" method="post">
+        <div class="form-input-container">
+          <label for="content" >Content</label><br>
+	  <textarea name="content" id="content" class="textbox" cols="30" rows="6"  required>{{ comment.content }}</textarea>
+        </div>
+
+        <div class="form-input-container">
+            <input type="submit" value="Submit" class="button">
+        </div>
+    </form>
+</div>
+
+{% include "script/info_container.html" %}
+{% endblock %}
