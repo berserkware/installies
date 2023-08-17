@@ -11,23 +11,33 @@ from peewee import (
 )
 from datetime import datetime
 
-class ReportBase(BaseModel):
-    """A base model for reports."""
+class Report(BaseModel):
+    """A model for reports."""
 
     title = CharField(255)
     body = TextField()
+    report_type = CharField(255)
     creation_date = DateTimeField(default=datetime.now)
     submitter = ForeignKeyField(User, backref="reports")
     resolved = BooleanField(default=False)
 
+    def delete_instance(self):
+        if self.report_type == 'app':
+            self.app_data.get().delete_instance()
+        elif self.report_type == 'script':
+            self.script_data.get().delete_instance()
+        super().delete_instance()
 
-class AppReport(ReportBase):
-    """A model for reporting apps."""
 
+class ReportAppInfo(BaseModel):
+    """A model for storing app data for reports."""
+
+    report = ForeignKeyField(Report, backref="app_data")
     app = ForeignKeyField(App, backref="reports")
 
 
-class ScriptReport(ReportBase):
-    """A model for reporting scripts."""
+class ReportScriptInfo(BaseModel):
+    """A model for storing script data for reports."""
 
+    report = ForeignKeyField(Report, backref="script_data")
     script = ForeignKeyField(Script, backref="reports")

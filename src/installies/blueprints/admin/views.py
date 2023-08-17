@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g, abort
-from installies.models.report import ReportBase, AppReport, ScriptReport
+from installies.models.report import Report, ReportAppInfo, ReportScriptInfo
 from installies.models.user import User
 from installies.validators.base import ValidationError
 from installies.lib.view import FormView, AuthenticationRequiredMixin, TemplateView, ListView
@@ -33,10 +33,8 @@ class ReportMixin:
     :param report_class: The class of the report. Default is the Report class.
     """
 
-    report_class = ReportBase
-
     def on_request(self, **kwargs):
-        report = self.report_class.select().where(self.report_class.id == kwargs['report_id'])
+        report = Report.select().where(Report.id == kwargs['report_id'])
 
         if report.exists() is False:
             abort(404)
@@ -48,7 +46,7 @@ class ReportMixin:
         return super().on_request(**kwargs)
 
 
-class AppReportDetailView(
+class ReportDetailView(
         AuthenticationRequiredMixin,
         AdminRequiredMixin,
         ReportMixin,
@@ -56,12 +54,20 @@ class AppReportDetailView(
 ):
     """A view to get app reports."""
 
-    template_path = 'admin/app_report_view.html'
+    template_path = 'admin/report_view.html'
     public_only = True
-    report_class = AppReport
 
+    def get(self, **kwargs):
+        report = kwargs['report']
 
-class DeleteAppReportView(
+        if report.report_type == 'app':
+            kwargs['app'] = report.app_data.get().app
+        elif report.report_type == 'script':
+            kwargs['script'] = report.script_data.get().script
+        
+        return super().get(**kwargs)
+
+class DeleteReportView(
         AuthenticationRequiredMixin,
         AdminRequiredMixin,
         ReportMixin,
@@ -69,9 +75,8 @@ class DeleteAppReportView(
 ):
     """A view for deleting app reports."""
 
-    template_path = 'admin/delete_app_report.html'
+    template_path = 'admin/delete_report.html'
     public_only = True
-    report_class = AppReport
     
     def post(self, **kwargs):
         report = kwargs['report']
@@ -80,7 +85,7 @@ class DeleteAppReportView(
         return redirect(url_for('admin.admin_options'), 303)
 
 
-class ResolveAppReportView(
+class ResolveReportView(
         AuthenticationRequiredMixin,
         AdminRequiredMixin,
         ReportMixin,
@@ -88,9 +93,8 @@ class ResolveAppReportView(
 ):
     """A view for resolving app reports."""
     
-    template_path = 'admin/resolve_app_report.html'
+    template_path = 'admin/resolve_report.html'
     public_only = True
-    report_class = AppReport
 
     def post(self, **kwargs):
         report = kwargs['report']
@@ -100,79 +104,15 @@ class ResolveAppReportView(
         return redirect(url_for('admin.admin_options'), 303)
 
 
-class AppReportListView(AuthenticationRequiredMixin, AdminRequiredMixin, ListView):
+class ReportListView(AuthenticationRequiredMixin, AdminRequiredMixin, ListView):
     """A view for listing app reports."""
 
-    template_path = 'admin/app_reports.html'
+    template_path = 'admin/reports.html'
     public_only = True
     group_name = 'reports'
 
     def get_group(self, **kwargs):
-        return AppReport.select()
-
-
-
-class ScriptReportDetailView(
-        AuthenticationRequiredMixin,
-        AdminRequiredMixin,
-        ReportMixin,
-        TemplateView
-):
-    """A view to get script reports."""
-
-    template_path = 'admin/script_report_view.html'
-    public_only = True
-    report_class = ScriptReport
-
-
-class DeleteScriptReportView(
-        AuthenticationRequiredMixin,
-        AdminRequiredMixin,
-        ReportMixin,
-        TemplateView
-):
-    """A view for deleting script reports."""
-
-    template_path = 'admin/delete_script_report.html'
-    public_only = True
-    report_class = ScriptReport
-    
-    def post(self, **kwargs):
-        report = kwargs['report']
-        report.delete_instance()
-        flash('Report successfully removed.', 'success')
-        return redirect(url_for('admin.admin_options'), 303)
-
-
-class ResolveScriptReportView(
-        AuthenticationRequiredMixin,
-        AdminRequiredMixin,
-        ReportMixin,
-        TemplateView
-):
-    """A view for resolving script reports."""
-    
-    template_path = 'admin/resolve_script_report.html'
-    public_only = True
-    report_class = ScriptReport
-
-    def post(self, **kwargs):
-        report = kwargs['report']
-        report.resolved = True
-        report.save()
-        flash('Report successfully resolved.', 'success')
-        return redirect(url_for('admin.admin_options'), 303)
-
-
-class ScriptReportListView(AuthenticationRequiredMixin, AdminRequiredMixin, ListView):
-    """A view for listing script reports."""
-
-    template_path = 'admin/script_reports.html'
-    public_only = True
-    group_name = 'reports'
-
-    def get_group(self, **kwargs):
-        return ScriptReport.select()
+        return Report.select()
 
 
 class BanUserFormView(AuthenticationRequiredMixin, AdminRequiredMixin, FormView):
@@ -238,15 +178,10 @@ class UnbanUserFormView(AuthenticationRequiredMixin, AdminRequiredMixin, Templat
     
 admin.add_url_rule('/admin', 'admin_options', AdminOptions.as_view())
 
-admin.add_url_rule('/admin/app-reports/<int:report_id>/delete', 'delete_app_report', DeleteAppReportView.as_view(), methods=['GET', 'POST'])
-admin.add_url_rule('/admin/app-reports/<int:report_id>', 'app_report_view', AppReportDetailView.as_view())
-admin.add_url_rule('/admin/app-reports/<int:report_id>/resolve', 'resolve_app_report', ResolveAppReportView.as_view(), methods=['GET', 'POST'])
-admin.add_url_rule('/admin/app-reports', 'app_reports', AppReportListView.as_view())
-
-admin.add_url_rule('/admin/script-reports/<int:report_id>/delete', 'delete_script_report', DeleteScriptReportView.as_view(), methods=['GET', 'POST'])
-admin.add_url_rule('/admin/script-reports/<int:report_id>', 'script_report_view', ScriptReportDetailView.as_view())
-admin.add_url_rule('/admin/script-reports/<int:report_id>/resolve', 'resolve_script_report', ResolveScriptReportView.as_view(), methods=['GET', 'POST'])
-admin.add_url_rule('/admin/script-reports', 'script_reports', ScriptReportListView.as_view())
+admin.add_url_rule('/admin/reports/<int:report_id>/delete', 'delete_report', DeleteReportView.as_view(), methods=['GET', 'POST'])
+admin.add_url_rule('/admin/reports/<int:report_id>', 'report_view', ReportDetailView.as_view())
+admin.add_url_rule('/admin/reports/<int:report_id>/resolve', 'resolve_report', ResolveReportView.as_view(), methods=['GET', 'POST'])
+admin.add_url_rule('/admin/reports', 'reports', ReportListView.as_view())
 
 admin.add_url_rule('/profile/<username>/ban', 'ban_user', BanUserFormView.as_view(), methods=['get', 'post'])
 admin.add_url_rule('/profile/<username>/unban', 'unban_user', UnbanUserFormView.as_view(), methods=['get', 'post'])

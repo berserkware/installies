@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container black">
-  <h2>App Report Details</h2>
+  <h2>Report Details</h2>
 
   <table>
     <tr>
@@ -20,6 +20,22 @@
       <td>{{ report.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
     </tr>
     <tr>
+      <th>Type:</th>
+      <td>{{ report.report_type }}</td>
+    </tr>
+    {% if app %}
+    <tr>
+      <th>App:</th>
+      <td>[<a href="{{ url_for('app_manager.app_view', app_name=app.name) }}">View</a>]</td>
+    </tr>
+    {% endif %}
+    {% if script %}
+    <tr>
+      <th>Script:</th>
+      <td>[<a href="{{ url_for('app_manager.script_view', app_name=script.app.name, script_id=script.id) }}">View</a>]</td>
+    </tr>
+    {% endif %}
+    <tr>
       <th>Resolved:</th>
       <td>{% if report.resolved %}True{% else %}False{% endif %}</td>
     </tr>
@@ -29,7 +45,7 @@
      </tr>
     <tr>
       <th>Action:</th>
-      <td>[<a href="{{ url_for('admin.delete_app_report', report_id=report.id) }}">Delete</a>][<a href="{{ url_for('admin.resolve_app_report', report_id=report.id) }}">Resolve</a>]</td>
+      <td>[<a href="{{ url_for('admin.delete_report', report_id=report.id) }}">Delete</a>][<a href="{{ url_for('admin.resolve_report', report_id=report.id) }}">Resolve</a>]</td>
     </tr>
   </table>
 </div>

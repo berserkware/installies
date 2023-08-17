@@ -4,11 +4,11 @@
 
 {% block content %}
 <div class="container black">
-  <h2>App Reports</h2>
+  <h2>Reports</h2>
   {% if reports|length == 0 %}
   <p>No reports found.</p>
   {% else %}
-  {% include 'admin/app_reports_table.html' %}
+  {% include 'admin/reports_table.html' %}
   {% endif %}
 </div>
 {% endblock %}

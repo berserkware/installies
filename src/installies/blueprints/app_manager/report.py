@@ -20,7 +20,6 @@ from installies.validators.base import ValidationError
 from installies.models.app import App
 from installies.models.script import Script
 from installies.models.user import User
-from installies.models.report import ReportBase, AppReport
 from installies.forms.report import (
     ReportAppForm,
     ReportScriptForm,

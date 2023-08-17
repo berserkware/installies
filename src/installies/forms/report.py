@@ -6,7 +6,7 @@ from installies.validators.report import (
 )
 from installies.models.app import App
 from installies.models.script import Script
-from installies.models.report import AppReport, ScriptReport
+from installies.models.report import Report, ReportAppInfo, ReportScriptInfo
 
 class CreateReportBaseForm(Form):
     """A form to create reports."""
@@ -23,12 +23,17 @@ class ReportAppForm(CreateReportBaseForm):
     model = App
 
     def save(self, app: App):
-        return AppReport.create(
+        report = Report.create(
             title=self.data['title'],
             body=self.data['body'],
+            report_type='app',
             submitter=g.user,
-            app=app,
         )
+        info = ReportAppInfo.create(
+            report=report,
+            app=app
+        )
+        return report
 
 
 class ReportScriptForm(CreateReportBaseForm):
@@ -37,9 +42,15 @@ class ReportScriptForm(CreateReportBaseForm):
     model = Script
 
     def save(self, script: Script):
-        return ScriptReport.create(
+        report = Report.create(
             title=self.data['title'],
             body=self.data['body'],
+            report_type='script',
             submitter=g.user,
             script=script,
         )
+        info = ReportScriptInfo.create(
+            report=report,
+            script=script,
+        )
+        return report

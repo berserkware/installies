@@ -6,7 +6,6 @@ from installies.validators.discussion import (
 )
 from installies.models.app import App
 from installies.models.script import Script
-from installies.models.report import AppReport, ScriptReport
 from installies.models.discussion import Thread, Comment, CommentJunction
 
 
