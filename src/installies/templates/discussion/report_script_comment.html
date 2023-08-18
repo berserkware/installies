@@ -1,6 +1,6 @@
 {% extends "app/base.html" %}
 
-{% block app_page_title %}Script Info for {% endblock %}
+{% block app_page_title %}Delete Comment for Script for {% endblock %}
 
 {% block header %}
 <script src="/static/js/codemirror/lib/codemirror.js"></script>
@@ -10,27 +10,29 @@
 {% endblock %}
 
 {% block content %}
-{% include "script/info_container.html" %}
+<div class="container black" style="width:auto">
+    <h2>Report the Following Comment</h2>
+    
+    <form action="{{ url_for('app_manager.report_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) }}" method="post">
+        <div class="form-input-container">
+          <label for="title" >Title</label><br>
+	  <input type="text" name="title" id="title" class="textbox" required>
+        </div>
 
-<h2>Comments</h2>
-
-{% if g.is_authed %}
-{% set create_comment_form_route = url_for('app_manager.create_script_comment', app_name=app.name, script_id=script.id) %}
-{% include "discussion/create_comment.html" %}
-{% endif %}
-
-<p>{{ total_comment_count }} comment{% if total_comment_count > 1 %}s{% endif%} found. Page {{ request.args.get('page', '1') }} of {{ page_count }}.</p>
-{% for comment in comments %}
+	<div class="form-input-container">
+	  <label for="body">Body</label><br>
+	  <textarea name="body" id="body" class="textbox" cols="30" rows="6" required></textarea>
+	</div>
+        
+        <div class="form-input-container">
+            <input type="submit" value="Submit" class="button">
+        </div>
+    </form>
+</div>
 
 {% set edit_comment_route = url_for('app_manager.edit_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) %}
 {% set delete_comment_route = url_for('app_manager.delete_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) %}
 {% set report_comment_route = url_for('app_manager.report_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) %}
 {% include "discussion/comment.html" %}
-
-{% endfor %}
-
-{% set url_for_route = 'app_manager.script_view' %}
-{% set url_for_arguments = {'app_name': app.name, 'script_id': script.id} %}
-{% include "pager.html" %}
 
 {% endblock %}

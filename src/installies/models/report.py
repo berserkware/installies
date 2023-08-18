@@ -2,6 +2,7 @@ from installies.models.base import BaseModel
 from installies.models.user import User
 from installies.models.app import App
 from installies.models.script import Script
+from installies.models.discussion import Comment
 from peewee import (
     CharField,
     DateTimeField,
@@ -26,6 +27,8 @@ class Report(BaseModel):
             self.app_data.get().delete_instance()
         elif self.report_type == 'script':
             self.script_data.get().delete_instance()
+        elif self.report_type == 'comment':
+            self.comment_data.get().delete_instance()
         super().delete_instance()
 
 
@@ -41,3 +44,11 @@ class ReportScriptInfo(BaseModel):
 
     report = ForeignKeyField(Report, backref="script_data")
     script = ForeignKeyField(Script, backref="reports")
+
+
+class ReportCommentInfo(BaseModel):
+    """A model for storing comment data for reports."""
+
+    report = ForeignKeyField(Report, backref="comment_data")
+    comment = ForeignKeyField(Comment, backref="reports")
+    is_script_comment = BooleanField()

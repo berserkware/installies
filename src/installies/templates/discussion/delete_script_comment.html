@@ -23,8 +23,7 @@
 
 {% set edit_comment_route = url_for('app_manager.edit_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) %}
 {% set delete_comment_route = url_for('app_manager.delete_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) %}
+{% set report_comment_route = url_for('app_manager.report_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) %}
 {% include "discussion/comment.html" %}
 
-
-{% include "script/info_container.html" %}
 {% endblock %}

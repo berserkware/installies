@@ -1,0 +1,37 @@
+{% extends "app/base.html" %}
+
+{% block app_page_title %}Report comment on "{{ thread.title }}" on {% endblock %}
+
+{% block content %}
+
+<div class="container black">
+  <h1 class="no-underline no-padding no-margin">{{ thread.title }}</h1>
+  <p>By <a href="{{ url_for('auth.profile', username=thread.creator.username) }}">{{ thread.creator.username }}</a> on {{ thread.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC) [<a class="red" href="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}">Delete</a>]</p>
+</div>
+
+<div class="container black" style="width:auto">
+    <h2>Report the Following Comment</h2>
+    
+    <form action="{{ url_for('app_manager.report_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) }}" method="post">
+        <div class="form-input-container">
+          <label for="title" >Title</label><br>
+	  <input type="text" name="title" id="title" class="textbox" required>
+        </div>
+
+	<div class="form-input-container">
+	  <label for="body">Body</label><br>
+	  <textarea name="body" id="body" class="textbox" cols="30" rows="6" required></textarea>
+	</div>
+        
+        <div class="form-input-container">
+            <input type="submit" value="Submit" class="button">
+        </div>
+    </form>
+</div>
+
+{% set edit_comment_route = url_for('app_manager.edit_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
+{% set delete_comment_route = url_for('app_manager.delete_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
+{% set delete_comment_route = url_for('app_manager.report_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
+{% include "discussion/comment.html" %}
+
+{% endblock %}

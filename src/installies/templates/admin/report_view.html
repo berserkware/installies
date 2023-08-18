@@ -35,6 +35,20 @@
       <td>[<a href="{{ url_for('app_manager.script_view', app_name=script.app.name, script_id=script.id) }}">View</a>]</td>
     </tr>
     {% endif %}
+    {% if comment %}
+    <tr>
+      <th>Comment Content:</th>
+      <td>{{ comment.content }}</td>
+    </tr>
+    <tr>
+      <th>View Comments:</th>
+      {% if report.comment_data.get().is_script_comment %}
+      <td>[<a href="{{ url_for('app_manager.script_view', app_name=comment.get_script().app.name, script_id=comment.get_script().id) }}">View</a>]</td>
+      {% else %}
+      <td>[<a href="{{ url_for('app_manager.comments', app_name=comment.get_thread().app.name, thread_id=comment.get_thread().id) }}">View</a>]</td>
+      {% endif %}
+    </tr>
+    {% endif %}
     <tr>
       <th>Resolved:</th>
       <td>{% if report.resolved %}True{% else %}False{% endif %}</td>

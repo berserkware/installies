@@ -64,6 +64,8 @@ class ReportDetailView(
             kwargs['app'] = report.app_data.get().app
         elif report.report_type == 'script':
             kwargs['script'] = report.script_data.get().script
+        elif report.report_type == 'comment':
+            kwargs['comment'] = report.comment_data.get().comment
         
         return super().get(**kwargs)
 

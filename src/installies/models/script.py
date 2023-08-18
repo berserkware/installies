@@ -130,7 +130,7 @@ class Script(BaseModel):
     script_data = ForeignKeyField(ScriptData)
     submitter = ForeignKeyField(User, backref='scripts')
     maintainers = ForeignKeyField(Maintainers)
-    comments = ForeignKeyField(CommentJunction)
+    comments = ForeignKeyField(CommentJunction, backref="script")
     app = ForeignKeyField(App, backref='scripts')
     
     @classmethod

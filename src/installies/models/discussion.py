@@ -56,3 +56,19 @@ class Comment(BaseModel):
     creation_date = DateTimeField(default=datetime.now)
     content = TextField()
     edited = BooleanField(default=False)
+
+    def get_thread(self):
+        """
+        Gets the thread the comment belongs to.
+
+        None is returned if it doesn't belong to a thread.
+        """
+        return self.group.threads.get()
+
+    def get_script(self):
+        """
+        Gets the script the comment belongs to.
+
+        None is returned if it doesn't belong to a script.
+        """
+        return self.group.script.get()

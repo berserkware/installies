@@ -23,6 +23,7 @@ from installies.models.user import User
 from installies.forms.report import (
     ReportAppForm,
     ReportScriptForm,
+    ReportCommentForm,
 )
 from installies.lib.view import (
     View,
@@ -41,6 +42,7 @@ from installies.blueprints.app_manager.app import (
 from installies.blueprints.app_manager.script import (
     ScriptMixin,
 )
+from installies.blueprints.app_manager.discussion import CommentMixin, ThreadMixin
 
 
 class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
@@ -66,4 +68,30 @@ class ReportScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormV
         form.save(script=kwargs['script'])
 
         flash('Script successfully reported.', 'success')
+        return self.get_script_view_redirect(**kwargs)
+
+
+class ReportAppCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, FormView):
+    """A view for reporting comments."""
+
+    template_path = 'discussion/report_app_comment.html'
+    form_class = ReportCommentForm
+
+    def form_valid(self, form, **kwargs):
+        form.save(comment=kwargs['comment'], is_script_comment=False)
+
+        flash('Comment successfully reported.', 'success')
+        return self.get_app_view_redirect(**kwargs)
+
+
+class ReportScriptCommentView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, CommentMixin, FormView):
+    """A view for reporting comments."""
+
+    template_path = 'discussion/report_script_comment.html'
+    form_class = ReportCommentForm
+
+    def form_valid(self, form, **kwargs):
+        form.save(comment=kwargs['comment'], is_script_comment=True)
+
+        flash('Comment successfully reported.', 'success')
         return self.get_script_view_redirect(**kwargs)

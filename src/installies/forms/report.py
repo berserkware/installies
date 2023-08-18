@@ -6,7 +6,8 @@ from installies.validators.report import (
 )
 from installies.models.app import App
 from installies.models.script import Script
-from installies.models.report import Report, ReportAppInfo, ReportScriptInfo
+from installies.models.discussion import Comment
+from installies.models.report import Report, ReportAppInfo, ReportScriptInfo, ReportCommentInfo
 
 class CreateReportBaseForm(Form):
     """A form to create reports."""
@@ -47,10 +48,28 @@ class ReportScriptForm(CreateReportBaseForm):
             body=self.data['body'],
             report_type='script',
             submitter=g.user,
-            script=script,
         )
         info = ReportScriptInfo.create(
             report=report,
             script=script,
+        )
+        return report
+
+class ReportCommentForm(CreateReportBaseForm):
+    """A form to report comments."""
+
+    model = Comment
+
+    def save(self, comment: Comment, is_script_comment: bool):
+        report = Report.create(
+            title=self.data['title'],
+            body=self.data['body'],
+            report_type='comment',
+            submitter=g.user,
+        )
+        info = ReportCommentInfo.create(
+            report=report,
+            comment=comment,
+            is_script_comment=is_script_comment,
         )
         return report
