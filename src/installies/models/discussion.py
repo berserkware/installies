@@ -57,6 +57,13 @@ class Comment(BaseModel):
     content = TextField()
     edited = BooleanField(default=False)
 
+    def delete_instance(self):
+        report_info = self.reports.get()
+        report_info.report.delete_instance()
+        report_info.delete_instance()
+        
+        return super().delete_instance()
+    
     def get_thread(self):
         """
         Gets the thread the comment belongs to.
