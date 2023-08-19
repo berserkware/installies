@@ -128,7 +128,7 @@ class Script(BaseModel):
     last_modified = DateTimeField(default=datetime.now)
     version = CharField(64, null=True)
     script_data = ForeignKeyField(ScriptData)
-    thread = ForeignKeyField(Thread)
+    thread = ForeignKeyField(Thread, backref="for_script")
     submitter = ForeignKeyField(User, backref='scripts')
     maintainers = ForeignKeyField(Maintainers)
     app = ForeignKeyField(App, backref='scripts')

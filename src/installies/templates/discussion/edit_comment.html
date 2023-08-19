@@ -3,6 +3,11 @@
 {% block app_page_title %}Edit Comment for {% endblock %}
 
 {% block content %}
+<div class="container black">
+  <h1 class="no-underline no-padding no-margin">{{ thread.title }}</h1>
+  <p>By {% if thread.creator %}<a href="url_for('auth.profile', username=thread.creator.username)">{{ thread.creator.username }}</a>{% else %}system{% endif %} on {{ thread.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC) {% if thread.creator == g.user %}[<a class="red" href="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}">Delete</a>]{% endif %}{% if thread.for_script %} for <a href="{{ url_for('app_manager.script_view', app_name=thread.for_script.get().app.name, script_id=thread.for_script.get().id) }}">Script</a>{% endif %}</p>
+</div>
+
 <div class="container black" style="width:auto">
     <h2>Edit Comment</h2>
     
