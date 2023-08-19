@@ -31,11 +31,6 @@ from installies.forms.script import (
     AddScriptForm,
     EditScriptForm,
 )
-from installies.forms.discussion import (
-    CreateCommentForm,
-    EditCommentForm,
-)
-from installies.blueprints.app_manager.discussion import CommentMixin
 from installies.lib.view import (
     View,
     FormView,
@@ -112,30 +107,6 @@ class ScriptDetailView(AppMixin, ScriptMixin, DetailView):
 
     def get_object(self, **kwargs):
         return kwargs['script']
-
-    def get(self, **kwargs):
-        comments = kwargs['script'].comments.get_all()
-        
-        paginator = Paginate(
-            default_per_page = 10,
-            max_per_page = 50,
-        )
-        
-        paginated_comments = paginator.modify(comments, **request.args)
-        
-        total_comment_count = comments.count()
-        try:
-            per_page = int(request.args.get('per-page', 10))
-        except ValueError:
-            per_page = 10
-            
-        page_count = math.ceil(total_comment_count / per_page)
-
-        kwargs["comments"] = paginated_comments
-        kwargs["total_comment_count"] = total_comment_count
-        kwargs["page_count"] = page_count
-
-        return super().get(**kwargs)
 
 
 class ScriptDownloadView(AppMixin, ScriptMixin, View):
@@ -263,44 +234,4 @@ class RemoveScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, ScriptMi
         script.maintainers.delete_maintainer(kwargs['user'])
         
         flash(f'Maintainer successfully removed.', 'success')
-        return self.get_script_view_redirect(**kwargs)
-
-
-class CreateScriptCommentView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):
-    """A view for creating comments"""
-
-    form_class = CreateCommentForm
-
-    def form_invaid(self, form, **kwargs):
-        return self.get_script_view_redirect(**kwargs)
-    
-    def form_valid(self, form, **kwargs):
-        form.save(group=kwargs['script'].comments)
-
-        flash('Comment successfully posted.', 'success')
-        return self.get_script_view_redirect(**kwargs)
-    
-
-class EditScriptCommentView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, CommentMixin, FormView):
-    """A view for editing comments."""
-
-    template_path = 'discussion/edit_script_comment.html'
-    form_class = EditCommentForm
-    
-    def form_valid(self, form, **kwargs):
-        form.save(comment=kwargs['comment'])
-
-        flash('Comment successfully edited', 'success')
-        return self.get_script_view_redirect(**kwargs)
-
-
-class DeleteScriptCommentView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, CommentMixin, FormView):
-    """A view for deleting comments."""
-
-    template_path = 'discussion/delete_script_comment.html'
-
-    def post(self, **kwargs):
-        kwargs['comment'].delete_instance()
-
-        flash('Comment successfully deleted', 'success')
         return self.get_script_view_redirect(**kwargs)

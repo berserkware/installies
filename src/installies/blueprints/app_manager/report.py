@@ -78,20 +78,7 @@ class ReportAppCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, C
     form_class = ReportCommentForm
 
     def form_valid(self, form, **kwargs):
-        form.save(comment=kwargs['comment'], is_script_comment=False)
+        form.save(comment=kwargs['comment'])
 
         flash('Comment successfully reported.', 'success')
         return self.get_app_view_redirect(**kwargs)
-
-
-class ReportScriptCommentView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, CommentMixin, FormView):
-    """A view for reporting comments."""
-
-    template_path = 'discussion/report_script_comment.html'
-    form_class = ReportCommentForm
-
-    def form_valid(self, form, **kwargs):
-        form.save(comment=kwargs['comment'], is_script_comment=True)
-
-        flash('Comment successfully reported.', 'success')
-        return self.get_script_view_redirect(**kwargs)

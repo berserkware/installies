@@ -42,11 +42,7 @@
     </tr>
     <tr>
       <th>View Comments:</th>
-      {% if report.comment_data.get().is_script_comment %}
-      <td>[<a href="{{ url_for('app_manager.script_view', app_name=comment.get_script().app.name, script_id=comment.get_script().id) }}">View</a>]</td>
-      {% else %}
-      <td>[<a href="{{ url_for('app_manager.comments', app_name=comment.get_thread().app.name, thread_id=comment.get_thread().id) }}">View</a>]</td>
-      {% endif %}
+      <td>[<a href="{{ url_for('app_manager.comments', app_name=comment.thread.app.name, thread_id=comment.thread.id) }}">View</a>]</td>
     </tr>
     {% endif %}
     <tr>

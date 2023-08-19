@@ -60,7 +60,7 @@ class ReportCommentForm(CreateReportBaseForm):
 
     model = Comment
 
-    def save(self, comment: Comment, is_script_comment: bool):
+    def save(self, comment: Comment):
         report = Report.create(
             title=self.data['title'],
             body=self.data['body'],
@@ -70,6 +70,5 @@ class ReportCommentForm(CreateReportBaseForm):
         info = ReportCommentInfo.create(
             report=report,
             comment=comment,
-            is_script_comment=is_script_comment,
         )
         return report

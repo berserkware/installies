@@ -6,7 +6,7 @@ from installies.validators.discussion import (
 )
 from installies.models.app import App
 from installies.models.script import Script
-from installies.models.discussion import Thread, Comment, CommentJunction
+from installies.models.discussion import Thread, Comment
 
 
 class CreateThreadForm(Form):
@@ -39,9 +39,9 @@ class CommentForm(Form):
 class CreateCommentForm(CommentForm):
     """A form to create comments."""
 
-    def save(self, group: CommentJunction):
+    def save(self, thread: Thread):
         return Comment.create(
-            group=group,
+            thread=thread,
             creator=g.user,
             content=self.data['content'],
         )

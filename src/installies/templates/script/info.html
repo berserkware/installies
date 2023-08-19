@@ -12,25 +12,4 @@
 {% block content %}
 {% include "script/info_container.html" %}
 
-<h2>Comments</h2>
-
-{% if g.is_authed %}
-{% set create_comment_form_route = url_for('app_manager.create_script_comment', app_name=app.name, script_id=script.id) %}
-{% include "discussion/create_comment.html" %}
-{% endif %}
-
-<p>{{ total_comment_count }} comment{% if total_comment_count > 1 %}s{% endif%} found. Page {{ request.args.get('page', '1') }} of {{ page_count }}.</p>
-{% for comment in comments %}
-
-{% set edit_comment_route = url_for('app_manager.edit_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) %}
-{% set delete_comment_route = url_for('app_manager.delete_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) %}
-{% set report_comment_route = url_for('app_manager.report_script_comment', app_name=app.name, script_id=script.id, comment_id=comment.id) %}
-{% include "discussion/comment.html" %}
-
-{% endfor %}
-
-{% set url_for_route = 'app_manager.script_view' %}
-{% set url_for_arguments = {'app_name': app.name, 'script_id': script.id} %}
-{% include "pager.html" %}
-
 {% endblock %}

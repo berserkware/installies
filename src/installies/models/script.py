@@ -11,8 +11,8 @@ from installies.models.base import BaseModel
 from installies.models.user import User
 from installies.models.app import App
 from installies.models.maintainer import Maintainers
+from installies.models.discussion import Thread
 from installies.models.supported_distros import SupportedDistrosJunction
-from installies.models.discussion import CommentJunction
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
@@ -32,7 +32,7 @@ class ScriptData(BaseModel):
     """A model for storing the path to the script content."""
 
     filepath = CharField(255)
-    method = CharField(255)
+    method = CharField(255, unique=True)
     supported_distros = ForeignKeyField(SupportedDistrosJunction)
 
     def open_content(self, mode='r'):
@@ -128,9 +128,9 @@ class Script(BaseModel):
     last_modified = DateTimeField(default=datetime.now)
     version = CharField(64, null=True)
     script_data = ForeignKeyField(ScriptData)
+    thread = ForeignKeyField(Thread)
     submitter = ForeignKeyField(User, backref='scripts')
     maintainers = ForeignKeyField(Maintainers)
-    comments = ForeignKeyField(CommentJunction, backref="script")
     app = ForeignKeyField(App, backref='scripts')
     
     @classmethod
@@ -182,13 +182,17 @@ class Script(BaseModel):
 
         maintainers = Maintainers.create()
 
-        comments = CommentJunction.create()
+        thread = Thread.create(
+            title=f'Discussion of script with method "{method}"',
+            app=app,
+            creator=None,
+        )
         
         created_script = super().create(
             version=version,
             script_data=script_data,
+            thread=thread,
             maintainers=maintainers,
-            comments=comments,
             submitter=submitter,
             app=app,
         )
@@ -224,6 +228,9 @@ class Script(BaseModel):
         self.script_data.supported_distros.delete_all_distros()
         self.script_data.supported_distros.create_from_list(supported_distros)
 
+        self.thread.title = f'Discussion of script with method "{method}"'
+        self.thread.save()
+
         Action.delete().where(Action.script_data == self.script_data).execute()
         Action.create_from_list(self.script_data, actions)
         
@@ -243,8 +250,6 @@ class Script(BaseModel):
         super().delete_instance()
 
         self.script_data.delete_instance()
-
-        self.comments.delete_instance()
 
     def serialize(self):
         """Turns the Script into a json serializable dict."""

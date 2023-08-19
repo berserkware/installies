@@ -6,7 +6,7 @@
 
 <div class="container black">
   <h1 class="no-underline no-padding no-margin">{{ thread.title }}</h1>
-  <p>By <a href="{{ url_for('auth.profile', username=thread.creator.username) }}">{{ thread.creator.username }}</a> on {{ thread.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC) [<a class="red" href="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}">Delete</a>]</p>
+  <p>By {% if thread.creator %}<a href="url_for('auth.profile', username=thread.creator.username)">{{ thread.creator.username }}{% else %}system{% endif %} on {{ thread.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC) {% if thread.creator == g.user %}[<a class="red" href="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}">Delete</a>]{% endif %}</p>
 </div>
 
 {% if g.is_authed %}

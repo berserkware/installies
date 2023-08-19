@@ -51,4 +51,3 @@ class ReportCommentInfo(BaseModel):
 
     report = ForeignKeyField(Report, backref="comment_data")
     comment = ForeignKeyField(Comment, backref="reports")
-    is_script_comment = BooleanField()

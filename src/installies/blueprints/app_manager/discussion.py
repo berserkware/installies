@@ -120,7 +120,7 @@ class CreateCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Form
         )
     
     def form_valid(self, form, **kwargs):
-        form.save(group=kwargs['thread'].comments)
+        form.save(thread=kwargs['thread'])
 
         flash('Comment successfully posted.', 'success')
         return redirect(
@@ -202,7 +202,7 @@ class CommentListView(AppMixin, ThreadMixin, ListView):
     )
 
     def get_group(self, **kwargs):
-        return kwargs['thread'].comments.get_all()
+        return kwargs['thread'].comments
 
 
 class ThreadListView(AppMixin, ListView):
