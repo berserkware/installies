@@ -21,8 +21,6 @@ import string
 import random
 import bleach
 
-class AppNotFound(Exception):
-    """An exception to raise when an app cannot be found."""
 
 class App(BaseModel):
     """A class for storing app data."""
@@ -35,28 +33,6 @@ class App(BaseModel):
     last_modified = DateTimeField(default=datetime.now)
     submitter = ForeignKeyField(User, backref='apps')
     maintainers = ForeignKeyField(Maintainers)
-
-    @classmethod
-    def get_by_name(cls, name: str):
-        """
-        Gets an app by its name.
-
-        An AppNotFound error is raised if it cannot be found.
-
-        :param name: The name to get the app by.
-        """
-
-        app = (
-            App
-            .select()
-            .join(Script, JOIN.LEFT_OUTER)
-            .where(App.name == name)
-        )
-
-        if app.exists() is False:
-            raise AppNotFound
-
-        return app.get()
     
     @classmethod
     def create(

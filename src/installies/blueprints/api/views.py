@@ -2,7 +2,7 @@ from flask import Blueprint, abort, request, g
 from installies.groups.app import AppGroup
 from installies.groups.script import ScriptGroup
 from installies.groups.modifiers import Paginate
-from installies.models.app import App, AppNotFound
+from installies.models.app import App
 from installies.models.script import Script
 from peewee import *
 

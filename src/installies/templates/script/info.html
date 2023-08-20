@@ -12,4 +12,15 @@
 {% block content %}
 {% include "script/info_container.html" %}
 
+<h2>Latest Comments</h2>
+
+{% for comment in script.thread.comments.limit(10) %}
+{% set edit_comment_route = url_for('app_manager.edit_comment', app_name=app.name, thread_id=script.thread.id, comment_id=comment.id) %}
+{% set delete_comment_route = url_for('app_manager.delete_comment', app_name=app.name, thread_id=script.thread.id, comment_id=comment.id) %}
+{% set report_comment_route = url_for('app_manager.report_comment', app_name=app.name, thread_id=script.thread.id, comment_id=comment.id) %}
+{% include "discussion/comment.html" %}
+{% endfor %}
+
+<a class="link" href="{{ url_for("app_manager.comments", app_name=script.app.name, thread_id=script.thread.id) }}">View all comments</a>
+
 {% endblock %}
