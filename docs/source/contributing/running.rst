@@ -67,7 +67,7 @@ your python interpreter and run the following code.
 Running
 -------
 
-You can run Installies in python3.
+You can run Installies with python3.
 
 .. code-block:: bash
 
