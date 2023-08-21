@@ -18,4 +18,5 @@ free to run, copy, distribute, study, change and improve the software.
    :caption: Contents:
 
    guides/index.rst
+   contributing/index.rst
    api.rst

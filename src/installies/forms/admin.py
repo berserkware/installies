@@ -1,4 +1,4 @@
-from installies.lib.form import Form, FormInput
+from installies.forms.base import Form, FormInput
 from installies.validators.admin  import (
     BanReasonValidator,
 )

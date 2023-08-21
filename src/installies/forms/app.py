@@ -1,5 +1,5 @@
 from flask import g
-from installies.lib.form import Form, FormInput
+from installies.forms.base import Form, FormInput
 from installies.validators.app import (
     AppNameValidator,
     AppDisplayNameValidator,
