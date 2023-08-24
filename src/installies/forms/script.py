@@ -32,7 +32,11 @@ class ModifyScriptForm(Form):
             '',
         ),
         FormInput('script-content', ScriptContentValidator),
-        FormInput('script-method', ScriptMethodValidator),
+        FormInput(
+            'script-method',
+            ScriptMethodValidator,
+            original_data_getter=lambda script: script.script_data.method,
+        ),
         FormInput('for-version', ScriptVersionValidator, default=None)
     ]
     model = Script
@@ -56,7 +60,10 @@ class AddScriptForm(ModifyScriptForm):
 class EditScriptForm(ModifyScriptForm):
     """A form for editing scripts."""
 
+    edit_form = True
+    
     def save(self, script: Script):
+        print(self.data['script-method'])
         return script.edit(
             actions=self.data['script-actions'],
             supported_distros=self.data['script-supported-distros'],

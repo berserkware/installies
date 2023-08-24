@@ -227,6 +227,8 @@ class Script(BaseModel):
 
         self.script_data.supported_distros.delete_all_distros()
         self.script_data.supported_distros.create_from_list(supported_distros)
+        self.script_data.method = method
+        self.script_data.save()
 
         self.thread.title = f'Discussion of script with method "{method}"'
         self.thread.save()
@@ -236,8 +238,6 @@ class Script(BaseModel):
         
         with self.script_data.open_content('w') as f:
             f.write(content)
-
-        self.script_data.method = method
 
         self.app.last_modified = datetime.today()
         self.app.save()

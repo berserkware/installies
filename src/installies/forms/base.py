@@ -8,13 +8,24 @@ class FormInput:
     :param validator: The validator class to validate the data.
     :param converter: A callable to convert the data to it's required type.
     :param default: The default value of the input.
+    :param original_data_getter: A callable that should take a model object,
+    and return the value of the attribute that the input is for. This is form
+    edit forms.
     """
 
-    def __init__(self, name: str, validator=None, converter=None, default=None):
+    def __init__(
+            self,
+            name: str,
+            validator=None,
+            converter=None,
+            default=None,
+            original_data_getter=None,
+    ):
         self.name = name
         self.validator = validator
         self.converter = converter
         self.default = default
+        self.original_data_getter = original_data_getter
 
     def get(self, form: dict):
         """
@@ -54,12 +65,16 @@ class Form:
     form data.
 
     :param form_data: A dictionary with all the form data from the user.
+    :param original_object: If edit_form is True, you need to give the original object that
+    the form is editing.
     """
 
     inputs = []
     model = None
+    edit_form = False
 
-    def __init__(self, form_data: dict):
+    def __init__(self, form_data: dict, original_object=None):
+        self.original_object = original_object
         self.raw_form_data = form_data
         self.error = None
 
@@ -80,6 +95,10 @@ class Form:
             return False
 
         for inp in self.inputs:
+            # does not validate input if it isnt changed.
+            if self.edit_form and inp.original_data_getter is not None and inp.original_data_getter(self.original_object) == self.data[inp.name]:
+                continue;
+            
             try:
                 inp.validate(self.data[inp.name])
             except ValidationError as e:
