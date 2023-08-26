@@ -63,7 +63,6 @@ class EditScriptForm(ModifyScriptForm):
     edit_form = True
     
     def save(self, script: Script):
-        print(self.data['script-method'])
         return script.edit(
             actions=self.data['script-actions'],
             supported_distros=self.data['script-supported-distros'],

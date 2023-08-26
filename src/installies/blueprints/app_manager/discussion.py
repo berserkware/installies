@@ -75,7 +75,12 @@ class ThreadMixin:
         if thread.exists() is False:
             abort(404)
 
-        kwargs['thread'] = thread.get()
+        thread = thread.get()
+
+        if thread.app != kwargs['app']:
+            abort(404)
+            
+        kwargs['thread'] = thread
         return super().on_request(**kwargs)
 
 
@@ -147,6 +152,9 @@ class CommentMixin:
         if comment.creator != g.user:
             flash('You do not have permission to modify this comment.', 'error')
             return self.get_app_view_redirect(**kwargs)
+
+        if comment.thread != kwargs['thread']:
+            return abort(404)
         
         kwargs['comment'] = comment
         return super().on_request(**kwargs)

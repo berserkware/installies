@@ -67,6 +67,9 @@ class ScriptMixin:
 
         script = script.get()
 
+        if kwargs['app'] != script.app:
+            abort(404)
+        
         if script.can_user_edit(g.user) is False and self.script_maintainer_only:
             flash(
                 'You do not have permission to do that.',
@@ -97,8 +100,9 @@ class ScriptListView(AppMixin, ListView):
     )
 
     def get_group(self, **kwargs):
-        return ScriptGroup.get(**request.args).where(Script.app == kwargs['app'])
-
+        app_scripts = Script.select().where(Script.app == kwargs['app'])
+        group = ScriptGroup.get(**request.args) & app_scripts
+        return group
 
 class ScriptDetailView(AppMixin, ScriptMixin, DetailView):
     """A view for getting the details of a script."""

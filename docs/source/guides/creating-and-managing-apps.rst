@@ -1,10 +1,14 @@
 Creating and Managing Apps
 ==========================
 
-Apps are used to organize scripts that are for installing that app.
+Apps are used to organize scripts that are for installing that app. This is a guide on how
+to create and manage apps.
 
 Creating Apps
 -------------
+
+.. image:: ../_static/create-app.png
+  :alt: Create App Form
 
 The app name cannot contain capitals or spaces. You can stylise the name with the
 display name field. You can describe the app with the description.
@@ -17,10 +21,13 @@ user doesn't specify a version to install.
 Managing Apps
 -------------
 
+.. image:: ../_static/app-info.png
+  :alt: App Info
+
 Maintainers
 ***********
 
-To manage apps, you must be a maintainer. You can add maintainer by clicking the link on
+To manage apps you must be a maintainer. You can add a maintainer by clicking the link on
 the app sidebar. You have to remember that maintainers you add will have the exact same
 permissions as you, so don't add just anyone. The app submitter doesn't have any permission
 to edit the app, unless they are a maintainer.

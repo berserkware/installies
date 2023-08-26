@@ -19,6 +19,9 @@ You can use the Supports option to only show apps that support the distros given
 distros must be separated by commas. You can specify a architechture with ``:arch_name``.
 You can substitute the distro name with ``*`` to match any distros.
 
+.. image:: ../_static/app-refiner.png
+  :alt: App Refiner
+
 Scripts
 -------
 
@@ -32,6 +35,9 @@ most of the search options for scripts are pretty straight foward to understand.
 options that might not be simple are the "Supports" and "Supported Action" search options. The
 "Supports" option is the same as the app version. The "Supported Actions" option is where you
 can specify the actions that the script supports. It is a comman separated list.
+
+.. image:: ../_static/script-refiner.png
+  :alt: Script Refiner
 
 Downloading and Running Scripts
 *******************************

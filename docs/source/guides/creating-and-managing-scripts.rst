@@ -7,6 +7,9 @@ to create and manage scripts.
 Creating Scripts
 ----------------
 
+.. image:: ../_static/add-script.png
+  :alt: Add Script Form
+
 You can create a script by clicking the "Add Script" link on the app sidebar. This will
 take you to the add script form. The "Actions" input should contain a comma separated list of
 actions the script supports. The "Method" input should contain a short sentence on how
