@@ -1,4 +1,7 @@
 from installies.config import database
+from installies.groups.modifiers import (
+    SortBy,
+)
 
 class Group:
     """
@@ -24,10 +27,16 @@ class Group:
         if cls.model is None:
             return []
 
+        sort_by_modifier = None
+
         query = cls.model.select()
 
         new_queries = []
         for modifier in cls.modifiers:
+            if type(modifier) == SortBy:
+                sort_by_modifier = modifier
+                continue
+            
             new_query = modifier.modify(query, **kwargs)
             
             new_queries.append(new_query)
@@ -35,5 +44,8 @@ class Group:
         for q in new_queries:
             query = query & q
 
+        if sort_by_modifier is not None:
+            query = sort_by_modifier.modify(query, **kwargs)
+            
         return query
         

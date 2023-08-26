@@ -32,7 +32,10 @@ class IndexView(TemplateView):
 
         recently_updated_apps = (
             AppGroup
-            .get(**{'sort-by': 'last_modified'})
+            .get(**{
+                'sort-by': 'last_modified',
+                'order-by': 'asc',
+            })
             .paginate(1, 10)
         )
         kwargs['recently_updated_apps'] = recently_updated_apps
