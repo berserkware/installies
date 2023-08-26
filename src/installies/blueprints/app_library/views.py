@@ -34,7 +34,7 @@ class IndexView(TemplateView):
             AppGroup
             .get(**{
                 'sort-by': 'last_modified',
-                'order-by': 'asc',
+                'order-by': 'desc',
             })
             .paginate(1, 10)
         )
@@ -42,7 +42,10 @@ class IndexView(TemplateView):
 
         newest_apps = (
             AppGroup
-            .get(**{'sort-by': 'creation_date'})
+            .get(**{
+                'sort-by': 'creation_date',
+                'order-by': 'desc',
+            })
             .paginate(1, 10)
         )
         kwargs['newest_apps'] = newest_apps
