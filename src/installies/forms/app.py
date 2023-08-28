@@ -44,10 +44,11 @@ class EditAppForm(Form):
         FormInput('app-current-version', AppCurrentVersionValidator, default=None),
     ]
     model = App
+    edit_form = True
 
-    def save(self, app):
+    def save(self):
         """Edits the app."""
-        return app.edit(
+        return self.original_object.edit(
             display_name=self.data['app-display-name'],
             description=self.data['app-desc'],
             current_version=self.data['app-current-version'],

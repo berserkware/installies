@@ -50,7 +50,10 @@ class CreateCommentForm(CommentForm):
 class EditCommentForm(CommentForm):
     """A form to edit comments"""
 
-    def save(self, comment: Comment):
+    edit_form = True
+
+    def save(self):
+        comment = self.original_object
         comment.content = self.data['content']
         comment.edited = True
         comment.save()

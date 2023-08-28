@@ -33,6 +33,7 @@ from installies.forms.discussion import (
 from installies.lib.view import (
     View,
     FormView,
+    EditFormView,
     AuthenticationRequiredMixin,
     TemplateView,
     ListView,
@@ -160,14 +161,17 @@ class CommentMixin:
         return super().on_request(**kwargs)
     
 
-class EditCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, FormView):
+class EditCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, EditFormView):
     """A view for editing comments."""
 
     template_path = 'discussion/edit_comment.html'
     form_class = EditCommentForm
+
+    def get_object_to_edit(self, **kwargs):
+        return kwargs['comment']
     
     def form_valid(self, form, **kwargs):
-        form.save(comment=kwargs['comment'])
+        form.save()
 
         flash('Comment successfully edited', 'success')
         return redirect(

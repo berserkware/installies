@@ -156,10 +156,10 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, Edi
         return kwargs['script']
     
     def form_valid(self, form, **kwargs):
-        form.save(script=kwargs['script'])
+        form.save()
 
         flash('Script successfully edited.', 'success')
-        return self.get_app_view_redirect(**kwargs)
+        return self.get_script_view_redirect(**kwargs)
 
 
 class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, TemplateView):
