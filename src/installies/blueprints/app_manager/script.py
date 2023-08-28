@@ -100,8 +100,7 @@ class ScriptListView(AppMixin, ListView):
     )
 
     def get_group(self, **kwargs):
-        app_scripts = Script.select().where(Script.app == kwargs['app'])
-        group = ScriptGroup.get(**request.args) & app_scripts
+        group = kwargs['app'].scripts & ScriptGroup.get(**request.args)
         return group
 
 class ScriptDetailView(AppMixin, ScriptMixin, DetailView):
