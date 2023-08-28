@@ -156,8 +156,6 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, Edi
         return kwargs['script']
     
     def form_valid(self, form, **kwargs):
-        print('valid')
-        
         form.save(script=kwargs['script'])
 
         flash('Script successfully edited.', 'success')
