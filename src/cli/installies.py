@@ -490,6 +490,7 @@ if __name__ == '__main__':
         print(f'Installies CLI v{__version__}')
 
     if not hasattr(args, 'action'):
+        print("Nothing to do.")
         sys.exit()
 
     action_handler = ActionHandler(
