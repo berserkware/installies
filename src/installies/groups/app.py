@@ -35,23 +35,23 @@ class AppGroup(Group):
         ),
         ByColumn(
             model = App,
-            kwarg_name = 'name',
+            param_name = 'name',
             attribute = 'name',
         ),
         ByColumn(
             model = App,
-            kwarg_name = 'display_name',
+            param_name = 'display_name',
             attribute = 'display_name',
         ),
         ByColumn(
             model = App,
-            kwarg_name = 'creation_date',
+            param_name = 'creation_date',
             attribute = 'creation_date',
             converter = datetime.fromisoformat,
         ),
         ByColumn(
             model = App,
-            kwarg_name = 'last_modified',
+            param_name = 'last_modified',
             attribute = 'last_modified',
             converter = datetime.fromisoformat,
         ),

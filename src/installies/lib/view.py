@@ -106,7 +106,7 @@ class ListView(ListMixin, TemplateMixin, View):
         if self.paginator is not None:
             paginated_objects = self.paginator.modify(
                 objects,
-                **request.args
+                request.args
             )
 
             total_object_count = objects.count()

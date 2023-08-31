@@ -19,12 +19,12 @@ class IndexView(TemplateView):
         if g.is_authed:
             user_maintained_apps = (
                 AppGroup
-                .get(**{'search-in': 'maintainers', 'k': g.user.username})
+                .get({'search-in': 'maintainers', 'k': g.user.username})
                 .paginate(1, 10)
             )
             user_maintained_scripts = (
                  ScriptGroup
-                .get(**{'search-in': 'maintainers', 'k': g.user.username})
+                .get({'search-in': 'maintainers', 'k': g.user.username})
                 .paginate(1, 10)
             )
             kwargs['user_maintained_apps'] = user_maintained_apps
@@ -32,7 +32,7 @@ class IndexView(TemplateView):
 
         recently_updated_apps = (
             AppGroup
-            .get(**{
+            .get({
                 'sort-by': 'last_modified',
                 'order-by': 'desc',
             })
@@ -42,7 +42,7 @@ class IndexView(TemplateView):
 
         newest_apps = (
             AppGroup
-            .get(**{
+            .get({
                 'sort-by': 'creation_date',
                 'order-by': 'desc',
             })
@@ -56,14 +56,14 @@ app_library.add_url_rule('/', 'index', view_func=IndexView.as_view())
     
 @app_library.route('/apps')
 def apps():
-    apps = AppGroup.get(**request.args)
+    apps = AppGroup.get(request.args)
 
     paginator = Paginate(
         default_per_page = 10,
         max_per_page = 50,
     )
 
-    paginated_apps = paginator.modify(apps, **request.args)
+    paginated_apps = paginator.modify(apps, request.args)
     
     total_app_count = apps.count()
     try:
@@ -83,14 +83,14 @@ def apps():
 
 @app_library.route('/scripts')
 def scripts():
-    scripts = ScriptGroup.get(**request.args)
+    scripts = ScriptGroup.get(request.args)
 
     paginator = Paginate(
         default_per_page = 10,
         max_per_page = 50,
     )
 
-    paginated_scripts = paginator.modify(scripts, **request.args)
+    paginated_scripts = paginator.modify(scripts, request.args)
 
     total_script_count = scripts.count()
     try:

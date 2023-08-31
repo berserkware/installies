@@ -13,11 +13,11 @@ class Modifier:
     This class defines the standard for all modifier classes to follow.
     """
 
-    def modify(self, query: Query, **kwargs):
+    def modify(self, query: Query, params):
         """
         A method for modifying SelectQuerys.
 
-        It should take a query, modify it with the kwargs, and return it.
+        It should take a query, modify it with the params, and return it.
         """
 
         return query
@@ -33,7 +33,7 @@ class JoinModifier(Modifier):
     def __init__(self, models: list):
         self.models = models
 
-    def modify(self, query: Query, **kwargs):
+    def modify(self, query: Query, params):
         for model in self.models:
             query = query.join(model)
 
@@ -56,16 +56,16 @@ class SortBy(Modifier):
         self.default_attribute = default_attribute
         self.default_order = default_order
 
-    def modify(self, query: Query, **kwargs):
+    def modify(self, query: Query, params):
         """
-        Sorts and orders the query by the sort_by and order_by kwargs.
+        Sorts and orders the query by the sort_by and order_by param.
 
-        If the sort_by kwarg is not in the allowed attributes or the order_by kwarg is
-        not in the kwargs, then the objects are sorted descending.
+        If the sort_by param is not in the allowed attributes or the order_by param is
+        not in the param, then the objects are sorted descending.
         """
 
-        sort_by = kwargs.get('sort-by', self.default_attribute)
-        order_by = kwargs.get('order-by', self.default_order)
+        sort_by = params.get('sort-by', self.default_attribute)
+        order_by = params.get('order-by', self.default_order)
 
         if sort_by not in self.allowed_attributes:
             return query
@@ -87,27 +87,27 @@ class ByColumn(Modifier):
     A modifier class for only getting objects that have a specific value in a attribute.
 
     :param model: The model to get from.
-    :param kwarg_name: The name of the kwarg to get the value of the column from.
+    :param param_name: The name of the param to get the value of the column from.
     :param attribute: The name of the column to get the object by.
     :param converter: A callable to convert the user submitted value to something different.
     """
 
-    def __init__(self, model, kwarg_name: str, attribute: str, converter: t.Callable=None):
+    def __init__(self, model, param_name: str, attribute: str, converter: t.Callable=None):
         self.model = model
-        self.kwarg_name = kwarg_name
+        self.param_name = param_name
         self.attribute = attribute
         self.converter = converter
 
 
-    def modify(self, query: Query, **kwargs):
+    def modify(self, query: Query, params):
         """
         Modifies the query to only have object where a attribute is equal to a value.
 
-        If the kwarg name is not present, the unmodified query is returned. If the converter
+        If the param name is not present, the unmodified query is returned. If the converter
         returns an error while converting, the query is returned.
         """
 
-        attr_value = kwargs.get(self.kwarg_name)
+        attr_value = params.get(self.param_name)
 
         if attr_value is None or attr_value == '':
             return query
@@ -152,7 +152,7 @@ class SearchInAttributes(Modifier):
     A modifier class for searching in attributes.
 
     The user can choose what attributes to search in with a comman separated list
-    in the 'search_in' kwargs. The search keywords go in the 'k' kwarg.
+    in the 'search_in' kwargs. The search keywords go in the 'k' param.
 
     :param model: The model to search in.
     :param allowed_attributes: The attributes the user can search in.
@@ -164,16 +164,16 @@ class SearchInAttributes(Modifier):
         self.searchable_attributes = searchable_attributes
         self.default_attribute = default_attribute
 
-    def modify(self, query: Query, **kwargs):
+    def modify(self, query: Query, param):
         """
         Modifies the query to only contain objects that match the search query.
 
-        If the search query kwarg is not present, the unmodified query is returned. If no
-        usable attributes are found in the search_in kwarg, the default attribute is used.
+        If the search query param is not present, the unmodified query is returned. If no
+        usable attributes are found in the search_in param, the default attribute is used.
         """
 
-        keywords = kwargs.get('k')
-        search_in = kwargs.get('search-in', self.default_attribute)
+        keywords = param.get('k')
+        search_in = param.get('search-in', self.default_attribute)
 
         if keywords is None:
             return query
@@ -206,19 +206,20 @@ class BySupportedDistro(Modifier):
     A modifier class for getting by supported distros.
 
     This only works on App and Script object. This is becuase the SupportedDistro object only
-    contains backrefs to App and Script. It looks in the 'supports' kwarg for the distro. The 'supports' kwarg can contain multiple distros seporated by commas.
+    contains backrefs to App and Script. It looks in the 'supports' param for the distro. The
+    'supports' param can contain multiple distros seporated by commas.
     """
     
-    def modify(self, query: Query, **kwargs):
+    def modify(self, query: Query, params):
         """
         Modifies the query to only contain objects that support a specific distro.
 
-        If the 'supports' kwarg is not present or contains a unsupported distro, the unmodified query is
+        If the 'supports' param is not present or contains a unsupported distro, the unmodified query is
         returned.
         """
 
         # gets the supported distros of the object to get.
-        supports = kwargs.get('supports')
+        supports = params.get('supports')
 
         if supports is None or supports == '':
             return query
@@ -272,19 +273,19 @@ class Paginate(Modifier):
         self.default_per_page = default_per_page
         self.max_per_page = max_per_page
 
-    def modify(self, query: Query, **kwargs):
+    def modify(self, query: Query, params):
         """
         Modifies the query to only show object on the page.
 
-        It if the 'page' kwarg is not present, then it defualts to the first. If the 'per-page'
-        kwarg is not present, then it defaults to the default amount.
+        It if the 'page' param is not present, then it defualts to the first. If the 'per-page'
+        param is not present, then it defaults to the default amount.
         """
         try:
-            page = int(kwargs.get('page', 1))
+            page = int(params.get('page', 1))
         except ValueError:
             page = 1
         try:
-            per_page = int(kwargs.get('per-page', self.default_per_page))
+            per_page = int(params.get('per-page', self.default_per_page))
         except ValueError:
             per_page = self.default_per_page
 
@@ -301,11 +302,11 @@ class BySupportedAction(Modifier):
     This only works on Script objects. It uses the 'actions' param in the url.
     """
 
-    def modify(self, query: Query, **kwargs):
-        if 'actions' not in kwargs.keys():
+    def modify(self, query: Query, params):
+        if 'actions' not in params.keys():
             return query
         
-        actions = [action.strip() for action in kwargs['actions'].split(',')]
+        actions = [action.strip() for action in params['actions'].split(',')]
 
         query = query.join(ScriptData).join(Action)
         

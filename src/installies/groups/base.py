@@ -16,7 +16,7 @@ class Group:
     model = None
 
     @classmethod
-    def get(cls, **kwargs):
+    def get(cls, params):
         """
         Gets a group of objects from the database.
 
@@ -37,7 +37,7 @@ class Group:
                 sort_by_modifier = modifier
                 continue
             
-            new_query = modifier.modify(query, **kwargs)
+            new_query = modifier.modify(query, params)
             
             new_queries.append(new_query)
 
@@ -45,7 +45,7 @@ class Group:
             query = query & q
 
         if sort_by_modifier is not None:
-            query = sort_by_modifier.modify(query, **kwargs)
+            query = sort_by_modifier.modify(query, params)
             
         return query
         

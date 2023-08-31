@@ -35,23 +35,23 @@ class ScriptGroup(Group):
         ),
         ByColumn(
             model = Script,
-            kwarg_name = 'id',
+            param_name = 'id',
             attribute = 'id'
         ),
         ByColumn(
             model = Script,
-            kwarg_name = 'version',
+            param_name = 'version',
             attribute = 'version'
         ),
         ByColumn(
             model = Script,
-            kwarg_name = 'last_modified',
+            param_name = 'last_modified',
             attribute = 'last_modified',
             converter = datetime.fromisoformat,
         ),
         ByColumn(
             model = Script,
-            kwarg_name = 'creation_date',
+            param_name = 'creation_date',
             attribute = 'last_modified',
             converter = datetime.fromisoformat,
         ),
