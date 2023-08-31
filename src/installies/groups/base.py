@@ -16,12 +16,15 @@ class Group:
     model = None
 
     @classmethod
-    def get(cls, params):
+    def get(cls, params, query=None):
         """
         Gets a group of objects from the database.
 
         It uses the Modifier classes in the 'modifier' attribute. If the model in
         the `model` attribute is none, then an empty list is returned.
+
+        :param query: A query to use instead of cls.model.select().
+        :param params: The params for the query modifiers.
         """
 
         if cls.model is None:
@@ -29,7 +32,8 @@ class Group:
 
         sort_by_modifier = None
 
-        query = cls.model.select()
+        if query is None:
+            query = cls.model.select()
 
         new_queries = []
         for modifier in cls.modifiers:
