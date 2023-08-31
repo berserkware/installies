@@ -134,14 +134,14 @@ input[type=submit] {
     border-radius: 0px;
     border-width: 1px;
     border-style: solid;
-    font-size: 18px;
+    font-size: 16px;
     font-family: Inter Regular;
     vertical-align: middle;
     padding: 0;
     padding-left: 5px;
     padding-right: 5px;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
     display: inline;
     
 }
