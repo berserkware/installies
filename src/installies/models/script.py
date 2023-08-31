@@ -183,7 +183,7 @@ class Script(BaseModel):
         maintainers = Maintainers.create()
 
         thread = Thread.create(
-            title=f'Discussion of script with method "{method}"',
+            title=f'Discussion of script: "{method}"',
             app=app,
             creator=None,
         )
@@ -230,7 +230,7 @@ class Script(BaseModel):
         self.script_data.method = method
         self.script_data.save()
 
-        self.thread.title = f'Discussion of script with method "{method}"'
+        self.thread.title = f'Discussion of script: "{method}"'
         self.thread.save()
 
         Action.delete().where(Action.script_data == self.script_data).execute()
