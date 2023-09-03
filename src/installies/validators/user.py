@@ -2,7 +2,7 @@ from installies.validators.base import Validator
 from installies.validators.check import (
     EmptyChecker,
     LengthChecker,
-    AllowedCharactersChecker,
+    CharacterWhitelistChecker,
     UniqueChecker,
     EmailChecker,
 )
@@ -15,7 +15,7 @@ class UsernameValidator(Validator):
     checkers = [
         EmptyChecker(),
         LengthChecker(max_len=32),
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_extra=['-', '_', '<', '>', '!']
         ),
         UniqueChecker(table=User, column_name='username'),

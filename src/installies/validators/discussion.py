@@ -2,8 +2,8 @@ from installies.validators.base import Validator
 from installies.validators.check import (
     EmptyChecker,
     LengthChecker,
-    AllowedCharactersChecker,
-    DisallowedCharactersChecker,
+    CharacterWhitelistChecker,
+    CharacterBlacklistChecker,
     UniqueChecker,
     NotInContainerChecker,
     DictionaryChecker,
@@ -21,7 +21,7 @@ class ThreadTitleValidator(Validator):
     checkers = [
         EmptyChecker(),
         LengthChecker(max_len=128),
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_extra=['-', ',', '.', '"', '\'', '(', ')'],
         ),
         UniqueChecker(
@@ -39,7 +39,7 @@ class CommentContentValidator(Validator):
     checkers = [
         EmptyChecker(),
         LengthChecker(max_len=1024),
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_extra=['-', ',', '.', '"', '\'', '(', ')'],
         ),
     ]

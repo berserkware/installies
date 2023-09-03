@@ -2,8 +2,8 @@ from installies.validators.base import Validator
 from installies.validators.check import (
     EmptyChecker,
     LengthChecker,
-    AllowedCharactersChecker,
-    DisallowedCharactersChecker,
+    CharacterWhitelistChecker,
+    CharacterBlacklistChecker,
     UniqueChecker,
     NotInContainerChecker,
     DictionaryChecker,
@@ -15,7 +15,7 @@ class AppNameValidator(Validator):
     """A class for validating app names submitted by the user."""
 
     checkers = [
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_uppercase=False,
             allow_spaces=False,
             allow_extra=['-', '_']
@@ -35,7 +35,7 @@ class AppDisplayNameValidator(Validator):
     """A class for validating app display names."""
 
     checkers = [
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_extra=['-', '_'],
         ),
         LengthChecker(max_len=64),
@@ -60,7 +60,7 @@ class VersionValidator(Validator):
 
     checkers = [
         LengthChecker(max_len=64),
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_extra=['.', '-']
         )
     ]

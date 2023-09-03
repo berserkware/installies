@@ -2,8 +2,8 @@ from installies.validators.base import Validator
 from installies.validators.check import (
     EmptyChecker,
     LengthChecker,
-    AllowedCharactersChecker,
-    DisallowedCharactersChecker,
+    CharacterWhitelistChecker,
+    CharacterBlacklistChecker,
     UniqueChecker,
     NotInContainerChecker,
     DictionaryChecker,
@@ -21,7 +21,7 @@ class ScriptActionValidator(Validator):
 
     checkers = [
         EmptyChecker(),
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_spaces=False,
             allow_uppercase=False,
             allow_extra=['-']
@@ -38,7 +38,7 @@ class ScriptDistroValidator(Validator):
     checkers = [
         EmptyChecker(),
         LengthChecker(max_len=255),
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_spaces=False,
             allow_uppercase=False,
             allow_extra=['-', '_', '!', '*'],
@@ -54,7 +54,7 @@ class ScriptArchitectureValidator(Validator):
     checkers = [
         EmptyChecker(),
         LengthChecker(max_len=255),
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_spaces=False,
             allow_uppercase=False,
             allow_extra=['-', '_', '*'],
@@ -93,7 +93,7 @@ class ScriptMethodValidator(Validator):
     checkers = [
         EmptyChecker(),
         LengthChecker(max_len=255),
-        AllowedCharactersChecker(allow_extra=['_', '-', ',', '.']),
+        CharacterWhitelistChecker(allow_extra=['_', '-', ',', '.']),
         UniqueChecker(
             table=ScriptData,
             column_name='method',

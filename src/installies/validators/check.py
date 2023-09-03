@@ -56,9 +56,9 @@ class LengthChecker:
             )
 
 
-class AllowedCharactersChecker:
+class CharacterWhitelistChecker:
     """
-    A class that checks that a string only contains a set of characters.
+    A class that checks that a string only contains characters in a whitelist.
 
     :param allow_spaces: Allow spaces.
     :param allow_lowercase: Allow lowercase letters.
@@ -106,9 +106,9 @@ class AllowedCharactersChecker:
                 )
 
 
-class DisallowedCharactersChecker:
+class CharacterBlacklistChecker:
     """
-    A checker that checks that a string does not contain certain charecters.
+    A checker that checks that a string does not contain characters in a blacklist.
 
     :param disallowed_characters: The characters that are not allowed.
     """

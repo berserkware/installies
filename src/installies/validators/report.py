@@ -2,8 +2,8 @@ from installies.validators.base import Validator
 from installies.validators.check import (
     EmptyChecker,
     LengthChecker,
-    AllowedCharactersChecker,
-    DisallowedCharactersChecker,
+    CharacterWhitelistChecker,
+    CharacterBlacklistChecker,
     UniqueChecker,
     NotInContainerChecker,
     DictionaryChecker,
@@ -17,7 +17,7 @@ class ReportTitleValidator(Validator):
     checkers = [
         EmptyChecker(),
         LengthChecker(max_len=64),
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_extra=['-', ',', '.', '"', '\'', '(', ')'],
         )
     ]
@@ -31,7 +31,7 @@ class ReportBodyValidator(Validator):
     checkers = [
         EmptyChecker(),
         LengthChecker(max_len=2048),
-        AllowedCharactersChecker(
+        CharacterWhitelistChecker(
             allow_extra=['-', ',', '.', '"', '\'', '(', ')'],
         )
     ]
