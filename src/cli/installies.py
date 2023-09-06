@@ -128,7 +128,7 @@ class AppRequest:
     """
 
     def __init__(self, app_name: str):
-        split_app_name = args.app_name.split('==')
+        split_app_name = app_name.split('==')
         
         self.name = split_app_name[0]
 
@@ -153,10 +153,16 @@ class Script:
 
         :param app_request: The data of the app to get.
         """
-        apps = requests.get(
+        request = requests.get(
             url=f'http://localhost:8000/api/apps',
             params={'name': app_request.name},
-        ).json()['apps']
+        )
+
+        if request.status_code == 404:
+            print(f"\033[31mError: No matching app found for {app_request.name}")
+            sys.exit()
+        
+        apps = request.json()['apps']
 
         if len(apps) == 0:
              print(f"\033[31mError: No matching app found for {app_request.name}")
@@ -290,7 +296,6 @@ class ActionHandler:
     """
     A class to handle actions like install, remove, update, compile, or run.
 
-    :param app_request: The AppRequest to get.
     :param install_actions: Actions that install apps.
     :param modify_actions: Actions that modify the current installation.
     :param remove_actions: Actions that remove the installation.
@@ -298,12 +303,10 @@ class ActionHandler:
 
     def __init__(
             self,
-            app_request,
             install_actions=[],
             modify_actions=[],
             remove_actions=[],
     ):
-        self.app_request = app_request
         self.install_actions = install_actions
         self.modify_actions = modify_actions
         self.remove_actions = remove_actions
@@ -317,14 +320,14 @@ class ActionHandler:
 
         self.installed = Installed.get_or_create()
 
-    def get_script(self, action):
+    def get_script(self, action, app_request):
         """Gets a script for an action."""
 
         # if the action modifies the current installation, ask user if they want to use the
         # same script they used to install. If the script no longer exists, alert the user and
         # quit.
-        if action in self.modify_actions and self.installed.check_installed(self.app_request.name):
-            if Script.check_content_cached(self.app_request.name) and confirm('Do you want to use the same script used to install the app?') is True:
+        if action in self.modify_actions and self.installed.check_installed(app_request.name):
+            if Script.check_content_cached(app_request.name) and confirm('Do you want to use the same script used to install the app?'):
                 print('==> Cached script found, do you want to use it?:')
                 print('1 Use the cached script.')
                 print('2 Get a new version of the script.')
@@ -341,19 +344,21 @@ class ActionHandler:
                         print('Please enter a number.')
                         continue
                     
-                script_data = self.installed.data['installed_apps'][self.app_request.name]['script']
+                script_data = self.installed.data['installed_apps'][app_request.name]['script']
+                # Gets a cached script
                 if option == 1:
                     return Script(
                         id=script_data['id'],
                         actions=script_data['actions'],
                         method=script_data['method'],
-                        content=Script.get_cached_content(self.app_request.name),
-                        version=self.installed.data['installed_apps'][self.app_request.name]['version']
+                        content=Script.get_cached_content(app_request.name),
+                        version=self.installed.data['installed_apps'][app_request.name]['version']
                     )
+                # gets a script from the website
                 elif option == 2:
-                    script_id = self.installed.data['installed_apps'][self.app_request.name]['script']['id']
+                    script_id = self.installed.data['installed_apps'][app_request.name]['script']['id']
                     scripts = Script.get(
-                        self.app_request,
+                        app_request,
                         args.action,
                         distro_id=self.distro_id,
                         architechture=self.architechture,
@@ -367,44 +372,45 @@ class ActionHandler:
                     return scripts[0]
             else:
                 return Script.get(
-                     self.app_request,
+                     app_request,
                      args.action,
                      distro_id=self.distro_id,
                      architechture=self.architechture,
                  )
         else:
             return Script.get(
-                self.app_request,
+                app_request,
                 args.action,
                 distro_id=self.distro_id,
                 architechture=self.architechture,
             )
         
-    def handle(self, action, args):
+    def handle(self, action, app_request, args):
         """
         Handles an action.
 
         :param action: The action to match to a method.
+        :param app_request: The AppRequest to get.
         :param args: The args to pass to the method.
         """
 
-        if action in self.modify_actions and self.installed.check_installed(self.app_request.name) is False:
-            if confirm(':: App is not installed, are you sure you want to proceed?') is False:
-                sys.exit()
+        if action in self.modify_actions and self.installed.check_installed(app_request.name) is False:
+            if confirm(f':: {app_request.name} is not installed, are you sure you want to proceed?') is False:
+                return
 
         # if action is an installing action and app is already installed, confirm user wants to
         # run the script.
-        if action in self.install_actions and self.app_request.name in self.installed.data['installed_apps'].keys():
-            if confirm(':: App already installed, are you sure you want to proceed?') is False:
-                sys.exit()
+        if action in self.install_actions and app_request.name in self.installed.data['installed_apps'].keys():
+            if confirm(f':: {app_request.name} already installed, are you sure you want to proceed?') is False:
+                return
 
-        script = self.get_script(action)
+        script = self.get_script(action, app_request)
 
-        script.run(self.app_request.name, action, args)
+        script.run(app_request.name, action, args)
 
         # if the action is an install action, add the app to the installed_apps file.
         if action in self.install_actions:
-            self.installed.data['installed_apps'][self.app_request.name] = {
+            self.installed.data['installed_apps'][app_request.name] = {
                 'version': script.version,
                 'script': {
                     'id': script.id,
@@ -415,8 +421,8 @@ class ActionHandler:
             self.installed.save()
         # else if the action is a remove action, remove it from the file.
         elif action in self.remove_actions:
-            if self.app_request.name in self.installed.data['installed_apps']:
-                del self.installed.data['installed_apps'][self.app_request.name]
+            if app_request.name in self.installed.data['installed_apps']:
+                del self.installed.data['installed_apps'][app_request.name]
                 self.installed.save()
 
 
@@ -437,7 +443,7 @@ def create_parser():
         action='store_true',
         help="shows the script before executing"
     )
-    action_parser.add_argument('app_name')
+    action_parser.add_argument('apps', nargs='+', help='List of apps to install.')
     
     install_parser = subparsers.add_parser(
         "install",
@@ -490,11 +496,10 @@ if __name__ == '__main__':
         print(f'Installies CLI v{__version__}')
 
     if not hasattr(args, 'action'):
-        print("Nothing to do.")
+        print('Nothing to do.')
         sys.exit()
 
     action_handler = ActionHandler(
-        AppRequest(args.app_name),
         install_actions=[
             'install',
             'compile,'
@@ -509,7 +514,8 @@ if __name__ == '__main__':
     )
 
     try:
-        action_handler.handle(args.action, args)
+        for name in args.apps:
+            action_handler.handle(args.action, AppRequest(name), args)
     except KeyboardInterrupt:
         print('')
         sys.exit()

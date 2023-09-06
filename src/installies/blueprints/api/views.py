@@ -13,7 +13,7 @@ api = Blueprint('api', __name__)
 
 @api.route('/api/apps')
 def apps():
-    apps = AppGroup().get(**request.args)
+    apps = AppGroup().get(params=request.args)
 
     data = {
         'apps': []
@@ -24,7 +24,7 @@ def apps():
          max_per_page = 50,
      )
 
-    apps = paginator.modify(apps, **request.args)
+    apps = paginator.modify(apps, params=request.args)
 
     for app in apps:
         data['apps'].append(app.serialize())
@@ -40,14 +40,14 @@ def scripts(app_name):
 
     app = app.get()
 
-    scripts = ScriptGroup.get(**request.args).where(Script.app == app)
+    scripts = ScriptGroup.get(params=request.args).where(Script.app == app)
 
     paginator = Paginate(
         default_per_page = 10,
         max_per_page = 50,
     )
 
-    scripts = paginator.modify(scripts, **request.args)
+    scripts = paginator.modify(scripts, params=request.args)
 
     data = {
         'scripts': []
