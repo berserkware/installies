@@ -13,6 +13,7 @@ from installies.groups.modifiers import (
     BySupportedDistro,
     Paginate,
     BySupportedAction,
+    BySupportedShell,
 )
 from datetime import datetime
 
@@ -78,5 +79,6 @@ class ScriptGroup(Group):
         ),
         BySupportedDistro(),
         BySupportedAction(),
+        BySupportedShell(),
     ]
     model = Script

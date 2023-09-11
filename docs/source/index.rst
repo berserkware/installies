@@ -6,7 +6,7 @@
 Welcome to the Installies documentation!
 ========================================
 
-Installies is a site for managing, organizing, and retrieving bash scripts for
+Installies is a site for managing, organizing, and retrieving shell scripts for
 use to install, remove, update or compile apps on linux. This is the documentation
 on how to use Installies.
 

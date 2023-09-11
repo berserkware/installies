@@ -42,6 +42,10 @@
 	<input type="text" name="actions" id="actions" value="{{ request.args.get('actions', '') }}">
       </div>
       <div>
+	<label for="shells">Supported Shells:</label>
+	<input type="text" name="shells" id="shells" value="{{ request.args.get('shells', '') }}">
+      </div>
+      <div>
 	<label for="page">Page:</label>
 	<input type="text" name="page" id="page" size="4" value="{{ request.args.get('page', 1) }}">
       </div>

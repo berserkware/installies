@@ -1,6 +1,6 @@
 from peewee import Query
 from installies.models.app import App
-from installies.models.script import Script, ScriptData, Action
+from installies.models.script import Script, ScriptData, Action, Shell
 from installies.models.supported_distros import SupportedDistro, SupportedDistrosJunction
 from functools import reduce
 
@@ -313,6 +313,29 @@ class BySupportedAction(Modifier):
         for action in actions:
             query = query.where(
                 Action.name.contains(action)
+            )
+
+        return query
+
+
+class BySupportedShell(Modifier):
+    """"
+    A modifier class for getting by supported shells.
+
+    This only works on Script objects. It uses the 'shells' param in the url.
+    """
+
+    def modify(self, query: Query, params):
+        if 'shells' not in params.keys():
+            return query
+        
+        shells = [shell.strip() for shell in params['shells'].split(',')]
+
+        query = query.join(ScriptData).join(Shell)
+        
+        for shell in shells:
+            query = query.where(
+                Shell.name.contains(shell)
             )
 
         return query

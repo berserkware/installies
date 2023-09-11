@@ -75,7 +75,15 @@ class ScriptData(BaseModel):
 
 
     @classmethod
-    def create(cls, directory: str, content: str, method: str, distros: dict, actions: list[str]):
+    def create(
+            cls,
+            directory: str,
+            content: str,
+            method: str,
+            distros: dict,
+            actions: list[str],
+            shells: list[str],
+    ):
         """Creates the script data."""
 
         filepath = cls.create_script_file(directory, content)
@@ -90,6 +98,7 @@ class ScriptData(BaseModel):
         )
 
         actions = Action.create_from_list(script_data, actions)
+        shells = Shell.create_from_list(script_data, shells)
 
         return script_data
 
@@ -102,6 +111,10 @@ class ScriptData(BaseModel):
     def get_supported_actions(self):
         """Get the actions the script supports in a list."""
         return [action.name for action in self.actions]
+
+    def get_supported_shells(self):
+        """Get the shells the script supports in a list."""
+        return [shell.name for shell in self.shells]
 
 
 class Action(BaseModel):
@@ -119,6 +132,23 @@ class Action(BaseModel):
             action_objects.append(Action.create(name=action, script_data=script_data))
 
         return action_objects
+
+
+class Shell(BaseModel):
+    """A model for storing a shell that a script supports."""
+
+    name = CharField(255)
+    script_data = ForeignKeyField(ScriptData, backref="shells")
+
+    @classmethod
+    def create_from_list(cls, script_data: ScriptData, shells: list[str]):
+        """Creates multiple Shell objects from a list."""
+        shell_objects = []
+
+        for shell in shells:
+            shell_objects.append(Shell.create(name=shell, script_data=script_data))
+
+        return shell_objects
     
     
 class Script(BaseModel):
@@ -161,6 +191,7 @@ class Script(BaseModel):
             content: str,
             method: str,
             actions: list[str],
+            shells: list[str],
             submitter: User,
             app: App,
             version: str=None,
@@ -172,13 +203,21 @@ class Script(BaseModel):
         :param content: The content of the script.
         :param method: The method the script uses.
         :param actions: The actions that the script supports.
+        :param shells: The shells that the script supports.
         :param submitter: The submitter.
         :param app: The app the script is for.
         :param version: The version of the app the script is for.
         """
         app_dir = app.create_or_get_folder()
         
-        script_data = ScriptData.create(app_dir, content, method, supported_distros, actions)
+        script_data = ScriptData.create(
+            app_dir,
+            content,
+            method,
+            supported_distros,
+            actions,
+            shells,
+        )
 
         maintainers = Maintainers.create()
 
@@ -209,7 +248,8 @@ class Script(BaseModel):
             supported_distros: list,
             content: str,
             method: str,
-            actions: str,
+            actions: list[str],
+            shells: list[str],
             version: str=None
     ):
         """
@@ -219,6 +259,7 @@ class Script(BaseModel):
         :param content: The new content.
         :param method: The script's method.
         :param actions: The sctions that the script supports.
+        :param shells: The shles that the script supports.
         :param version: The version of the app the script is for.
         """
 
@@ -235,6 +276,9 @@ class Script(BaseModel):
 
         Action.delete().where(Action.script_data == self.script_data).execute()
         Action.create_from_list(self.script_data, actions)
+
+        Shell.delete().where(Shell.script_data == self.script_data).execute()
+        Shell.create_from_list(self.script_data, shells)
         
         with self.script_data.open_content('w') as f:
             f.write(content)
@@ -257,6 +301,7 @@ class Script(BaseModel):
 
         data['id'] = self.id
         data['actions'] = [action.name for action in self.script_data.actions]
+        data['shells'] = [shell.name for shell in self.script_data.shells]
         data['supported_distros'] = self.script_data.supported_distros.get_as_dict()
         data['last_modified'] = str(self.last_modified)
         data['for_version'] = self.version

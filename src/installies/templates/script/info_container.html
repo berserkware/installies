@@ -9,6 +9,10 @@
       <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
     </tr>
     <tr>
+      <th class="bold">Supported Shells:</th>
+      <td>{{ ", ".join(script.script_data.get_supported_shells()) }}</td>
+    </tr>
+    <tr>
       <th class="bold">Method:</th>
       <td>{{ script.script_data.method }}</td>
     </tr>

@@ -12,8 +12,9 @@ Creating Scripts
 
 You can create a script by clicking the "Add Script" link on the app sidebar. This will
 take you to the add script form. The "Actions" input should contain a comma separated list of
-actions the script supports. The "Method" input should contain a short sentence on how
-the script works.
+actions the script supports. The "Supported Shells" input should contain a comma separated list
+of shells that the script supports. The default is bash. The "Method" input should contain a
+short sentence on how the script works.
 
 Supported Distros
 *****************

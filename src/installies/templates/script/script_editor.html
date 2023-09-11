@@ -5,6 +5,11 @@
   </div>
 
   <div class="form-input-container">
+    <label for="script-shells">Supported Shells</label><br>
+    <input type="text" name="script-shells" id="script-shells" class="textbox" placeholder="Default is bash." value="{% if default_form_script %}{{ ", ".join(default_form_script.script_data.get_supported_shells()) }}{% endif %}">
+  </div>
+
+  <div class="form-input-container">
     <label for="script-method">Method</label><br>
     <input type="text" name="script-method" id="script-method" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.script_data.method }}{% endif %}" style="width: 50%">
   </div>

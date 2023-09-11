@@ -32,6 +32,22 @@ class ScriptActionValidator(Validator):
     data_name = 'Script action'
 
 
+class ScriptShellValidator(Validator):
+    """A class for validating script shells submitted by the user."""
+
+    checkers = [
+        EmptyChecker(),
+        CharacterWhitelistChecker(
+            allow_spaces=False,
+            allow_uppercase=False,
+            allow_extra=['-', '_']
+        ),
+        LengthChecker(max_len=32),
+    ]
+
+    data_name = 'Script shell'
+
+
 class ScriptDistroValidator(Validator):
     """A class for validating script distros submitted by the user."""
 
