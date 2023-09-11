@@ -1,17 +1,17 @@
 <form action="{{ form_url }}" method="post" id="script-form">
   <div class="form-input-container">
     <label for="script-actions">Actions</label><br>
-    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ", ".join(default_form_script.script_data.get_supported_actions()) }}{% endif %}">
+    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ", ".join(default_form_script.script_data.get_supported_actions()) }}{% endif %}" required>
   </div>
 
   <div class="form-input-container">
-    <label for="script-shells">Supported Shells</label><br>
+    <label for="script-shells">Supported Shells <span style="color:var(--light-grey)">(optional)</span></label><br>
     <input type="text" name="script-shells" id="script-shells" class="textbox" placeholder="Default is bash." value="{% if default_form_script %}{{ ", ".join(default_form_script.script_data.get_supported_shells()) }}{% endif %}">
   </div>
 
   <div class="form-input-container">
     <label for="script-method">Method</label><br>
-    <input type="text" name="script-method" id="script-method" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.script_data.method }}{% endif %}" style="width: 50%">
+    <input type="text" name="script-method" id="script-method" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.script_data.method }}{% endif %}" style="width: 50%" required>
   </div>
   
   <div class="form-input-container">
@@ -146,7 +146,7 @@
   
   <div class="form-input-container">
     <label for="script-content">Script Content</label><br>
-    <textarea name="script-content" id="script-content">{% if default_form_script %}{% with f = default_form_script.script_data.open_content() %}{{ f.read() }}{% endwith %}{% endif %}</textarea>
+    <textarea name="script-content" id="script-content" required>{% if default_form_script %}{% with f = default_form_script.script_data.open_content() %}{{ f.read() }}{% endwith %}{% endif %}</textarea>
     
     <script>
       mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
