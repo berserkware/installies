@@ -104,12 +104,15 @@
       
       form = document.getElementById('script-form')
       form.onformdata = (e) => {
-	const formData = e.formData;
-	let tableChildren = document.getElementById("distro-table").firstElementChild.children;
-	let idList = [];
-	for (let i = 1; i < tableChildren.length; i++) {
-		idList.push(tableChildren[i].id);
-	}
+	  console.log("start")
+	  
+	  const formData = e.formData;
+	  let tableChildren = document.getElementById("distro-table").firstElementChild.children;
+	  let idList = [];
+	  
+	  for (let i = 1; i < tableChildren.length; i++) {
+	      idList.push(tableChildren[i].id);
+	  }
 	  
 	  let distro_strings = []
 	  
@@ -146,7 +149,7 @@
   
   <div class="form-input-container">
     <label for="script-content">Script Content</label><br>
-    <textarea name="script-content" id="script-content" required>{% if default_form_script %}{% with f = default_form_script.script_data.open_content() %}{{ f.read() }}{% endwith %}{% endif %}</textarea>
+    <textarea name="script-content" id="script-content">{% if default_form_script %}{% with f = default_form_script.script_data.open_content() %}{{ f.read() }}{% endwith %}{% endif %}</textarea>
     
     <script>
       mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
