@@ -1,12 +1,12 @@
 <form action="{{ form_url }}" method="post" id="script-form">
   <div class="form-input-container">
     <label for="script-actions">Actions</label><br>
-    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ", ".join(default_form_script.script_data.get_supported_actions()) }}{% endif %}" required>
+    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ', '.join(default_form_script.script_data.get_supported_actions()) }}{% endif %}" required>
   </div>
 
   <div class="form-input-container">
     <label for="script-shells">Supported Shells <span style="color:var(--light-grey)">(optional)</span></label><br>
-    <input type="text" name="script-shells" id="script-shells" class="textbox" placeholder="Default is bash." value="{% if default_form_script %}{{ ", ".join(default_form_script.script_data.get_supported_shells()) }}{% endif %}">
+    <input type="text" name="script-shells" id="script-shells" class="textbox" placeholder="Default is bash." value="{% if default_form_script %}{{ ', '.join(default_form_script.script_data.get_supported_shells()) }}{% endif %}">
   </div>
 
   <div class="form-input-container">
@@ -27,7 +27,7 @@
     <script>
       function deleteDistro(id) {
 	  distro = document.getElementById(id);
-	    distro.remove();
+	  distro.remove();
       }
       
       function makeId() {
@@ -89,27 +89,27 @@
       function addDistroOnClick(e) {
 	  addDistro();
       }		     
-      
-      addDistroButton = document.getElementById('add-distro-button')
-      addDistroButton.onclick = addDistroOnClick
+
+      addDistroButton = document.getElementById('add-distro-button');
+      addDistroButton.onclick = addDistroOnClick;
 
       {% if default_form_script %}
         {% set supported_distros = default_form_script.script_data.supported_distros.get_as_dict() %}
         {% for arch, distros in supported_distros.items() %}
-      addDistro("{{ ', '.join(distros) }}", "{{ arch }}")
+      addDistro("{{ ', '.join(distros) }}", "{{ arch }}");
         {% endfor %}
       {% else %}
-      addDistro()
+      addDistro();
       {% endif %}
       
       form = document.getElementById('script-form')
       form.onformdata = (e) => {
-	  const formData = e.formData;
-	  let tableChildren = document.getElementById("distro-table").firstElementChild.children;
-	  let idList = [];
-	  for (let i = 1; i < tableChildren.length; i++) {
+	const formData = e.formData;
+	let tableChildren = document.getElementById("distro-table").firstElementChild.children;
+	let idList = [];
+	for (let i = 1; i < tableChildren.length; i++) {
 		idList.push(tableChildren[i].id);
-	  }
+	}
 	  
 	  let distro_strings = []
 	  
@@ -128,7 +128,7 @@
 		  for (let k = 0; k < split_archs.length; k++) {
 		      arch_string = arch_string + ':' + split_archs[k].trim();
 		  }
-		  
+		
 		  if (arch_string != "") {
 		      distro = distro + arch_string;
 		  }
@@ -138,7 +138,7 @@
 	      
 	  }
 	  
-	  formData.append('script-supported-distros', distro_strings.join(','));
+	formData.append('script-supported-distros', distro_strings.join(','));
       }
       
     </script>
