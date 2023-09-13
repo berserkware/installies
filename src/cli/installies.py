@@ -117,10 +117,7 @@ class Installed:
     def check_installed(self, app_name):
         """Checks if the given app is installed."""
 
-        if app_name in self.data['installed_apps']:
-            return True
-
-        return False
+        return app_name in self.data['installed_apps']
             
 class AppRequest:
     """
@@ -173,13 +170,13 @@ class Script:
         return app
         
     @classmethod
-    def get(cls, app_request, action, distro_id, architechture, script_id=None):
+    def get(cls, app_request, action, distro_id, architecture, script_id=None):
         """Gets a script."""
         app = cls.get_app(app_request)
         
         params = {
             'actions': action,
-            'supports': f'{distro_id}:{architechture}',
+            'supports': f'{distro_id}:{architecture}',
         }
 
         if app_request.version is not None:
@@ -310,89 +307,87 @@ class ActionHandler:
         self.install_actions = install_actions
         self.modify_actions = modify_actions
         self.remove_actions = remove_actions
-        
-        self.distro_id = distro.id()
-        
-        architechture = platform.machine()
-        if architechture == 'x86_64':
-            architechture = 'amd64'
-        self.architechture = architechture
 
         self.installed = Installed.get_or_create()
 
-    def get_script(self, action, app_request):
-        """Gets a script for an action."""
-
+    def get_script(self, args, app_request):
+        """Gets a script for an action from the args."""
+        action = args.action
+        
         # if the action modifies the current installation, ask user if they want to use the
         # same script they used to install. If the script no longer exists, alert the user and
         # quit.
-        if action in self.modify_actions and self.installed.check_installed(app_request.name):
-            if Script.check_content_cached(app_request.name) and confirm('Do you want to use the same script used to install the app?'):
-                print('==> Cached script found, do you want to use it?:')
-                print('1 Use the cached script.')
-                print('2 Get a new version of the script.')
-                while True:
-                    try:
-                        option = int(input('==> Choose Option [1/2]: '))
 
-                        if option < 1 or option > 2:
-                            print('Please enter 1 or 2.')
-                            continue
-
-                        break
-                    except ValueError:
-                        print('Please enter a number.')
-                        continue
-                    
-                script_data = self.installed.data['installed_apps'][app_request.name]['script']
-                # Gets a cached script
-                if option == 1:
-                    return Script(
-                        id=script_data['id'],
-                        actions=script_data['actions'],
-                        method=script_data['method'],
-                        content=Script.get_cached_content(app_request.name),
-                        version=self.installed.data['installed_apps'][app_request.name]['version']
-                    )
-                # gets a script from the website
-                elif option == 2:
-                    script_id = self.installed.data['installed_apps'][app_request.name]['script']['id']
-                    scripts = Script.get(
-                        app_request,
-                        args.action,
-                        distro_id=self.distro_id,
-                        architechture=self.architechture,
-                        script_id=script_id
-                    )
-                    
-                    if len(scripts) == 0:
-                        print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
-                        sys.exit()
-                            
-                    return scripts[0]
-            else:
-                return Script.get(
-                     app_request,
-                     args.action,
-                     distro_id=self.distro_id,
-                     architechture=self.architechture,
-                 )
-        else:
+        # gets a script from the website if it isnt cached
+        if self.installed.check_installed(app_request.name) is False:
             return Script.get(
                 app_request,
                 args.action,
-                distro_id=self.distro_id,
-                architechture=self.architechture,
+                distro_id=args.distro,
+                architecture=args.architecture,
             )
-        
-    def handle(self, action, app_request, args):
-        """
-        Handles an action.
 
-        :param action: The action to match to a method.
-        :param app_request: The AppRequest to get.
-        :param args: The args to pass to the method.
+        script_data = self.installed.data['installed_apps'][app_request.name]['script']
+
+        if args.action not in self.installed.data['installed_apps'][app_request.name]['script']['actions']:
+            return Script.get(
+                app_request,
+                args.action,
+                distro_id=args.distro,
+                architecture=args.architecture,
+            )
+            
+        print('==> Cached script found, do you want to use it?:')
+        print('1 Use the cached script.')
+        print('2 Get a new version of the script.')
+        while True:
+            try:
+                option = int(input('==> Choose Option [1/2]: '))
+                
+                if option < 1 or option > 2:
+                    print('Please enter 1 or 2.')
+                    continue
+                
+                break
+            except ValueError:
+                print('Please enter a number.')
+                continue
+                    
+        # Gets a cached script
+        if option == 1:
+            return Script(
+                id=script_data['id'],
+                actions=script_data['actions'],
+                method=script_data['method'],
+                content=Script.get_cached_content(app_request.name),
+                version=self.installed.data['installed_apps'][app_request.name]['version']
+            )
+        # gets a script from the website
+        elif option == 2:
+            script_id = self.installed.data['installed_apps'][app_request.name]['script']['id']
+            scripts = Script.get(
+                app_request,
+                args.action,
+                distro_id=args.distro,
+                architecture=args.architecture,
+                script_id=script_id
+            )
+            
+            if len(scripts) == 0:
+                print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
+                sys.exit()
+                
+            return scripts[0]
+
+        
+    def handle(self, app_request, args):
         """
+        Handles an action from the args.
+
+        :param app_request: The AppRequest to get.
+        :param args: The args to get the action and other stuff from.
+        """
+        action = args.action
 
         if action in self.modify_actions and self.installed.check_installed(app_request.name) is False:
             if confirm(f':: {app_request.name} is not installed, are you sure you want to proceed?') is False:
@@ -404,7 +399,7 @@ class ActionHandler:
             if confirm(f':: {app_request.name} already installed, are you sure you want to proceed?') is False:
                 return
 
-        script = self.get_script(action, app_request)
+        script = self.get_script(args, app_request)
 
         script.run(app_request.name, action, args)
 
@@ -441,9 +436,24 @@ def create_parser():
         '-o',
         '--output-script',
         action='store_true',
-        help="shows the script before executing"
+        help="shows the script before executing",
     )
     action_parser.add_argument('apps', nargs='+', help='List of apps to install.')
+    action_parser.add_argument(
+        '-d',
+        '--distro',
+        help="Specify a distro to get the script for.",
+    )
+    action_parser.add_argument(
+        '-a',
+        '--architecture',
+        help="Specify a CPU architecture to get the script for.",
+    )
+    action_parser.add_argument(
+        '-s',
+        '--shell',
+        help="Specify a shell to get a script for. It will also be used as the shell to run the script."
+    )
     
     install_parser = subparsers.add_parser(
         "install",
@@ -513,9 +523,19 @@ if __name__ == '__main__':
         ]
     )
 
+    if args.distro is None:
+        args.distro = distro.id()
+        
+    architecture = platform.machine()
+    if architecture == 'x86_64':
+        architecture = 'amd64'
+        
+    if args.architecture is None:
+        args.architecture = architecture
+
     try:
         for name in args.apps:
-            action_handler.handle(args.action, AppRequest(name), args)
+            action_handler.handle(AppRequest(name), args)
     except KeyboardInterrupt:
         print('')
         sys.exit()
