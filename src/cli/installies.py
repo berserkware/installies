@@ -365,7 +365,7 @@ class ActionHandler:
         # gets a script from the website
         elif option == 2:
             script_id = self.installed.data['installed_apps'][app_request.name]['script']['id']
-            scripts = Script.get(
+            script = Script.get(
                 app_request,
                 args.action,
                 distro_id=args.distro,
@@ -373,11 +373,11 @@ class ActionHandler:
                 script_id=script_id
             )
             
-            if len(scripts) == 0:
+            if script is None:
                 print(f'\033[31mError: Script no longer exists, or doesn\'t support the given action.\033[0m')
                 sys.exit()
                 
-            return scripts[0]
+            return script
 
         
     def handle(self, app_request, args):
