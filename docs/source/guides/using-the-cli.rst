@@ -7,7 +7,7 @@ automatic caching of scripts.
 Installing the CLI
 ------------------
 
-You can install the CLI through the `Installiss app <https://installies.org/apps/installies>`_ on Installies. You will
+You can install the CLI through the `Installies app <https://installies.org/apps/installies>`_ on Installies. You will
 need python and pip installed for the install script and CLI to work.
 
 .. code-block::
@@ -57,15 +57,28 @@ If the app isn't installed, it will warn and ask you if you want to proceed with
 Running
 *******
 
-This is a bit of a different action, it's only purpose is to run bash code.
+This is a bit of a different action, it's only purpose is to run the script.
 
 .. code-block::
 
    $ installies run app_name
 
 
+Extra Options
+-------------
+
+Outputting the Script's Code
+****************************
+
+You can output the script's code with the ``-o`` or ``--output-script`` flag.
+
+.. code-block::
+
+   $ installies install app_name -o
+
+
 Specifying a Version
---------------------
+********************
 
 You can specify a version of an app to install by appending "==version" to the end of the app name.
 
@@ -76,11 +89,34 @@ You can specify a version of an app to install by appending "==version" to the e
 It is not guaranteed that the script actually installs the version you specified, so if you want to
 confirm you can check the script code.
 
-Outputing the Script's Code
----------------------------
 
-You can output the script's code with the ``-o`` or ``--output-script`` flag.
+Getting a Script for another Distro, Architecture, or Shell
+***********************************************************
+
+To specify a distro, you can use the -d or --distro option.
 
 .. code-block::
 
-   $ installies install app_name -o
+   $ installies install python3 --distro arch
+
+To specify a architecture, you can use the -a or --architecture option.
+
+.. code-block::
+
+   $ installies install python3 --architechture arm
+
+To specify a shell, you can use the -s or --shell option.
+
+.. code-block::
+
+   $ installies install python3 --shell zsh
+
+
+Use Alternate Command to Run Script
+***********************************
+
+You can use the -c or --command option.
+
+.. code-block::
+
+   $ installies install python3 --command /path/to/shell 
