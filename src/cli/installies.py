@@ -136,9 +136,10 @@ class AppRequest:
 class Script:
     """An object for retrieving and storing scripts."""
 
-    def __init__(self, id, actions, method, content, version):
+    def __init__(self, id, actions, shells, method, content, version):
         self.id = id
         self.actions = actions
+        self.shells = shells
         self.method = method
         self.content = content
         self.version = version
@@ -170,13 +171,14 @@ class Script:
         return app
         
     @classmethod
-    def get(cls, app_request, action, distro_id, architecture, script_id=None):
+    def get(cls, app_request, args, script_id=None):
         """Gets a script."""
         app = cls.get_app(app_request)
         
         params = {
-            'actions': action,
-            'supports': f'{distro_id}:{architecture}',
+            'actions': args.action,
+            'supports': f'{args.distro}:{args.architecture}',
+            'shells': os.path.split(args.shell)[-1]
         }
 
         if app_request.version is not None:
@@ -205,6 +207,7 @@ class Script:
             script_list.append(Script(
                 id=script['id'],
                 actions=script['actions'],
+                shells=script['shells'],
                 method=script['method'],
                 content=script['content'],
                 version=(version if version is not None else script['for_version']),
@@ -266,7 +269,7 @@ class Script:
         os.system(f'chmod +x {path}')
         return path
 
-    def run(self, app_name, action, args):
+    def run(self, app_name, args):
         """Runs this script."""
 
         if args.output_script:
@@ -279,13 +282,13 @@ class Script:
             if confirm('\033[38;5;214mWarning: You are running the script in sudo mode, do you want to continue?\033[0m') is False:
                 sys.exit()
 
-        if confirm(f':: Continue with {action}?') is False:
+        if confirm(f':: Continue with {args.action}?') is False:
             sys.exit()
 
         script_file_path = self.create_file(app_name)
         
         print(f'-- Begin executing script. --')
-        subprocess.run(f'{script_file_path} {action}', shell=True)
+        subprocess.run(f'{args.command} {script_file_path} {args.action}', shell=True)
         print(f'--  End executing script.  --')
 
 
@@ -322,9 +325,7 @@ class ActionHandler:
         if self.installed.check_installed(app_request.name) is False:
             return Script.get(
                 app_request,
-                args.action,
-                distro_id=args.distro,
-                architecture=args.architecture,
+                args,
             )
 
         script_data = self.installed.data['installed_apps'][app_request.name]['script']
@@ -332,9 +333,7 @@ class ActionHandler:
         if args.action not in self.installed.data['installed_apps'][app_request.name]['script']['actions']:
             return Script.get(
                 app_request,
-                args.action,
-                distro_id=args.distro,
-                architecture=args.architecture,
+                args,
             )
             
         print('==> Cached script found, do you want to use it?:')
@@ -358,6 +357,7 @@ class ActionHandler:
             return Script(
                 id=script_data['id'],
                 actions=script_data['actions'],
+                shells=script_data['shells'],
                 method=script_data['method'],
                 content=Script.get_cached_content(app_request.name),
                 version=self.installed.data['installed_apps'][app_request.name]['version']
@@ -367,9 +367,7 @@ class ActionHandler:
             script_id = self.installed.data['installed_apps'][app_request.name]['script']['id']
             script = Script.get(
                 app_request,
-                args.action,
-                distro_id=args.distro,
-                architecture=args.architecture,
+                args,
                 script_id=script_id
             )
             
@@ -401,7 +399,7 @@ class ActionHandler:
 
         script = self.get_script(args, app_request)
 
-        script.run(app_request.name, action, args)
+        script.run(app_request.name, args)
 
         # if the action is an install action, add the app to the installed_apps file.
         if action in self.install_actions:
@@ -410,6 +408,7 @@ class ActionHandler:
                 'script': {
                     'id': script.id,
                     'actions': script.actions,
+                    'shells': script.shells,
                     'method': script.method,
                 }
             }
@@ -436,7 +435,7 @@ def create_parser():
         '-o',
         '--output-script',
         action='store_true',
-        help="shows the script before executing",
+        help="Shows the script before executing",
     )
     action_parser.add_argument('apps', nargs='+', help='List of apps to install.')
     action_parser.add_argument(
@@ -452,7 +451,12 @@ def create_parser():
     action_parser.add_argument(
         '-s',
         '--shell',
-        help="Specify a shell to get a script for. It will also be used as the shell to run the script."
+        help="Specify a shell to get a script for."
+    )
+    action_parser.add_argument(
+        '-c',
+        '--command',
+        help="Specify a command to use to run the script."
     )
     
     install_parser = subparsers.add_parser(
@@ -526,13 +530,19 @@ if __name__ == '__main__':
     if args.distro is None:
         args.distro = distro.id()
         
-    architecture = platform.machine()
-    if architecture == 'x86_64':
-        architecture = 'amd64'
-        
     if args.architecture is None:
+        architecture = platform.machine()
+        if architecture == 'x86_64':
+            architecture = 'amd64'
+        
         args.architecture = architecture
 
+    if args.shell is None:
+        args.shell = os.environ['SHELL']
+
+    if args.command is None:
+        args.command = ''
+        
     try:
         for name in args.apps:
             action_handler.handle(AppRequest(name), args)
