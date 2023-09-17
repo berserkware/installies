@@ -297,6 +297,7 @@ class Script(BaseModel):
         super().delete_instance()
 
         self.script_data.delete_instance()
+        self.thread.delete_instance()
 
     def serialize(self):
         """Turns the Script into a json serializable dict."""

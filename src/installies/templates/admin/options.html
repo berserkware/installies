@@ -2,6 +2,21 @@
 
 {% block content %}
 <div class="container black">
+  <p class="no-underline no-top-margin">User Count:</p>
+  <h3 class="no-underline">{{ user_count }}</h3>
+  <p class="no-underline">App Count:</p>
+  <h3 class="no-underline">{{ app_count }}</h3>
+  <p class="no-underline">Script Count:</p>
+  <h3 class="no-underline">{{ script_count }}</h3>
+  <p class="no-underline">Thread Count:</p>
+  <h3 class="no-underline">{{ thread_count }}</h3>
+  <p class="no-underline">Comment Count:</p>
+  <h3 class="no-underline">{{ comment_count }}</h3>
+</div>
+
+<h3>Options</h3>
+
+<div class="container black">
   <a href="{{ url_for('admin.reports') }}">Reports</a>
 </div>
 {% endblock content %}
