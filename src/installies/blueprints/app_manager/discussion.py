@@ -70,6 +70,10 @@ class CreateThreadView(AuthenticationRequiredMixin, AppMixin, FormView):
 class ThreadMixin:
     """A mixin for getting threads from url variables."""
 
+    # if this is true it will only allow admins and thread owners to
+    # access
+    modify_view = False
+    
     def on_request(self, **kwargs):
         thread = Thread.select().where(Thread.id == kwargs['thread_id'])
 
@@ -80,6 +84,17 @@ class ThreadMixin:
 
         if thread.app != kwargs['app']:
             abort(404)
+
+        if self.modify_view and thread.can_user_edit(g.user) is False:
+            flash('You do not have permission to modify this thread.', 'error')
+            return redirect(
+                url_for(
+                    'app_manager.comments',
+                    app_name=kwargs['app'].name,
+                    thread_id=thread.id
+                ),
+                303
+            )
             
         kwargs['thread'] = thread
         return super().on_request(**kwargs)
@@ -89,19 +104,9 @@ class DeleteThreadView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, FormV
     """A view for deleting threads."""
 
     template_path = 'discussion/delete_thread.html'
+    modify_view = True
 
     def post(self, **kwargs):
-        if kwargs['thread'].creator != g.user:
-            flash('You do not have permission to delete this thread.', 'error')
-            return redirect(
-                url_for(
-                    'app_manager.comments',
-                    app_name=kwargs['app'].name,
-                    thread_id=kwargs['thread'].id
-                ),
-                303
-            )
-
         thread = kwargs['thread']
 
         thread.delete_instance()
@@ -150,7 +155,7 @@ class CommentMixin:
 
         comment = comment.get()
 
-        if comment.creator != g.user:
+        if comment.can_user_edit(g.user) is False:
             flash('You do not have permission to modify this comment.', 'error')
             return self.get_app_view_redirect(**kwargs)
 

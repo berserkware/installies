@@ -20,11 +20,24 @@ class Thread(BaseModel):
     creation_date = DateTimeField(default=datetime.now)
 
     def delete_instance(self):
-        super().delete_instance()
-
         for comment in self.comments:
             comment.delete_instance()
+        
+        super().delete_instance()
 
+
+    def can_user_edit(self, user: User):
+        """Check if the given user is allowed to edit the thread."""
+        if user is None:
+            return False
+
+        if user.admin is True:
+            return True
+
+        if user == creator:
+            return True
+
+        return False
 
 
 class Comment(BaseModel):
@@ -35,3 +48,16 @@ class Comment(BaseModel):
     creation_date = DateTimeField(default=datetime.now)
     content = TextField()
     edited = BooleanField(default=False)
+
+    def can_user_edit(self, user: User):
+        """Check if the given user is allowed to edit the comment."""
+        if user is None:
+            return False
+
+        if user.admin is True:
+            return True
+
+        if user == creator:
+            return True
+
+        return False
