@@ -9,12 +9,12 @@ os.environ['TZ'] = 'UTC'
 config = configparser.ConfigParser()
 config.read('/etc/installies/config.ini')
 
-# general config
-default_config = config['DEFAULT']
+# server config
+server_config = config['server']
 
-host = default_config['Host']
-port = int(default_config['Port'])
-debug_mode = default_config['DebugMode']
+host = server_config['Host']
+port = int(server_config['Port'])
+debug_mode = server_config['DebugMode']
 
 # config related to database
 database_config = config['database']
