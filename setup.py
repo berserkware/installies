@@ -27,6 +27,5 @@ setup(
         'bleach',
         'bcrypt',
         'pymysql',
-        'python-dotenv',
     ],
 )

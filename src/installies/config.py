@@ -1,26 +1,43 @@
 import os
+import configparser
 
 from peewee import MySQLDatabase
-from dotenv import load_dotenv
 from pathlib import Path
 
-dotenv_path = os.path.join(Path(__file__).parent.resolve(), '.env')
-load_dotenv(dotenv_path)
 os.environ['TZ'] = 'UTC'
 
+config = configparser.ConfigParser()
+config.read('/etc/installies/config.ini')
+
+# general config
+default_config = config['DEFAULT']
+
+host = default_config['Host']
+port = int(default_config['Port'])
+debug_mode = default_config['DebugMode']
+
+# config related to database
+database_config = config['database']
+
 database = MySQLDatabase(
-    os.environ.get('DATABASE_NAME'),
-    user=os.environ.get('DATABASE_USER'),
-    password=os.environ.get('DATABASE_PASS'),
-    host=os.environ.get('DATABASE_HOST'),
-    port=int(os.environ.get('DATABASE_PORT'))
+    database_config['Name'],
+    user=database_config['User'],
+    password=database_config['Passwd'],
+    host=database_config['Host'],
+    port=int(database_config['Port'])
 )
 
-apps_path = os.environ.get('SCRIPT_UPLOAD_PATH')
+# config related to scripts
+script_config = config['script']
 
-max_script_length = os.environ.get('MAX_SCRIPT_LEN', 10000)
+apps_path = script_config['UploadPath']
+max_script_length = int(script_config['MaxLength'])
 
-noreply_email = os.environ.get('NOREPLY_EMAIL')
-noreply_email_password = os.environ.get('NOREPLY_EMAIL_PASSWORD')
-smtp_server = os.environ.get('SMTP_SERVER')
-smtp_server_port = int(os.environ.get('SMTP_SERVER_PORT'))
+
+# config related to email
+email_config = config['email']
+
+noreply_email = email_config['User']
+noreply_email_password = email_config['Passwd']
+smtp_server = email_config['SMTPAddr']
+smtp_server_port = int(email_config['SMTPPort'])
