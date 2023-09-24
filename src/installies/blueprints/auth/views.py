@@ -8,14 +8,16 @@ from installies.validators.user import (
     EmailValidator,
     PasswordConfirmValidator,
 )
-from installies.models.user import User, Session
+from installies.validators.check import EmailChecker, EmptyChecker
+from installies.models.user import User, Session, PasswordResetRequest
 from installies.blueprints.auth.decorators import (
     unauthenticated_required,
     authenticated_required,
 )
+from installies.lib.random import gen_random_string
 from installies.lib.email import send_email
 from peewee import *
-from datetime import date
+from datetime import datetime, timedelta
 import calendar
 
 auth = Blueprint('auth', __name__)
@@ -146,6 +148,95 @@ def verify_user(verify_string):
     flash('Account successfully verified', 'success')
     return redirect('/login')
 
+
+@auth.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+
+        try:
+            EmptyChecker().check(email)
+        except ValidationError:
+            flash('You must enter a email.', 'error')
+            return render_template('forgot_password.html')
+
+        try:
+            EmailChecker().check(email)
+        except ValidationError:
+            flash('You must enter a valid email.', 'error')
+            return render_template('forgot_password.html')
+
+        try:
+            user = User.get(User.email == email)
+        except DoesNotExist:
+            return redirect('/')
+
+        # generates a unique string.
+        token = gen_random_string(50)
+        while True:
+            reset_request = PasswordResetRequest.select().where(
+                PasswordResetRequest.token == token
+            )
+            if reset_request.exists() is False:
+                break
+            token = gen_random_string(50)
+        
+        reset_request = PasswordResetRequest.create(
+            user=user,
+            token=token,
+        )
+    
+        send_email(
+            email,
+            render_template('email/reset_password.html', reset_request=reset_request),
+            'Reset Password',
+        )
+
+        flash('Check you inbox for an email to reset you password. It will expire after 10 minutes.', 'success')
+        return redirect('/')
+
+    return render_template('forgot_password.html')
+
+        
+
+@auth.route('/reset-password/<token>', methods=['GET', 'POST'])
+@unauthenticated_required()
+def reset_password(token):
+    if request.method == 'POST':
+        password = request.form.get('password')
+        password_confirm = request.form.get('password-confirm')
+
+        try:
+            PasswordValidator.validate(password)
+            PasswordConfirmValidator.validate(password_confirm)
+        except ValidationError as e:
+            flash(str(e), 'error')
+            return render_template('reset_password.html')
+
+        if password != password_confirm:
+            flash('Passwords do not match.', 'error')
+            return render_template('reset_password.html')
+
+        try:
+            reset_request = PasswordResetRequest.get(PasswordResetRequest.token == token)
+        except DoesNotExist:
+            abort(404)
+            
+        if (reset_request.request_date + timedelta(minutes=10)) < datetime.now():
+            flash('Password reset request has expired.', 'error')
+            reset_request.delete_instance()
+            return redirect('/')
+
+        reset_request.user.password = User.hash_password(password)
+        reset_request.user.save()
+
+        reset_request.delete_instance()
+
+        flash('Password successfully resetted.', 'success')
+        return redirect('/login')
+
+    return render_template('reset_password.html', token=token)
+    
 
 @auth.route('/profile/<username>')
 def profile(username):

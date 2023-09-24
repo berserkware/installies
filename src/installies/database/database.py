@@ -2,7 +2,7 @@ from installies.config import database
 from installies.models.app import App
 from installies.models.script import Script, ScriptData, Action, Shell
 from installies.models.supported_distros import SupportedDistrosJunction, SupportedDistro
-from installies.models.user import User, Session, Ban
+from installies.models.user import User, Session, Ban, PasswordResetRequest
 from installies.models.report import Report, ReportAppInfo, ReportScriptInfo, ReportCommentInfo
 from installies.models.discussion import Thread, Comment
 from installies.models.maintainer import Maintainers, Maintainer
@@ -14,6 +14,7 @@ tables =  [
     ScriptData,
     Script,
     Ban,
+    PasswordResetRequest,
     Action,
     Shell,
     SupportedDistrosJunction,

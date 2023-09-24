@@ -8,7 +8,7 @@ from peewee import (
 )
 from installies.models.base import BaseModel
 from installies.config import database, apps_path
-from installies.lib.random import gen_random_id
+from installies.lib.random import gen_random_id, gen_random_string
 from installies.lib.url import make_slug
 from datetime import datetime
 
@@ -78,12 +78,12 @@ class User(BaseModel):
         hashed_pass = cls.hash_password(password)
 
         # creates a verify string, goes untill a unique one is generated
-        verify_string = cls.generate_verify_string()
+        verify_string = gen_random_string(50)
         while True:
             user = User.select().where(User.verify_string)
             if user.exists() is False:
                 break
-            verify_string = cls.generate_verify_string()
+            verify_string = gen_random_string(50)
 
         return super().create(
             username=username,
@@ -92,12 +92,6 @@ class User(BaseModel):
             verify_string=verify_string,
             admin=admin
         )
-
-    @classmethod
-    def generate_verify_string(cls):
-        """Generates a verify string."""
-
-        return ''.join(random.choice(string.ascii_letters) for i in range(50))
 
     def is_banned(self):
         """Returns true if user is banned, else False."""
@@ -117,7 +111,7 @@ class Session(BaseModel):
     @classmethod
     def create(cls, user):
         while True:
-            token = cls.make_token()
+            token = gen_random_string(50)
 
             if Session.select().where(Session.token == token).exists():
                 continue
@@ -129,16 +123,17 @@ class Session(BaseModel):
             token=token
         )
 
-    @classmethod
-    def make_token(cls):
-        """Create a 50 letter long string of random letters and numbers."""
-        letters = string.ascii_letters + string.digits
-        return ''.join(random.choice(letters) for i in range(50))
-
-
 class Ban(BaseModel):
     """A model for storing ban data."""
 
     user = ForeignKeyField(User, backref="bans")
     reason = CharField(255)
     date = DateTimeField(default=datetime.now)
+
+
+class PasswordResetRequest(BaseModel):
+    """A model for storing password reset requests."""
+
+    user = ForeignKeyField(User, backref="password_requests")
+    token = CharField(255)
+    request_date = DateTimeField(default=datetime.now)

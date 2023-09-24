@@ -4,7 +4,8 @@
 
 {% block body %}
 <div class="container black auto-margin" style="width:450px;">
-    <h2>Log In</h2>
+  <h2>Log In</h2>
+  <h5 class="grey">Or if you don't have an account, <a class="link" href="/signup">Sign Up</a></h5>
 
     <form action="{{ url_for('auth.login') }}{% if 'referer' in request.args.keys() %}?referer={{ request.args['referer'] }}{% endif %}" method="post">
         <div class="form-input-container">
@@ -23,6 +24,6 @@
         
     </form>
 
-    <h5 class="grey">Or if you don't have an account, <a class="link" href="/signup">Sign Up</a></h5>
+    <h5><a class="link" href="/forgot-password">Forgot Password?</a></h5>
 </div>
 {% endblock %}
