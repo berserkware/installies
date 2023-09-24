@@ -82,6 +82,10 @@ a {
     text-decoration: none;
 }
 
+b {
+    font-family: Inter Bold;
+}
+
 footer {
     margin-top: 10px;
     text-align: center;

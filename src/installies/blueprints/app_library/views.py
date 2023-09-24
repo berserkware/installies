@@ -105,3 +105,8 @@ def scripts():
         page_count=page_count,
         scripts=paginated_scripts,
     )
+
+
+@app_library.route('/support')
+def support():
+    return render_template('support.html')
