@@ -6,6 +6,7 @@ from installies.blueprints.admin.views import admin
 from installies.config import database
 from installies.models.user import User, Session
 from installies.lib.dict import remove_value_from_dictionary, join_dictionaries
+from installies import __version__
 from flask import Flask, request, g, render_template
 from peewee import *
 
@@ -51,3 +52,5 @@ app.register_blueprint(admin)
 
 app.jinja_env.globals['remove_value_from_dictionary'] = remove_value_from_dictionary
 app.jinja_env.globals['join_dictionaries'] = join_dictionaries
+app.jinja_env.globals['__version__'] = __version__
+

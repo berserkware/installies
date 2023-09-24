@@ -1,8 +1,9 @@
 from setuptools import setup
+from installies import __version__
 
 setup(
     name='installies',
-    version='0.1.0',
+    version=__version__,
     packages=[
         'installies', 
         'installies.database',
