@@ -29,6 +29,9 @@
       <li><a href="{{ url_for("app_manager.add_script", app_name=app.name) }}">Add Script</a></li>
       <li><a href="{{ url_for("app_manager.create_thread", app_name=app.name) }}">Create Thread</a></li>
       <li><a href="{{ url_for("app_manager.report_app", app_name=app.name) }}" class="red">Report</a></li>
+      {% if g.user.admin %}
+      <li><a href="{{ url_for("app_manager.delete_app", app_name=app.name) }}" class="red">Delete</a></li>
+      {% endif %}
     </ul>
   </div>
 </div>

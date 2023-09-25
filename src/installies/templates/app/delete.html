@@ -1,0 +1,15 @@
+{% extends "app/base.html" %}
+
+{% block app_page_title %}Delete {% endblock %}
+
+{% block content %}
+<div class="container black" style="width:auto">
+    <h2>Delete App</h2>
+
+    <p>Are you sure you want to delete this app? This action is not reversable.</p>
+
+    <form class="delete-script-form" action="{{ url_for('app_manager.delete_app', app_name=app.name) }}" method="post">
+      <input type="submit" value="Delete App" class="button">
+    </form>
+</div>
+{% endblock %}

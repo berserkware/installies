@@ -117,6 +117,18 @@ class AppEditView(AuthenticationRequiredMixin, AppMixin, EditFormView):
         return self.get_app_view_redirect(**kwargs)
 
 
+class AppDeleteView(AdminRequiredMixin, AuthenticationRequiredMixin, AppMixin, TemplateView):
+    """A view for deleting apps."""
+
+    template_path = 'app/delete.html'
+
+    def post(self, **kwargs):
+        kwargs['app'].delete_instance()
+
+        flash('App successfully deleted.', 'success')
+        return redirect('/')
+    
+
 class AddMaintainerView(AuthenticationRequiredMixin, AppMixin, TemplateView):
     """A view for adding maintainers."""
 
