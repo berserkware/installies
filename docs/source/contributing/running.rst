@@ -13,33 +13,32 @@ to create a database for installies.
 Creating the Config File
 ************************
 
-You will need to put a .env file in the ``src/installies`` directory. This file need to include
-a few variables.
+You will need to create a configuration file in ``/etc/installies`` named ``config.ini`` before
+you can run Installies. Here is an example configuration:
 
-.. list-table::
+.. code-block:: ini
 
-   * - **Name**
-     - **Description**
-   * - DATABASE_NAME
-     - The name of the database you have created for Installies;
-   * - DATABASE_USER
-     - The username of the user to access the database.
-   * - DATABASE_PASS
-     - The password of the user.
-   * - DATABASE_HOST
-     - The host of the mysql server.
-   * - DATABASE_PORT
-     - The port of the mysql server.
-   * - SCRIPT_UPLOAD_PATH
-     - The directory to store the scripts uploaded.
-   * - NOREPLY_EMAIL
-     - The email for account verification.
-   * - NOREPLY_EMAIL_PASSWORD
-     - The password/key for the email.
-   * - SMTP_SERVER
-     - The server address for the email server to use.
-   * - SMTP_SERVER_PORT
-     - The port of the email server.
+   [server]
+   Host = 0.0.0.0
+   Port = 8000
+   DebugMode = yes
+
+   [database]
+   Name = Installies
+   User = installies
+   Passwd = password
+   Host = localhost
+   Port = 3306
+
+   [script]
+   UploadPath = /path/where/to/put/apps/and/scripts
+   MaxLength = 10000
+
+   [email]
+   User = installies@yourdomain.tld
+   Passwd = pass123
+   SMTPAddr = mail.example.com
+   SMTPPort = 465
        
 Installing
 ----------
