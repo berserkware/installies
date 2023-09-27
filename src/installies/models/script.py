@@ -28,12 +28,28 @@ class ScriptNotFound(Exception):
     """An exception to raise when an app cannot be found."""
 
 
+class Shell(BaseModel):
+    """A model for storing a shell that a script supports."""
+
+    name = CharField(255)
+    file_extension = CharField(255)
+    file_mimetype = CharField(255)
+    interpreter_path = CharField(255)
+    interpreter_arg = CharField(255)
+
+    @classmethod
+    def get_all_names(cls) -> list[str]:
+        """Gets the names of all the shells in a list."""
+        return [shell.name for shell in Shell.select()] 
+    
+
 class ScriptData(BaseModel):
     """A model for storing the path to the script content."""
 
     filepath = CharField(255)
     method = CharField(255, unique=True)
     supported_distros = ForeignKeyField(SupportedDistrosJunction)
+    shell = ForeignKeyField(Shell, backref="scripts")
 
     def open_content(self, mode='r'):
         """
@@ -82,7 +98,7 @@ class ScriptData(BaseModel):
             method: str,
             distros: dict,
             actions: list[str],
-            shells: list[str],
+            shell: Shell
     ):
         """Creates the script data."""
 
@@ -95,16 +111,15 @@ class ScriptData(BaseModel):
             filepath=filepath,
             method=method,
             supported_distros=supported_distros,
+            shell=shell,
         )
 
         actions = Action.create_from_list(script_data, actions)
-        shells = Shell.create_from_list(script_data, shells)
 
         return script_data
 
     def delete_instance(self):
         Action.delete().where(Action.script_data == self).execute()
-        Shell.delete().where(Shell.script_data == self).execute()
         
         os.remove(self.filepath)
         
@@ -114,10 +129,6 @@ class ScriptData(BaseModel):
     def get_supported_actions(self):
         """Get the actions the script supports in a list."""
         return [action.name for action in self.actions]
-
-    def get_supported_shells(self):
-        """Get the shells the script supports in a list."""
-        return [shell.name for shell in self.shells]
 
 
 class Action(BaseModel):
@@ -136,23 +147,6 @@ class Action(BaseModel):
 
         return action_objects
 
-
-class Shell(BaseModel):
-    """A model for storing a shell that a script supports."""
-
-    name = CharField(255)
-    script_data = ForeignKeyField(ScriptData, backref="shells")
-
-    @classmethod
-    def create_from_list(cls, script_data: ScriptData, shells: list[str]):
-        """Creates multiple Shell objects from a list."""
-        shell_objects = []
-
-        for shell in shells:
-            shell_objects.append(Shell.create(name=shell, script_data=script_data))
-
-        return shell_objects
-    
     
 class Script(BaseModel):
     """A model for storing data about scripts."""
@@ -194,7 +188,7 @@ class Script(BaseModel):
             content: str,
             method: str,
             actions: list[str],
-            shells: list[str],
+            shell: Shell,
             submitter: User,
             app: App,
             version: str=None,
@@ -206,7 +200,7 @@ class Script(BaseModel):
         :param content: The content of the script.
         :param method: The method the script uses.
         :param actions: The actions that the script supports.
-        :param shells: The shells that the script supports.
+        :param shell: The shell the script is for.
         :param submitter: The submitter.
         :param app: The app the script is for.
         :param version: The version of the app the script is for.
@@ -219,7 +213,7 @@ class Script(BaseModel):
             method,
             supported_distros,
             actions,
-            shells,
+            shell,
         )
 
         maintainers = Maintainers.create()
@@ -252,8 +246,8 @@ class Script(BaseModel):
             content: str,
             method: str,
             actions: list[str],
-            shells: list[str],
-            version: str=None
+            shell: Shell,
+            version: str=None,
     ):
         """
         Edits the script.
@@ -262,7 +256,7 @@ class Script(BaseModel):
         :param content: The new content.
         :param method: The script's method.
         :param actions: The sctions that the script supports.
-        :param shells: The shles that the script supports.
+        :param shell: The shell the script is for.
         :param version: The version of the app the script is for.
         """
 
@@ -272,6 +266,7 @@ class Script(BaseModel):
         self.script_data.supported_distros.delete_all_distros()
         self.script_data.supported_distros.create_from_list(supported_distros)
         self.script_data.method = method
+        self.script_data.shell = shell
         self.script_data.save()
 
         self.thread.title = f'Discussion of script: "{method}"'
@@ -280,9 +275,6 @@ class Script(BaseModel):
         Action.delete().where(Action.script_data == self.script_data).execute()
         Action.create_from_list(self.script_data, actions)
 
-        Shell.delete().where(Shell.script_data == self.script_data).execute()
-        Shell.create_from_list(self.script_data, shells)
-        
         with self.script_data.open_content('w') as f:
             f.write(content)
 
@@ -305,7 +297,7 @@ class Script(BaseModel):
 
         data['id'] = self.id
         data['actions'] = [action.name for action in self.script_data.actions]
-        data['shells'] = [shell.name for shell in self.script_data.shells]
+        data['shell'] = self.script_data.shell.name
         data['supported_distros'] = self.script_data.supported_distros.get_as_dict()
         data['last_modified'] = str(self.last_modified)
         data['for_version'] = self.version
@@ -338,6 +330,7 @@ class Script(BaseModel):
 
         It replaces <version> with the given version. If the version is None, it uses the
         app's current_version. Adds the action function matcher to the end of the content.
+        It also adds a shebang.
 
         :param version: The version of the script to install.
         """
@@ -361,6 +354,10 @@ fi\n"""
             action_switcher += if_statement
 
         new_content += action_switcher
+
+        #adds the shebang
+        shebang = f'#!{self.script_data.shell.interpreter_path} {self.script_data.shell.interpreter_arg}\n\n'
+        new_content = shebang + new_content
 
         return new_content
 

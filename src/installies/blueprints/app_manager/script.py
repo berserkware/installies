@@ -25,7 +25,7 @@ from installies.validators.script import (
 from installies.groups.script import ScriptGroup
 from installies.models.app import App
 from installies.models.maintainer import Maintainer, Maintainers
-from installies.models.script import Script
+from installies.models.script import Script, Shell
 from installies.models.user import User
 from installies.forms.script import (
     AddScriptForm,
@@ -89,6 +89,7 @@ class ScriptMixin:
             303
         )
 
+
 class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""
 
@@ -102,6 +103,7 @@ class ScriptListView(AppMixin, ListView):
     def get_group(self, **kwargs):
         group = ScriptGroup.get(request.args, query=kwargs['app'].scripts.select())
         return group
+
 
 class ScriptDetailView(AppMixin, ScriptMixin, DetailView):
     """A view for getting the details of a script."""
@@ -122,8 +124,8 @@ class ScriptDownloadView(AppMixin, ScriptMixin, View):
         script_file = io.BytesIO(content.encode('utf-8'))
         return send_file(
             script_file,
-            mimetype='application/x-shellscript',
-            download_name=f'{script.app.name}.sh',
+            mimetype=script.script_data.shell.file_mimetype,
+            download_name=f'{script.app.name}.{script.script_data.shell.file_extension}',
             as_attachment=True
         )
     
@@ -151,7 +153,7 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, Edi
     template_path = 'script/edit_script.html'
     script_maintainer_only = True
     form_class = EditScriptForm
-
+    
     def get_object_to_edit(self, **kwargs):
         return kwargs['script']
     

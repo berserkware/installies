@@ -1,0 +1,30 @@
+<form action="{{ form_url }}" method="post">
+    <div class="form-input-container">
+      <label for"shell-name">Name</label><br>
+      <input type="text" name="shell-name" id="shell-name" class="textbox" style="width:50%;" {% if default_form_shell %}value="{{ default_form_shell.name }}"{% endif %} required>
+    </div>
+
+    <div class="form-input-container">
+      <label for"shell-file-extension">File Extension</label><br>
+      <input type="text" name="shell-file-extension" id="shell-file-extension" class="textbox" style="width:50%;" {% if default_form_shell %}value="{{ default_form_shell.file_extension }}"{% endif %} required>
+    </div>
+
+    <div class="form-input-container">
+      <label for"shell-file-mimetype">File Mimetype</label><br>
+      <input type="text" name="shell-file-mimetype" id="shell-file-mimetype" class="textbox" style="width:50%;" {% if default_form_shell %}value="{{ default_form_shell.file_mimetype }}"{% endif %} required>
+    </div>
+
+    <div class="form-input-container">
+      <label for"shell-interpreter-path">Interpreter Path</label><br>
+      <input type="text" name="shell-interpreter-path" id="shell-interpreter-path" class="textbox" style="width:50%;" {% if default_form_shell %}value="{{ default_form_shell.interpreter_path }}"{% endif %} required>
+    </div>
+
+    <div class="form-input-container">
+      <label for"shell-interpreter-arg">Interpreter Arg <span style="color:var(--light-grey)">(optional)</span></label><br>
+      <input type="text" name="shell-interpreter-arg" id="shell-interpreter-arg" class="textbox" style="width:50%;"{% if default_form_shell %}value="{{ default_form_shell.interpreter_arg }}"{% endif %}>
+    </div>
+    
+    <div class="form-input-container">
+      <input type="submit" value="Submit" class="button">
+    </div>
+</form>

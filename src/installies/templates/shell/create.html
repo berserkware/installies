@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container black auto-width">
+  <h2>Create Shell</h2>
+
+  {% set form_url = url_for('admin.create_shell') %}
+  {% include "shell/form.html" %}
+</div>
+{% endblock content %}

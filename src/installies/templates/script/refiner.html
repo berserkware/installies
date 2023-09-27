@@ -42,8 +42,12 @@
 	<input type="text" name="actions" id="actions" value="{{ request.args.get('actions', '') }}">
       </div>
       <div>
-	<label for="shells">Supported Shells:</label>
-	<input type="text" name="shells" id="shells" value="{{ request.args.get('shells', '') }}">
+	<label for="shell">Shell:</label>
+	<select name="script-shell" id="script-shells" required>
+	  {% for shell in get_shell_names() %}
+	  <option value="{{ shell }}" {% if request.args.get('shell', '') == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
+	  {% endfor %}
+	</select>
       </div>
       <div>
 	<label for="page">Page:</label>

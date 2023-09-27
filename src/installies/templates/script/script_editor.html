@@ -5,8 +5,12 @@
   </div>
 
   <div class="form-input-container">
-    <label for="script-shells">Supported Shells <span style="color:var(--light-grey)">(optional)</span></label><br>
-    <input type="text" name="script-shells" id="script-shells" class="textbox" placeholder="Default is bash." value="{% if default_form_script %}{{ ', '.join(default_form_script.script_data.get_supported_shells()) }}{% endif %}">
+    <label for="script-shell">Shell</label><br>
+    <select name="script-shell" id="script-shells" required>
+      {% for shell in get_shell_names() %}
+      <option value="{{ shell }}" {% if default_form_script and default_form_script.script_data.shell.name == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
+      {% endfor %}
+    </select>
   </div>
 
   <div class="form-input-container">

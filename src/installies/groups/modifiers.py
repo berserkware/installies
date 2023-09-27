@@ -320,22 +320,19 @@ class BySupportedAction(Modifier):
 
 class BySupportedShell(Modifier):
     """"
-    A modifier class for getting by supported shells.
+    A modifier class for getting by shell.
 
-    This only works on Script objects. It uses the 'shells' param in the url.
+    This only works on Script objects. It uses the 'shell' param in the url.
     """
 
     def modify(self, query: Query, params):
-        if 'shells' not in params.keys():
+        if 'shell' not in params.keys():
             return query
-        
-        shells = [shell.strip() for shell in params['shells'].split(',')]
 
         query = query.join(ScriptData).join(Shell)
         
-        for shell in shells:
-            query = query.where(
-                Shell.name.contains(shell)
-            )
+        query = query.where(
+            Shell.name.contains(params['shell'])
+        )
 
         return query

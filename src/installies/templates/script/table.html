@@ -10,7 +10,7 @@
       <th>App</th>
       {% endif %}
       <th>Actions</th>
-      <th>Shells</th>
+      <th>Shell</th>
       <th>Method</th>
       <th>Supports</th>
       <th>For Version</th>
@@ -28,7 +28,7 @@
       <td><a href="{{ url_for('app_manager.app_view', app_name=script.app.name) }}">{{ script.app.name }}</a></td>
       {% endif %}
       <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
-      <td>{{ ", ".join(script.script_data.get_supported_shells()) }}</td>
+      <td>{{ script.script_data.shell.name }}</td>
       <td>{{ script.script_data.method }}</td>
       <td>
 	<table class="initial-font-size">

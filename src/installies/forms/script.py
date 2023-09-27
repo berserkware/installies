@@ -11,7 +11,7 @@ from installies.validators.script import (
 )
 from installies.models.supported_distros import SupportedDistrosJunction
 from installies.models.app import App
-from installies.models.script import Script
+from installies.models.script import Script, Shell
 
 
 class ModifyScriptForm(Form):
@@ -27,10 +27,8 @@ class ModifyScriptForm(Form):
             default='',
         ),
         FormInput(
-            'script-shells',
+            'script-shell',
             ScriptShellValidator,
-            lambda shell_string: [x.strip() for x in shell_string.split(',')],
-            default='bash',
         ),
         FormInput(
             'script-supported-distros',
@@ -53,13 +51,15 @@ class AddScriptForm(ModifyScriptForm):
     """A form for adding scripts."""
 
     def save(self, app: App):
+        shell = Shell.get(Shell.name == self.data['script-shell'])
+        
         return Script.create(
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
             app=app,
             version=self.data['for-version'],
             actions=self.data['script-actions'],
-            shells=self.data['script-shells'],
+            shell=shell,
             method=self.data['script-method'],
             submitter=g.user,
         )
@@ -71,9 +71,11 @@ class EditScriptForm(ModifyScriptForm):
     edit_form = True
     
     def save(self):
+        shell = Shell.get(Shell.name == self.data['script-shell'])
+        
         return self.original_object.edit(
             actions=self.data['script-actions'],
-            shells=self.data['script-shells'],
+            shell=shell,
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
             version=self.data['for-version'],

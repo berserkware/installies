@@ -7,10 +7,11 @@ from installies.validators.check import (
     UniqueChecker,
     NotInContainerChecker,
     DictionaryChecker,
+    NotInContainerChecker,
 )
 from installies.validators.app import VersionValidator
 from installies.models.app import App
-from installies.models.script import ScriptData
+from installies.models.script import ScriptData, Shell
 from installies.config import (
     max_script_length,
 )
@@ -37,12 +38,10 @@ class ScriptShellValidator(Validator):
 
     checkers = [
         EmptyChecker(),
-        CharacterWhitelistChecker(
-            allow_spaces=False,
-            allow_uppercase=False,
-            allow_extra=['-', '_']
-        ),
-        LengthChecker(max_len=32),
+        NotInContainerChecker(
+            container=Shell.get_all_names,
+            container_name='Supported Shells',
+        )
     ]
 
     data_name = 'Script shell'
