@@ -11,7 +11,7 @@ from installies.validators.script import (
 )
 from installies.models.supported_distros import SupportedDistrosJunction
 from installies.models.app import App
-from installies.models.script import Script, Shell
+from installies.models.script import AppScript, Script, Shell
 
 
 class ModifyScriptForm(Form):
@@ -54,10 +54,10 @@ class AddScriptForm(ModifyScriptForm):
     def save(self, app: App):
         shell = Shell.get(Shell.name == self.data['script-shell'])
         
-        return Script.create(
+        return AppScript.create(
+            app=app,
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
-            app=app,
             version=self.data['for-version'],
             actions=self.data['script-actions'],
             shell=shell,

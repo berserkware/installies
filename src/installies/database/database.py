@@ -1,6 +1,6 @@
 from installies.config import database
 from installies.models.app import App
-from installies.models.script import Script, ScriptData, Action, Shell
+from installies.models.script import Script, AppScript, Action, Shell
 from installies.models.supported_distros import SupportedDistrosJunction, SupportedDistro
 from installies.models.user import User, Session, Ban, PasswordResetRequest
 from installies.models.report import Report, ReportAppInfo, ReportScriptInfo, ReportCommentInfo
@@ -11,7 +11,7 @@ tables =  [
     User,
     Session,
     App,
-    ScriptData,
+    AppScript,
     Script,
     Ban,
     PasswordResetRequest,

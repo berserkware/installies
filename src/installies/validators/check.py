@@ -145,7 +145,8 @@ class UniqueChecker:
         self,
         table,
         column_name: str,
-        data_modifier: t.Callable=None
+        data_modifier: t.Callable=None,
+        query=None,
     ):
         self.table = table
         self.column_name = column_name

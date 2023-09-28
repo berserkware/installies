@@ -20,6 +20,7 @@ class FormInput:
             converter=None,
             default=None,
             original_data_getter=None,
+            script_form_input=False
     ):
         self.name = name
         self.validator = validator

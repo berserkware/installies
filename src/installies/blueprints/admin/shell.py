@@ -25,7 +25,7 @@ class CreateShellFormView(AuthenticationRequiredMixin, AdminRequiredMixin, FormV
         form.save()
 
         flash('Shell successfully created.', 'success')
-        return redirect(url_for('app_library.index'))
+        return redirect(url_for('admin.shells'))
 
 
 class ShellMixin:
@@ -57,7 +57,7 @@ class EditShellFormView(AuthenticationRequiredMixin, AdminRequiredMixin, ShellMi
         form.save(kwargs['shell'])
 
         flash('Shell successfully edited.', 'success')
-        return redirect(url_for('app_library.index'))
+        return redirect(url_for('admin.shells'))
 
 
 class DeleteShellView(AuthenticationRequiredMixin, AdminRequiredMixin, ShellMixin, TemplateView):

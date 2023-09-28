@@ -11,7 +11,7 @@ from installies.validators.check import (
 )
 from installies.validators.app import VersionValidator
 from installies.models.app import App
-from installies.models.script import ScriptData, Shell
+from installies.models.script import Shell, Script, AppScript
 from installies.config import (
     max_script_length,
 )
@@ -109,10 +109,6 @@ class ScriptMethodValidator(Validator):
         EmptyChecker(),
         LengthChecker(max_len=255),
         CharacterWhitelistChecker(allow_extra=['_', '-', ',', '.']),
-        UniqueChecker(
-            table=ScriptData,
-            column_name='method',
-        ),
     ]
 
     data_name = 'Script method'

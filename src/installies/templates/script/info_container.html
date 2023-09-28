@@ -6,15 +6,15 @@
     <td>{% if script.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, script_id=script.id) }}">Delete</a>] [<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, script_id=script.id) }}">Add Maintainer</a>] {% endif %}[<a class="red" href="{{ url_for('app_manager.report_script', app_name=app.name, script_id=script.id) }}">Report</a>]</td>
     <tr>
       <th class="bold">Actions:</th>
-      <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
+      <td>{{ ", ".join(script.get_supported_actions()) }}</td>
     </tr>
     <tr>
       <th class="bold">Shell:</th>
-      <td>{{ script.script_data.shell.name }}</td>
+      <td>{{ script.shell.name }}</td>
     </tr>
     <tr>
       <th class="bold">Method:</th>
-      <td>{{ script.script_data.method }}</td>
+      <td>{{ script.method }}</td>
     </tr>
     <tr>
       <th class="bold">Uses Function Matcher:</th>
@@ -46,13 +46,13 @@
     </tr>
     <tr>
       <th class="bold">Discussion:</th>
-      <td><a class="link" href="{{ url_for("app_manager.comments", app_name=script.app.name, thread_id=script.thread.id) }}">View this script's discussion.</a></td>
+      <td><a class="link" href="{{ url_for("app_manager.comments", app_name=script.app_data.get().app.name, thread_id=script.app_data.get().thread.id) }}">View this script's discussion.</a></td>
     </tr>
     <tr>
       <th class="bold">Supported Distros:</th>
       <td>
 	<table>
-	  {% set distros = script.script_data.supported_distros.get_as_dict() %}
+	  {% set distros = script.supported_distros.get_as_dict() %}
 	  {% for architecture in distros %}
 	  <tr class="initial-font-size">
 	    <td class="no-height-padding">{{ architecture }}:</td>
@@ -65,7 +65,7 @@
   </table>
   <p>Content</p>
   <textarea name="script-content" id="script-content">
-    {% with f = script.script_data.open_content() %}{{ f.read() }}{% endwith %}</textarea>
+    {% with f = script.open_content() %}{{ f.read() }}{% endwith %}</textarea>
   <script>
     mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
 	lineNumbers: true,
@@ -76,9 +76,9 @@
   </script>
   <br>
   <h3>Download Script</h3>
-  <form action="{{ url_for('app_manager.script_download', app_name=script.app.name, script_id=script.id) }}" method="get">
+  <form action="{{ url_for('app_manager.script_download', app_name=script.app_data.get().app.name, script_id=script.id) }}" method="get">
     <label for="version">Version <span style="color:var(--light-grey)">(optional)</span>:</label><br>
-    <input type="text" name="version" id="version" class="textbox" placeholder="{{ script.app.current_version }}">
+    <input type="text" name="version" id="version" class="textbox" placeholder="{{ script.app_data.get().app.current_version }}">
     <input type="submit" value="Download" style="font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
   </form>
 </div>

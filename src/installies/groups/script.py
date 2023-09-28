@@ -1,5 +1,5 @@
 from installies.models.app import App
-from installies.models.script import Script, ScriptData
+from installies.models.script import Script
 from installies.models.supported_distros import SupportedDistro
 from installies.models.maintainer import Maintainer, Maintainers
 from installies.models.user import User
@@ -61,8 +61,7 @@ class ScriptGroup(Group):
             searchable_attributes = [
                 SearchableAttribute(
                     'method',
-                    lambda model, name, data: model.script_data.method.contains(data),
-                    models=[ScriptData],
+                    lambda model, name, data: model.method.contains(data),
                 ),
                 SearchableAttribute(
                     'maintainers',

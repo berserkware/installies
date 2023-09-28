@@ -14,7 +14,7 @@ from datetime import datetime
 class Thread(BaseModel):
     """A model for discussion threads."""
 
-    title = CharField(255, unique=True)
+    title = CharField(255)
     app = ForeignKeyField(App, backref='threads')
     creator = ForeignKeyField(User, backref='threads', null=True)
     creation_date = DateTimeField(default=datetime.now)

@@ -23,16 +23,16 @@
   <tbody>
     {% for script in scripts %}
     <tr class="underline">
-      <td>[<a href="{{ url_for('app_manager.script_view', app_name=script.app.name, script_id=script.id) }}">View</a>]</td>
+      <td>[<a href="{{ url_for('app_manager.script_view', app_name=script.app_data.get().app.name, script_id=script.id) }}">View</a>]</td>
       {% if show_script_app %}
-      <td><a href="{{ url_for('app_manager.app_view', app_name=script.app.name) }}">{{ script.app.name }}</a></td>
+      <td><a href="{{ url_for('app_manager.app_view', app_name=script.app_data.get().app.name) }}">{{ script.app_data.get().app.name }}</a></td>
       {% endif %}
-      <td>{{ ", ".join(script.script_data.get_supported_actions()) }}</td>
-      <td>{{ script.script_data.shell.name }}</td>
-      <td>{{ script.script_data.method }}</td>
+      <td>{{ ", ".join(script.get_supported_actions()) }}</td>
+      <td>{{ script.shell.name }}</td>
+      <td>{{ script.method }}</td>
       <td>
 	<table class="initial-font-size">
-	  {% set distros = script.script_data.supported_distros.get_as_dict() %}
+	  {% set distros = script.supported_distros.get_as_dict() %}
 	  {% for architechture in distros %}
 	  <tr>
 	    <td class="no-height-padding">{{ architechture }}:</td>

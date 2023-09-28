@@ -25,7 +25,7 @@ from installies.validators.script import (
 from installies.groups.script import ScriptGroup
 from installies.models.app import App
 from installies.models.maintainer import Maintainer, Maintainers
-from installies.models.script import Script, Shell
+from installies.models.script import AppScript, Script, Shell
 from installies.models.user import User
 from installies.forms.script import (
     AddScriptForm,
@@ -40,7 +40,7 @@ from installies.lib.view import (
     ListView,
     DetailView,
 )
-from peewee import JOIN
+from peewee import JOIN, DoesNotExist
 from installies.blueprints.admin.views import AdminRequiredMixin
 from installies.groups.modifiers import Paginate
 from installies.blueprints.app_manager.app import (
@@ -67,7 +67,7 @@ class ScriptMixin:
 
         script = script.get()
 
-        if kwargs['app'] != script.app:
+        if kwargs['app'] != script.app_data.get().app:
             abort(404)
         
         if script.can_user_edit(g.user) is False and self.script_maintainer_only:
@@ -101,7 +101,10 @@ class ScriptListView(AppMixin, ListView):
     )
 
     def get_group(self, **kwargs):
-        group = ScriptGroup.get(request.args, query=kwargs['app'].scripts.select())
+        group = ScriptGroup.get(
+            request.args,
+            query=Script.select().join(AppScript).where(AppScript.app == kwargs['app'])
+        )
         return group
 
 
@@ -137,13 +140,36 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     form_class = AddScriptForm
 
     def form_valid(self, form, **kwargs):
-        print(request.form)
+        # checks that script method isnt already taken
+        try:
+            (
+                (
+                    Script
+                    .select()
+                    .join(AppScript)
+                    .where(AppScript.app == kwargs['app'])
+                ) &
+                Script.select().where(Script.method == form.data['script-method'])
+            ).get()
+        except DoesNotExist:
+            script = form.save(app=kwargs['app'])
         
-        script = form.save(app=kwargs['app'])
-        
-        flash('Script successfully created.', 'success')
+            flash('Script successfully created.', 'success')
+            return redirect(
+                url_for(
+                    'app_manager.script_view',
+                    app_name=kwargs['app'].name,
+                    script_id=script.id
+                ),
+                303
+            )
+
+        flash('Script method is taken.', 'error')
         return redirect(
-            url_for('app_manager.script_view', app_name=kwargs['app'].name, script_id=script.id),
+            url_for(
+                'app_manager.add_script',
+                app_name=kwargs['app'].name,
+            ),
             303
         )
 
@@ -159,10 +185,32 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, Edi
         return kwargs['script']
     
     def form_valid(self, form, **kwargs):
-        form.save()
+        # checks that script method isnt already taken
+        try:
+            (
+                (
+                    Script
+                    .select()
+                    .join(AppScript)
+                    .where(AppScript.app == kwargs['app'])
+                ) &
+                Script.select().where(Script.method == form.data['script-method'])
+            ).get()
+        except DoesNotExist:
+            form.save()
 
-        flash('Script successfully edited.', 'success')
-        return self.get_script_view_redirect(**kwargs)
+            flash('Script successfully edited.', 'success')
+            return self.get_script_view_redirect(**kwargs)
+
+        flash('Script method is taken.', 'error')
+        return redirect(
+            url_for(
+                'app_manager.edit_script',
+                app_name=kwargs['app'].name,
+                script_id=kwargs['script'].id,
+            ),
+            303
+        )
 
 
 class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, TemplateView):

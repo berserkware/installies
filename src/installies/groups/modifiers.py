@@ -1,6 +1,6 @@
 from peewee import Query
 from installies.models.app import App
-from installies.models.script import Script, ScriptData, Action, Shell
+from installies.models.script import Script, Action, Shell
 from installies.models.supported_distros import SupportedDistro, SupportedDistrosJunction
 from functools import reduce
 
@@ -244,7 +244,6 @@ class BySupportedDistro(Modifier):
         
         query = (
             query
-            .join(ScriptData)
             .join(SupportedDistrosJunction)
             .join(SupportedDistro)
         )
@@ -308,7 +307,7 @@ class BySupportedAction(Modifier):
         
         actions = [action.strip() for action in params['actions'].split(',')]
 
-        query = query.join(ScriptData).join(Action)
+        query = query.join(Action)
         
         for action in actions:
             query = query.where(
@@ -329,7 +328,7 @@ class BySupportedShell(Modifier):
         if 'shell' not in params.keys():
             return query
 
-        query = query.join(ScriptData).join(Shell)
+        query = query.join(Shell)
         
         query = query.where(
             Shell.name.contains(params['shell'])
