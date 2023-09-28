@@ -150,6 +150,11 @@
       
     </script>
   </div>
+
+  <div class="form-input-container">
+    <label for="script-use-default-function-matcher">Use Default Function Matcher:</label>
+    <input type="checkbox" name="script-use-default-function-matcher" id="script-use-default-function-matcher" {% if default_form_script and default_form_script.use_default_function_matcher %}checked{% endif %}>
+  </div>
   
   <div class="form-input-container">
     <label for="script-content">Script Content</label><br>

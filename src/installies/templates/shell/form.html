@@ -23,6 +23,21 @@
       <label for"shell-interpreter-arg">Interpreter Arg <span style="color:var(--light-grey)">(optional)</span></label><br>
       <input type="text" name="shell-interpreter-arg" id="shell-interpreter-arg" class="textbox" style="width:50%;"{% if default_form_shell %}value="{{ default_form_shell.interpreter_arg }}"{% endif %}>
     </div>
+
+    <div class="form-input-container">
+      <label for"shell-function-matcher-start">Shell Function Matcher Start</label><br>
+      <textarea id="shell-function-matcher-start" name="shell-function-matcher-start" rows="4" cols="50">{% if default_form_shell %}{{ default_form_shell.function_matcher_start }}{% endif %}</textarea>
+    </div>
+
+    <div class="form-input-container">
+      <label for"shell-function-matcher-block">Shell Function Matcher Block</label><br>
+      <textarea id="shell-function-matcher-block" name="shell-function-matcher-block" rows="4" cols="50">{% if default_form_shell %}{{ default_form_shell.function_matcher_block }}{% endif %}</textarea>
+    </div>
+
+    <div class="form-input-container">
+      <label for"shell-function-matcher-end">Shell Function Matcher End</label><br>
+      <textarea id="shell-function-matcher-end" name="shell-function-matcher-end" rows="4" cols="50">{% if default_form_shell %}{{ default_form_shell.function_matcher_end }}{% endif %}</textarea>
+    </div>
     
     <div class="form-input-container">
       <input type="submit" value="Submit" class="button">

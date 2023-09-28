@@ -1,6 +1,7 @@
 from peewee import (
     Model,
     CharField,
+    TextField,
     DateTimeField,
     BooleanField,
     TextField,
@@ -36,6 +37,18 @@ class Shell(BaseModel):
     file_mimetype = CharField(255)
     interpreter_path = CharField(255)
     interpreter_arg = CharField(255)
+
+    #action to function matcher fields
+
+    # this is code that runs no matter the action. It can
+    # be used to import the modules to get the cli args.
+    function_matcher_start = TextField()
+    # The code is added for each action the script supports. when this
+    # is added <action> get replaced with the action the block is for.
+    # It should call the function to run the action.
+    function_matcher_block = TextField()
+    # This is code to run if the user didn't select a supported function.
+    function_matcher_end = TextField()
 
     @classmethod
     def get_all_names(cls) -> list[str]:
@@ -159,6 +172,7 @@ class Script(BaseModel):
     submitter = ForeignKeyField(User, backref='scripts')
     maintainers = ForeignKeyField(Maintainers)
     app = ForeignKeyField(App, backref='scripts')
+    use_default_function_matcher = BooleanField(default=True)
     
     @classmethod
     def get_by_id(cls, id: int):
@@ -192,6 +206,7 @@ class Script(BaseModel):
             submitter: User,
             app: App,
             version: str=None,
+            use_default_function_matcher: bool=True
     ):
         """
         Create a Script object, and adds it to the database.
@@ -204,6 +219,7 @@ class Script(BaseModel):
         :param submitter: The submitter.
         :param app: The app the script is for.
         :param version: The version of the app the script is for.
+        :param use_default_function_matcher: True if you want to use the default function matcher.
         """
         app_dir = app.create_or_get_folder()
         
@@ -231,6 +247,7 @@ class Script(BaseModel):
             maintainers=maintainers,
             submitter=submitter,
             app=app,
+            use_default_function_matcher=use_default_function_matcher,
         )
 
         maintainers.add_maintainer(submitter)
@@ -248,6 +265,7 @@ class Script(BaseModel):
             actions: list[str],
             shell: Shell,
             version: str=None,
+            use_default_function_matcher: bool=True
     ):
         """
         Edits the script.
@@ -258,10 +276,12 @@ class Script(BaseModel):
         :param actions: The sctions that the script supports.
         :param shell: The shell the script is for.
         :param version: The version of the app the script is for.
+        :param use_default_function_matcher: True if you want to use the default function matcher.
         """
 
         self.last_modified = datetime.today()
         self.version = version
+        self.use_default_function_matcher = use_default_function_matcher
 
         self.script_data.supported_distros.delete_all_distros()
         self.script_data.supported_distros.create_from_list(supported_distros)
@@ -324,13 +344,31 @@ class Script(BaseModel):
         return False
 
 
+    def add_function_matcher(self, content: str):
+        """Adds the action to function matcher to the given content."""
+        matcher = '\n'
+
+        matcher += f'{self.script_data.shell.function_matcher_start}\n\n'
+        for action in self.script_data.actions:
+            matcher += f'{self.script_data.shell.function_matcher_block}\n'.replace(
+                '<action>', action.name
+            )
+        matcher += f'\n{self.script_data.shell.function_matcher_end}\n'
+
+        matcher = matcher.replace(
+            '<actions>',
+            ' '.join([action.name for action in self.script_data.actions]),
+        )
+        
+        return content + matcher
+    
+
     def complete_content(self, version=None):
         """
         Adds the stuff to the script's content to make it working, returns the content.
 
         It replaces <version> with the given version. If the version is None, it uses the
-        app's current_version. Adds the action function matcher to the end of the content.
-        It also adds a shebang.
+        app's current_version. It also adds a shebang.
 
         :param version: The version of the script to install.
         """
@@ -343,21 +381,11 @@ class Script(BaseModel):
         elif self.app.current_version is not None:
             new_content = new_content.replace('<version>', self.app.current_version)
 
-        action_switcher = """\n"""
-        # adds the action function matcher
-        for action in self.script_data.actions:
-            action_name = action.name
-            if_statement = f"""
-if [ \"$1\" == \"{action_name}\" ]; then
-    {action_name}
-fi\n"""
-            action_switcher += if_statement
-
-        new_content += action_switcher
-
         #adds the shebang
         shebang = f'#!{self.script_data.shell.interpreter_path} {self.script_data.shell.interpreter_arg}\n\n'
         new_content = shebang + new_content
+        
+        new_content = self.add_function_matcher(new_content)
 
         return new_content
 

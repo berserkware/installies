@@ -17,6 +17,10 @@
       <td>{{ script.script_data.method }}</td>
     </tr>
     <tr>
+      <th class="bold">Uses Function Matcher:</th>
+      <td>{% if script.use_default_function_matcher %}Yes{% else %}No{% endif %}</td>
+    </tr>
+    <tr>
       <th class="bold">For Version:</th>
       <td>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</td>
     </tr>

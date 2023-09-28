@@ -98,3 +98,33 @@ class ShellInterpreterArgValidator(Validator):
     ]
 
     data_name = 'Shell interpreter path'
+
+
+class ShellFunctionMatcherStartValidator(Validator):
+    """A class to validate shell function matcher start code."""
+
+    checkers = [
+        LengthChecker(max_len=256),
+    ]
+
+    data_name = 'Shell function matcher start'
+
+class ShellFunctionMatcherBlockValidator(Validator):
+    """A class to validate shell function matcher block code."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=256),
+    ]
+
+    data_name = 'Shell function matcher block'
+    
+class ShellFunctionMatcherEndValidator(Validator):
+    """A class to validate shell function matcher end code."""
+
+    checkers = [
+        EmptyChecker(),
+        LengthChecker(max_len=256),
+    ]
+
+    data_name = 'Shell function matcher end'

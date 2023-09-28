@@ -137,6 +137,7 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     form_class = AddScriptForm
 
     def form_valid(self, form, **kwargs):
+        print(request.form)
         
         script = form.save(app=kwargs['app'])
         

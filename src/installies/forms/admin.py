@@ -6,6 +6,9 @@ from installies.validators.admin  import (
     ShellFileMimetypeValidator,
     ShellInterpreterPathValidator,
     ShellInterpreterArgValidator,
+    ShellFunctionMatcherStartValidator,
+    ShellFunctionMatcherBlockValidator,
+    ShellFunctionMatcherEndValidator,
 )
 from installies.models.user import Ban
 from installies.models.script import Shell
@@ -40,6 +43,9 @@ class ModifyShellForm(Form):
         FormInput('shell-file-mimetype', ShellFileMimetypeValidator),
         FormInput('shell-interpreter-path', ShellInterpreterPathValidator),
         FormInput('shell-interpreter-arg', ShellInterpreterArgValidator, default=''),
+        FormInput('shell-function-matcher-start', ShellFunctionMatcherStartValidator, default=''),
+        FormInput('shell-function-matcher-block', ShellFunctionMatcherBlockValidator),
+        FormInput('shell-function-matcher-end', ShellFunctionMatcherEndValidator),
     ]
     model = Shell
 
@@ -54,6 +60,9 @@ class CreateShellForm(ModifyShellForm):
             file_mimetype=self.data['shell-file-mimetype'],
             interpreter_path=self.data['shell-interpreter-path'],
             interpreter_arg=self.data['shell-interpreter-arg'],
+            function_matcher_start=self.data['shell-function-matcher-start'].replace('\r', ''),
+            function_matcher_block=self.data['shell-function-matcher-block'].replace('\r', ''),
+            function_matcher_end=self.data['shell-function-matcher-end'].replace('\r', ''),
         )
 
 
@@ -66,7 +75,16 @@ class EditShellForm(ModifyShellForm):
         shell.name = self.data['shell-name']
         shell.file_extension = self.data['shell-file-extension']
         shell.file_mimetype = self.data['shell-file-mimetype']
+        
         shell.interpreter_path = self.data['shell-interpreter-path']
         shell.interpreter_arg = self.data['shell-interpreter-arg']
+
+        shell.function_matcher_start = self.data['shell-function-matcher-start'].replace('\r', '')
+        shell.function_matcher_block = self.data['shell-function-matcher-block'].replace('\r', '')
+        shell.function_matcher_end = self.data['shell-function-matcher-end'].replace('\r', '')
+
+        shell.use_default_function_matcher = [
+            True if self.data['script-use-default-function-matcher'] is 'yes' else False
+        ],
 
         return shell.save()

@@ -42,7 +42,8 @@ class ModifyScriptForm(Form):
             ScriptMethodValidator,
             original_data_getter=lambda script: script.script_data.method,
         ),
-        FormInput('for-version', ScriptVersionValidator, default=None)
+        FormInput('for-version', ScriptVersionValidator, default=None),
+        FormInput('script-use-default-function-matcher', default='no'),
     ]
     model = Script
 
@@ -62,6 +63,7 @@ class AddScriptForm(ModifyScriptForm):
             shell=shell,
             method=self.data['script-method'],
             submitter=g.user,
+            use_default_function_matcher=[True if self.data['script-use-default-function-matcher'] is 'yes' else False],
         )
 
 
@@ -80,4 +82,5 @@ class EditScriptForm(ModifyScriptForm):
             content=self.data['script-content'],
             version=self.data['for-version'],
             method=self.data['script-method'],
+            use_default_function_matcher=[True if self.data['script-use-default-function-matcher'] is 'yes' else False],
         )
