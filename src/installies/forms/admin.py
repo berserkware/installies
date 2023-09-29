@@ -83,8 +83,4 @@ class EditShellForm(ModifyShellForm):
         shell.function_matcher_block = self.data['shell-function-matcher-block'].replace('\r', '')
         shell.function_matcher_end = self.data['shell-function-matcher-end'].replace('\r', '')
 
-        shell.use_default_function_matcher = [
-            True if self.data['script-use-default-function-matcher'] is 'yes' else False
-        ],
-
         return shell.save()

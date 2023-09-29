@@ -14,8 +14,9 @@ def send_email(to: str, body: str, subject: str):
 
     message.attach(MIMEText(body, 'html'))
     
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(smtp_server, smtp_server_port, context=context) as server:
+    with smtplib.SMTP(smtp_server, smtp_server_port) as server:
+        server.starttls()
+        
         server.login(noreply_email, noreply_email_password)
         server.sendmail(
             noreply_email,

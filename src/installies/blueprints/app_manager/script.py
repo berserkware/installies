@@ -127,8 +127,8 @@ class ScriptDownloadView(AppMixin, ScriptMixin, View):
         script_file = io.BytesIO(content.encode('utf-8'))
         return send_file(
             script_file,
-            mimetype=script.script_data.shell.file_mimetype,
-            download_name=f'{script.app.name}.{script.script_data.shell.file_extension}',
+            mimetype=script.shell.file_mimetype,
+            download_name=f'{script.app_data.get().app.name}.{script.shell.file_extension}',
             as_attachment=True
         )
     

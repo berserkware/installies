@@ -12,9 +12,8 @@ Creating Scripts
 
 You can create a script by clicking the "Add Script" link on the app sidebar. This will
 take you to the add script form. The "Actions" input should contain a comma separated list of
-actions the script supports. The "Supported Shells" input should contain a comma separated list
-of shells that the script supports. The default is bash. The "Method" input should contain a
-short sentence on how the script works.
+actions the script supports. You can select the script's shell using the drop-down selector titled
+"Shell". The default is bash. The "Method" input should contain a short sentence on how the script works.
 
 Supported Distros
 *****************
@@ -26,8 +25,15 @@ You can remove a row of distros by clicking the remove button on the left of the
 Content
 *******
 
-The code for each action should be inclosed in it's own bash function. You can add code that
-will run for any action by putting it outside the functions.
+The content textbox is where you put the actual script code. The script should take one of the
+supported actions as the first arg. If the user does not input one of the script's supported
+actions, the script should return an error, and tell the user to enter one of the supported actions.
+
+You do not need to add a shebang to the start of the script, as this is added automatically.
+
+If you select the "Use Default Function Matcher" option under the script content, a block of code
+will be added at the end to match functions to actions. If you enable this, you code should look
+something like this (assuming your script is using bash):
 
 .. code-block:: bash
 
@@ -45,20 +51,24 @@ will run for any action by putting it outside the functions.
 	# put update code here
    }
 
-An if block is added to the end of the script when you download it to match the first arg to a
-function. Here is an example of the if block code.
+If you are using the bash shell, then the matcher code will look something like this.
 
 .. code-block:: bash
 
    if [ "$1" == "install" ]; then
 	install
+	exit
    fi
    if [ "$1" == "remove" ]; then
 	remove
+	exit
    fi
    if [ "$1" == "update" ]; then
 	update
+	exit
    fi
+
+   echo "Please re-run the script with one of the following actions as the first arg: install remove update."
 
 For App Version
 ***************

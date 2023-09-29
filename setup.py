@@ -1,6 +1,9 @@
 from setuptools import setup
-from installies import __version__
-
+try:
+    from installies import __version__
+except ImportError:
+    __version__ = "0.1.0"
+    
 setup(
     name='installies',
     version=__version__,
