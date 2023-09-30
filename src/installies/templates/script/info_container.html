@@ -64,8 +64,7 @@
     </tr>
   </table>
   <p>Content</p>
-  <textarea name="script-content" id="script-content">
-    {% with f = script.open_content() %}{{ f.read() }}{% endwith %}</textarea>
+  <textarea name="script-content" id="script-content">{{ script.complete_content() }}</textarea>
   <script>
     mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
 	lineNumbers: true,

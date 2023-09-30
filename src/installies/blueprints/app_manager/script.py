@@ -140,35 +140,14 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     form_class = AddScriptForm
 
     def form_valid(self, form, **kwargs):
-        # checks that script method isnt already taken
-        try:
-            (
-                (
-                    Script
-                    .select()
-                    .join(AppScript)
-                    .where(AppScript.app == kwargs['app'])
-                ) &
-                Script.select().where(Script.method == form.data['script-method'])
-            ).get()
-        except DoesNotExist:
-            script = form.save(app=kwargs['app'])
+        script = form.save(app=kwargs['app'])
         
-            flash('Script successfully created.', 'success')
-            return redirect(
-                url_for(
-                    'app_manager.script_view',
-                    app_name=kwargs['app'].name,
-                    script_id=script.id
-                ),
-                303
-            )
-
-        flash('Script method is taken.', 'error')
+        flash('Script successfully created.', 'success')
         return redirect(
             url_for(
-                'app_manager.add_script',
+                'app_manager.script_view',
                 app_name=kwargs['app'].name,
+                script_id=script.id
             ),
             303
         )
@@ -185,32 +164,10 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, Edi
         return kwargs['script']
     
     def form_valid(self, form, **kwargs):
-        # checks that script method isnt already taken
-        try:
-            (
-                (
-                    Script
-                    .select()
-                    .join(AppScript)
-                    .where(AppScript.app == kwargs['app'])
-                ) &
-                Script.select().where(Script.method == form.data['script-method'])
-            ).get()
-        except DoesNotExist:
-            form.save()
+        form.save()
 
-            flash('Script successfully edited.', 'success')
-            return self.get_script_view_redirect(**kwargs)
-
-        flash('Script method is taken.', 'error')
-        return redirect(
-            url_for(
-                'app_manager.edit_script',
-                app_name=kwargs['app'].name,
-                script_id=kwargs['script'].id,
-            ),
-            303
-        )
+        flash('Script successfully edited.', 'success')
+        return self.get_script_view_redirect(**kwargs)
 
 
 class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, TemplateView):

@@ -242,7 +242,7 @@ class Script(BaseModel):
 
     def add_function_matcher(self, content: str):
         """Adds the action to function matcher to the given content."""
-        matcher = '\n'
+        matcher = ''
 
         matcher += f'{self.shell.function_matcher_start}\n\n'
         for action in self.actions:
@@ -283,8 +283,9 @@ class Script(BaseModel):
         #adds the shebang
         shebang = f'#!{self.shell.interpreter_path} {self.shell.interpreter_arg}\n\n'
         new_content = shebang + new_content
-        
-        new_content = self.add_function_matcher(new_content)
+
+        if self.use_default_function_matcher:
+            new_content = self.add_function_matcher(new_content)
 
         return new_content
 

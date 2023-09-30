@@ -1,21 +1,21 @@
 <form action="{{ form_url }}" method="post" id="script-form">
   <div class="form-input-container">
     <label for="script-actions">Actions</label><br>
-    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ', '.join(default_form_script.script_data.get_supported_actions()) }}{% endif %}" required>
+    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ', '.join(default_form_script.get_supported_actions()) }}{% endif %}" required>
   </div>
 
   <div class="form-input-container">
     <label for="script-shell">Shell</label><br>
     <select name="script-shell" id="script-shells" required>
       {% for shell in get_shell_names() %}
-      <option value="{{ shell }}" {% if default_form_script and default_form_script.script_data.shell.name == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
+      <option value="{{ shell }}" {% if default_form_script and default_form_script.shell.name == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
       {% endfor %}
     </select>
   </div>
 
   <div class="form-input-container">
     <label for="script-method">Method</label><br>
-    <input type="text" name="script-method" id="script-method" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.script_data.method }}{% endif %}" style="width: 50%" required>
+    <input type="text" name="script-method" id="script-method" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.method }}{% endif %}" style="width: 50%" required>
   </div>
   
   <div class="form-input-container">

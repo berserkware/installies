@@ -40,10 +40,10 @@ class ModifyScriptForm(Form):
         FormInput(
             'script-method',
             ScriptMethodValidator,
-            original_data_getter=lambda script: script.script_data.method,
+            original_data_getter=lambda script: script.method,
         ),
         FormInput('for-version', ScriptVersionValidator, default=None),
-        FormInput('script-use-default-function-matcher', default='no'),
+        FormInput('script-use-default-function-matcher', default=None),
     ]
     model = Script
 
@@ -63,7 +63,7 @@ class AddScriptForm(ModifyScriptForm):
             shell=shell,
             method=self.data['script-method'],
             submitter=g.user,
-            use_default_function_matcher=[True if self.data['script-use-default-function-matcher'] is 'yes' else False],
+            use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
         )
 
 
@@ -74,6 +74,8 @@ class EditScriptForm(ModifyScriptForm):
     
     def save(self):
         shell = Shell.get(Shell.name == self.data['script-shell'])
+
+        print([True if self.data.get('script-use-default-function-matcher') is not None else False])
         
         return self.original_object.edit(
             actions=self.data['script-actions'],
@@ -82,5 +84,5 @@ class EditScriptForm(ModifyScriptForm):
             content=self.data['script-content'],
             version=self.data['for-version'],
             method=self.data['script-method'],
-            use_default_function_matcher=[True if self.data['script-use-default-function-matcher'] is 'yes' else False],
+            use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
         )
