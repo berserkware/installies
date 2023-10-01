@@ -102,8 +102,8 @@ class ScriptContentValidator(Validator):
     data_name = 'Script content'
 
 
-class ScriptMethodValidator(Validator):
-    """A class for validating script methods."""
+class ScriptDescriptionValidator(Validator):
+    """A class for validating script descriptions."""
 
     checkers = [
         EmptyChecker(),
@@ -111,7 +111,7 @@ class ScriptMethodValidator(Validator):
         CharacterWhitelistChecker(allow_extra=['_', '-', ',', '.']),
     ]
 
-    data_name = 'Script method'
+    data_name = 'Script description'
 
 
 class ScriptVersionValidator(VersionValidator):

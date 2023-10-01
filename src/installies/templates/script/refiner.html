@@ -8,7 +8,7 @@
       <div>
 	<label for="search-in">Search In:</label>
 	<select name="search-in" id="search-in">
-	  <option value="method" {% if request.args.get('search-in') == 'method' %}selected=""{% endif %}>Method</option>
+	  <option value="description" {% if request.args.get('search-in') == 'description' %}selected=""{% endif %}>Description</option>
 	  <option value="maintainers" {% if request.args.get('search-in') == 'maintainers' %}selected=""{% endif %}>Maintainers</option>
 	  <option value="submitter" {% if request.args.get('search-in') == 'submitter' %}selected=""{% endif %}>Submitter</option>
 	</select>

@@ -60,8 +60,8 @@ class ScriptGroup(Group):
             model = Script,
             searchable_attributes = [
                 SearchableAttribute(
-                    'method',
-                    lambda model, name, data: model.method.contains(data),
+                    'description',
+                    lambda description, name, data: model.description.contains(data),
                 ),
                 SearchableAttribute(
                     'maintainers',

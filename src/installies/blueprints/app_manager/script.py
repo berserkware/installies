@@ -178,7 +178,7 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, Templ
 
     def post(self, **kwargs):
         script = kwargs['script']
-        script.delete_instance()
+        script.app_data.get().delete_instance()
         flash('Script successfully deleted.', 'success')
         return self.get_app_view_redirect(**kwargs)
 

@@ -6,7 +6,7 @@ from installies.validators.script import (
     ScriptDistroValidator,
     ScriptContentValidator,
     ScriptDistroDictionaryValidator,
-    ScriptMethodValidator,
+    ScriptDescriptionValidator,
     ScriptVersionValidator,
 )
 from installies.models.supported_distros import SupportedDistrosJunction
@@ -38,9 +38,9 @@ class ModifyScriptForm(Form):
         ),
         FormInput('script-content', ScriptContentValidator),
         FormInput(
-            'script-method',
-            ScriptMethodValidator,
-            original_data_getter=lambda script: script.method,
+            'script-description',
+            ScriptDescriptionValidator,
+            original_data_getter=lambda script: script.description,
         ),
         FormInput('for-version', ScriptVersionValidator, default=None),
         FormInput('script-use-default-function-matcher', default=None),
@@ -61,7 +61,7 @@ class AddScriptForm(ModifyScriptForm):
             version=self.data['for-version'],
             actions=self.data['script-actions'],
             shell=shell,
-            method=self.data['script-method'],
+            description=self.data['script-description'],
             submitter=g.user,
             use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
         )
@@ -83,6 +83,6 @@ class EditScriptForm(ModifyScriptForm):
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
             version=self.data['for-version'],
-            method=self.data['script-method'],
+            description=self.data['script-description'],
             use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
         )

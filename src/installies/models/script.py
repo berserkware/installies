@@ -64,9 +64,9 @@ class Script(BaseModel):
     version = CharField(64, null=True)
     submitter = ForeignKeyField(User, backref='scripts')
     maintainers = ForeignKeyField(Maintainers)
+    description = CharField(255)
 
     filepath = CharField(255)
-    method = CharField(255)
     supported_distros = ForeignKeyField(SupportedDistrosJunction)
     shell = ForeignKeyField(Shell, backref="scripts")
     use_default_function_matcher = BooleanField(default=True)
@@ -114,7 +114,7 @@ class Script(BaseModel):
             cls,
             supported_distros: list,
             content: str,
-            method: str,
+            description: str,
             actions: list[str],
             shell: Shell,
             submitter: User,
@@ -126,7 +126,7 @@ class Script(BaseModel):
 
         :param supported_distros: A list of distros that the script supports.
         :param content: The content of the script.
-        :param method: The method the script uses.
+        :param description: The script's description.
         :param actions: The actions that the script supports.
         :param shell: The shell the script is for.
         :param submitter: The submitter.
@@ -145,7 +145,7 @@ class Script(BaseModel):
             maintainers=maintainers,
             submitter=submitter,
             filepath=filepath,
-            method=method,
+            description=description,
             supported_distros=distros,
             shell=shell,
             use_default_function_matcher=use_default_function_matcher,
@@ -160,7 +160,7 @@ class Script(BaseModel):
             self,
             supported_distros: list,
             content: str,
-            method: str,
+            description: str,
             actions: list[str],
             shell: Shell,
             version: str=None,
@@ -184,7 +184,7 @@ class Script(BaseModel):
 
         self.supported_distros.delete_all_distros()
         self.supported_distros.create_from_list(supported_distros)
-        self.method = method
+        self.description = description
         self.shell = shell
         self.save()
 
@@ -198,10 +198,10 @@ class Script(BaseModel):
 
     def delete_instance(self):
         """Deletes the script and its related SupportedDistro objects."""
-        
-        super().delete_instance()
 
         Action.delete().where(Action.script == self).execute()
+        
+        super().delete_instance()
         
         os.remove(self.filepath)
         
@@ -220,7 +220,7 @@ class Script(BaseModel):
         with self.open_content() as c:
             data['content'] = c.read()
         data['submitter'] = self.submitter.username
-        data['method'] = self.method
+        data['description'] = self.description
 
         return data
 
@@ -324,7 +324,7 @@ class AppScript(BaseModel):
         script = Script.create(**kwargs)
 
         thread = Thread.create(
-            title=f'Discussion of script: "{script.method}"',
+            title=f'Discussion of script: "{script.description}"',
             app=app,
             creator=None,
         )
@@ -344,10 +344,19 @@ class AppScript(BaseModel):
     def edit(self, **kwargs):
         self.script.edit(**kwargs)
         
-        self.thread.title = f'Discussion of script: "{self.script.method}"'
+        self.thread.title = f'Discussion of script: "{self.script.description}"'
         self.thread.save()
 
         self.app.last_modified = datetime.today()
         self.app.save()
 
         self.save()
+
+
+    def delete_instance(self, **kwargs):
+        deleted = super().delete_instance()
+
+        self.thread.delete_instance()
+        self.script.delete_instance()
+        
+        return deleted
