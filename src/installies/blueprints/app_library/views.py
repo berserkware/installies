@@ -5,6 +5,7 @@ from installies.groups.script import ScriptGroup
 from installies.groups.modifiers import Paginate
 from installies.models.app import App
 from installies.models.maintainer import Maintainer
+from installies.models.script import Script, AppScript
 from peewee import *
 from installies.lib.email import send_email
 
@@ -24,7 +25,8 @@ class IndexView(TemplateView):
             )
             user_maintained_scripts = (
                  ScriptGroup
-                .get({'search-in': 'maintainers', 'k': g.user.username})
+                .get(
+                    {'search-in': 'maintainers', 'k': g.user.username})
                 .paginate(1, 10)
             )
             kwargs['user_maintained_apps'] = user_maintained_apps
@@ -83,7 +85,9 @@ def apps():
 
 @app_library.route('/scripts')
 def scripts():
-    scripts = ScriptGroup.get(request.args)
+    scripts = ScriptGroup.get(
+        request.args,
+    )
 
     paginator = Paginate(
         default_per_page = 10,

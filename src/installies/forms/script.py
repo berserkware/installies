@@ -74,8 +74,6 @@ class EditScriptForm(ModifyScriptForm):
     
     def save(self):
         shell = Shell.get(Shell.name == self.data['script-shell'])
-
-        print([True if self.data.get('script-use-default-function-matcher') is not None else False])
         
         return self.original_object.edit(
             actions=self.data['script-actions'],

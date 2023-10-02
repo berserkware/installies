@@ -119,7 +119,8 @@ class Script(BaseModel):
             shell: Shell,
             submitter: User,
             version: str=None,
-            use_default_function_matcher: bool=True
+            use_default_function_matcher: bool=True,
+            **kwargs,
     ):
         """
         Create a Script object, and adds it to the database.
@@ -164,7 +165,8 @@ class Script(BaseModel):
             actions: list[str],
             shell: Shell,
             version: str=None,
-            use_default_function_matcher: bool=True
+            use_default_function_matcher: bool=True,
+            **kwargs,
     ):
         """
         Edits the script.
@@ -196,9 +198,15 @@ class Script(BaseModel):
 
         self.save()
 
+        if self.app_data.exists():
+            self.app_data.get().edit(**kwargs)
+
     def delete_instance(self):
         """Deletes the script and its related SupportedDistro objects."""
 
+        if self.app_data.exists():
+            self.app_data.get().delete_instance()
+        
         Action.delete().where(Action.script == self).execute()
         
         super().delete_instance()
@@ -342,8 +350,6 @@ class AppScript(BaseModel):
 
 
     def edit(self, **kwargs):
-        self.script.edit(**kwargs)
-        
         self.thread.title = f'Discussion of script: "{self.script.description}"'
         self.thread.save()
 
@@ -357,6 +363,5 @@ class AppScript(BaseModel):
         deleted = super().delete_instance()
 
         self.thread.delete_instance()
-        self.script.delete_instance()
         
         return deleted

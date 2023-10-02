@@ -40,7 +40,7 @@ class Group:
             if type(modifier) == SortBy:
                 sort_by_modifier = modifier
                 continue
-            
+
             new_query = modifier.modify(query, params)
             
             new_queries.append(new_query)
@@ -49,7 +49,7 @@ class Group:
             query = query & q
 
         if sort_by_modifier is not None:
-            query = sort_by_modifier.modify(query, params)
-            
+            query = query & sort_by_modifier.modify(query, params)
+
         return query
         

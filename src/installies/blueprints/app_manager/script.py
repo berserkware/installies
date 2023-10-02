@@ -103,8 +103,15 @@ class ScriptListView(AppMixin, ListView):
     def get_group(self, **kwargs):
         group = ScriptGroup.get(
             request.args,
-            query=Script.select().join(AppScript).where(AppScript.app == kwargs['app'])
+            query=(
+                Script
+                .select()
+                .join(AppScript)
+                .where(AppScript.app == kwargs['app'])
+                .switch(Script)
+            )
         )
+        
         return group
 
 
@@ -147,7 +154,7 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
             url_for(
                 'app_manager.script_view',
                 app_name=kwargs['app'].name,
-                script_id=script.id
+                script_id=script.script.id
             ),
             303
         )
@@ -178,7 +185,7 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, Templ
 
     def post(self, **kwargs):
         script = kwargs['script']
-        script.app_data.get().delete_instance()
+        script.delete_instance()
         flash('Script successfully deleted.', 'success')
         return self.get_app_view_redirect(**kwargs)
 

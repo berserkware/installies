@@ -11,7 +11,7 @@
       {% endif %}
       <th>Actions</th>
       <th>Shell</th>
-      <th>Method</th>
+      <th>Description</th>
       <th>Supports</th>
       <th>For Version</th>
       <th>Submitter</th>
@@ -29,7 +29,7 @@
       {% endif %}
       <td>{{ ", ".join(script.get_supported_actions()) }}</td>
       <td>{{ script.shell.name }}</td>
-      <td>{{ script.method }}</td>
+      <td>{{ script.description }}</td>
       <td>
 	<table class="initial-font-size">
 	  {% set distros = script.supported_distros.get_as_dict() %}
