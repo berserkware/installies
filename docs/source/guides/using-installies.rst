@@ -17,7 +17,8 @@ for more search options.
 All the search options are pretty easy to understand, except for the "Supports" option.
 You can use the Supports option to only show apps that support the distros given. The
 distros must be separated by commas. You can specify a architechture with ``:arch_name``.
-You can substitute the distro name with ``*`` to match any distros.
+You can substitute the distro or architecture name with ``*`` to match any distro or
+architecture.
 
 .. image:: ../_static/app-refiner.png
   :alt: App Refiner

@@ -13,14 +13,16 @@ Creating Scripts
 You can create a script by clicking the "Add Script" link on the app sidebar. This will
 take you to the add script form. The "Actions" input should contain a comma separated list of
 actions the script supports. You can select the script's shell using the drop-down selector titled
-"Shell". The default is bash. The "Method" input should contain a short sentence on how the script works.
+"Shell". The default is bash. The "Description" input should contain a short sentence on how the script works.
 
 Supported Distros
 *****************
 
 In each row in the supported distros table, you can add the distros and the architechture that
 this script supports. Adding another row allows you to add distros that support different distros.
-You can remove a row of distros by clicking the remove button on the left of the row.
+You can remove a row of distros by clicking the remove button on the left of the row. You can
+replace the distro or architecture name with an asterisk symbol to match any distro or
+architecture.
 
 Content
 *******
