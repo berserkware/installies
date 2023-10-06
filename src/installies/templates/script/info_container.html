@@ -22,7 +22,8 @@
     </tr>
     <tr>
       <th class="bold">For Version:</th>
-      <td>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</td>
+      {% set script_version = script.app_data.get().version %}
+      <td>{% if script_version != '' %}{{ script_version }}{% else %}Any{% endif %}</td>
     </tr>
     <tr>
       <th class="bold">Creation Date:</th>

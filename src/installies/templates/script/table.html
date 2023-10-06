@@ -41,7 +41,8 @@
 	  {% endfor %}
 	</table>
       </td>
-      <td>{% if script.version != '' %}{{ script.version }}{% else %}Any{% endif %}</td>
+      {% set script_version = script.app_data.get().version %}
+      <td>{% if script_version != '' %}{{ script_version }}{% else %}Any{% endif %}</td>
       <td><a href="{{ url_for('auth.profile', username=script.submitter.username) }}">{{ script.submitter.username }}</a></td>
       <td>
 	{% for maintainer in script.maintainers.get_maintainers() %}

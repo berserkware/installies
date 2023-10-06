@@ -61,7 +61,6 @@ class Script(BaseModel):
 
     creation_date = DateTimeField(default=datetime.now)
     last_modified = DateTimeField(default=datetime.now)
-    version = CharField(64, null=True)
     submitter = ForeignKeyField(User, backref='scripts')
     maintainers = ForeignKeyField(Maintainers)
     description = CharField(255)
@@ -118,7 +117,6 @@ class Script(BaseModel):
             actions: list[str],
             shell: Shell,
             submitter: User,
-            version: str=None,
             use_default_function_matcher: bool=True,
             **kwargs,
     ):
@@ -132,7 +130,6 @@ class Script(BaseModel):
         :param shell: The shell the script is for.
         :param submitter: The submitter.
         :param version: The version of the app the script is for.
-        :param use_default_function_matcher: True if you want to use the default function matcher.
         """
         filepath = cls.create_script_file(apps_path, content)
 
@@ -142,7 +139,6 @@ class Script(BaseModel):
         maintainers = Maintainers.create()
         
         created_script = super().create(
-            version=version,
             maintainers=maintainers,
             submitter=submitter,
             filepath=filepath,
@@ -164,7 +160,6 @@ class Script(BaseModel):
             description: str,
             actions: list[str],
             shell: Shell,
-            version: str=None,
             use_default_function_matcher: bool=True,
             **kwargs,
     ):
@@ -176,12 +171,10 @@ class Script(BaseModel):
         :param method: The script's method.
         :param actions: The sctions that the script supports.
         :param shell: The shell the script is for.
-        :param version: The version of the app the script is for.
         :param use_default_function_matcher: True if you want to use the default function matcher.
         """
 
         self.last_modified = datetime.today()
-        self.version = version
         self.use_default_function_matcher = use_default_function_matcher
 
         self.supported_distros.delete_all_distros()
@@ -224,7 +217,7 @@ class Script(BaseModel):
         data['shell'] = self.shell.name
         data['supported_distros'] = self.supported_distros.get_as_dict()
         data['last_modified'] = str(self.last_modified)
-        data['for_version'] = self.version
+        data['for_version'] = self.app_data.get().version
         with self.open_content() as c:
             data['content'] = c.read()
         data['submitter'] = self.submitter.username
@@ -325,10 +318,11 @@ class AppScript(BaseModel):
 
     script = ForeignKeyField(Script, backref="app_data")
     app = ForeignKeyField(App, backref="scripts")
+    version = CharField(64, null=True)
     thread = ForeignKeyField(Thread, backref="for_script")
 
     @classmethod
-    def create(cls, app, **kwargs):
+    def create(cls, app, version=None, **kwargs):
         script = Script.create(**kwargs)
 
         thread = Thread.create(
@@ -340,6 +334,7 @@ class AppScript(BaseModel):
         app_script = super().create(
             script=script,
             app=app,
+            version=version,
             thread=thread,
         )
 
@@ -349,9 +344,11 @@ class AppScript(BaseModel):
         return app_script
 
 
-    def edit(self, **kwargs):
+    def edit(self, version=None, **kwargs):
         self.thread.title = f'Discussion of script: "{self.script.description}"'
         self.thread.save()
+        
+        self.version = version 
 
         self.app.last_modified = datetime.today()
         self.app.save()
