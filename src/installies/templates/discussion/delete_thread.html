@@ -4,13 +4,13 @@
 
 {% block content %}
 <div class="container black" style="width:auto">
-    <h2>Delete Thread</h2>
+  <h2>Delete Thread: {{ thread.title }}</h2>
+  <p>Warning: This is permanent, and will delete all associated comments.</p>
     
-    <form action="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}" method="post">
-
-        <div class="form-input-container">
-            <input type="submit" value="Submit" class="button">
-        </div>
-    </form>
+  <form action="{{ url_for('app_manager.delete_thread', app_name=app.name, thread_id=thread.id) }}" method="post">
+    <div class="form-input-container">
+      <input type="submit" value="Submit" class="button">
+    </div>
+  </form>
 </div>
 {% endblock %}
