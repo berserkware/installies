@@ -6,7 +6,7 @@ from installies.validators.discussion import (
 )
 from installies.models.app import App
 from installies.models.script import Script
-from installies.models.discussion import Thread, Comment
+from installies.models.discussion import Thread, AppThread, Comment
 
 
 class CreateThreadForm(Form):
@@ -19,10 +19,14 @@ class CreateThreadForm(Form):
     model = Thread
 
     def save(self, app: App):
-        return Thread.create(
+        thread = Thread.create(
             title=self.data['title'],
-            app=app,
             creator=g.user,
+        )
+
+        return AppThread.create(
+            thread=thread,
+            app=app,
         )
 
 

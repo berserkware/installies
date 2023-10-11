@@ -20,7 +20,7 @@ from installies.validators.base import ValidationError
 from installies.models.app import App
 from installies.models.script import Script
 from installies.models.user import User
-from installies.models.discussion import Thread, Comment
+from installies.models.discussion import Thread, AppThread, Comment
 from installies.forms.report import (
     ReportAppForm,
     ReportScriptForm,
@@ -61,7 +61,7 @@ class CreateThreadView(AuthenticationRequiredMixin, AppMixin, FormView):
             url_for(
                 'app_manager.comments',
                 app_name=kwargs['app'].name,
-                thread_id=thread.id
+                thread_id=thread.thread.id
             ),
             303
         )
@@ -82,7 +82,7 @@ class ThreadMixin:
 
         thread = thread.get()
 
-        if thread.app != kwargs['app']:
+        if thread.app_data.get().app != kwargs['app']:
             abort(404)
 
         if self.modify_view and thread.can_user_edit(g.user) is False:
@@ -233,4 +233,9 @@ class ThreadListView(AppMixin, ListView):
     )
 
     def get_group(self, **kwargs):
-        return Thread.select().where(Thread.app == kwargs['app'])
+        return (
+            Thread.select()
+            .join(AppThread)
+            .where(AppThread.app == kwargs['app'])
+            .switch(Thread)
+        )

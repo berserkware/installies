@@ -15,11 +15,13 @@ class Thread(BaseModel):
     """A model for discussion threads."""
 
     title = CharField(255)
-    app = ForeignKeyField(App, backref='threads')
     creator = ForeignKeyField(User, backref='threads', null=True)
     creation_date = DateTimeField(default=datetime.now)
 
     def delete_instance(self):
+        if self.app_data.exists():
+            self.app_data.get().delete_instance()
+        
         for comment in self.comments:
             comment.delete_instance()
         
@@ -38,6 +40,13 @@ class Thread(BaseModel):
             return True
 
         return False
+
+
+class AppThread(BaseModel):
+    """A model for app discussion threads."""
+
+    thread = ForeignKeyField(Thread, backref='app_data')
+    app = ForeignKeyField(App, backref='threads')
 
 
 class Comment(BaseModel):

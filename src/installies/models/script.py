@@ -12,7 +12,7 @@ from installies.models.base import BaseModel
 from installies.models.user import User
 from installies.models.app import App
 from installies.models.maintainer import Maintainers
-from installies.models.discussion import Thread
+from installies.models.discussion import AppThread, Thread
 from installies.models.supported_distros import SupportedDistrosJunction
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
@@ -54,8 +54,8 @@ class Shell(BaseModel):
     def get_all_names(cls) -> list[str]:
         """Gets the names of all the shells in a list."""
         return [shell.name for shell in Shell.select()] 
-    
 
+    
 class Script(BaseModel):
     """A model for storing data about scripts."""
 
@@ -316,10 +316,10 @@ class Action(BaseModel):
 class AppScript(BaseModel):
     """A model for storing scripts for apps."""
 
-    script = ForeignKeyField(Script, backref="app_data")
-    app = ForeignKeyField(App, backref="scripts")
+    script = ForeignKeyField(Script, backref='app_data')
+    app = ForeignKeyField(App, backref='scripts')
     version = CharField(64, null=True)
-    thread = ForeignKeyField(Thread, backref="for_script")
+    thread = ForeignKeyField(Thread, backref='for_script')
 
     @classmethod
     def create(cls, app, version=None, **kwargs):
@@ -327,8 +327,11 @@ class AppScript(BaseModel):
 
         thread = Thread.create(
             title=f'Discussion of script: "{script.description}"',
-            app=app,
             creator=None,
+        )
+        app_thread = AppThread.create(
+            thread=thread,
+            app=app,
         )
 
         app_script = super().create(

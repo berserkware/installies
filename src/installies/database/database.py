@@ -4,7 +4,7 @@ from installies.models.script import Script, AppScript, Action, Shell
 from installies.models.supported_distros import SupportedDistrosJunction, SupportedDistro
 from installies.models.user import User, Session, Ban, PasswordResetRequest
 from installies.models.report import Report, ReportAppInfo, ReportScriptInfo, ReportCommentInfo
-from installies.models.discussion import Thread, Comment
+from installies.models.discussion import AppThread, Thread, Comment
 from installies.models.maintainer import Maintainers, Maintainer
 
 tables =  [
@@ -26,6 +26,7 @@ tables =  [
     ReportScriptInfo,
     ReportCommentInfo,
     Thread,
+    AppThread,
     Comment,
 ]
 
