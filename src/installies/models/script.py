@@ -164,7 +164,7 @@ class Script(BaseModel):
             **kwargs,
     ):
         """
-        Edits the script.
+        Edits the script. Also edits any related AppScripts.
 
         :param supported_distros: The new supported distros.
         :param content: The new content.
@@ -195,7 +195,7 @@ class Script(BaseModel):
             self.app_data.get().edit(**kwargs)
 
     def delete_instance(self):
-        """Deletes the script and its related SupportedDistro objects."""
+        """Deletes the script and its related objects."""
 
         if self.app_data.exists():
             self.app_data.get().delete_instance()
@@ -217,7 +217,10 @@ class Script(BaseModel):
         data['shell'] = self.shell.name
         data['supported_distros'] = self.supported_distros.get_as_dict()
         data['last_modified'] = str(self.last_modified)
-        data['for_version'] = self.app_data.get().version
+        
+        if self.app_data.exists():
+            data['for_version'] = self.app_data.get().version
+        
         with self.open_content() as c:
             data['content'] = c.read()
         data['submitter'] = self.submitter.username
