@@ -129,7 +129,6 @@ class Script(BaseModel):
         :param actions: The actions that the script supports.
         :param shell: The shell the script is for.
         :param submitter: The submitter.
-        :param version: The version of the app the script is for.
         """
         filepath = cls.create_script_file(apps_path, content)
 
