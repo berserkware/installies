@@ -118,7 +118,6 @@ class Script(BaseModel):
             shell: Shell,
             submitter: User,
             use_default_function_matcher: bool=True,
-            **kwargs,
     ):
         """
         Create a Script object, and adds it to the database.
@@ -324,9 +323,7 @@ class AppScript(BaseModel):
     thread = ForeignKeyField(Thread, backref='for_script')
 
     @classmethod
-    def create(cls, app, version=None, **kwargs):
-        script = Script.create(**kwargs)
-
+    def create(cls, script: Script, app, version=None):
         thread = Thread.create(
             title=f'Discussion of script: "{script.description}"',
             creator=None,

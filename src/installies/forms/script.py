@@ -48,17 +48,15 @@ class ModifyScriptForm(Form):
     model = Script
 
 
-class AddScriptForm(ModifyScriptForm):
-    """A form for adding scripts."""
+class CreateScriptForm(ModifyScriptForm):
+    """A form for creating Scripts."""
 
-    def save(self, app: App):
+    def save(self):
         shell = Shell.get(Shell.name == self.data['script-shell'])
         
-        return AppScript.create(
-            app=app,
+        return Script.create(
             supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
-            version=self.data['for-version'],
             actions=self.data['script-actions'],
             shell=shell,
             description=self.data['script-description'],
@@ -67,8 +65,23 @@ class AddScriptForm(ModifyScriptForm):
         )
 
 
+class CreateAppScriptForm(CreateScriptForm):
+    """A form for creating AppScripts"""
+
+    model = AppScript
+
+    def save(self, app: App):
+        script = super().save()
+
+        return AppScript.create(
+            script=script,
+            app=app,
+            version=self.data['for-version'],
+        )
+
+
 class EditScriptForm(ModifyScriptForm):
-    """A form for editing scripts."""
+    """A form for editing Scripts."""
 
     edit_form = True
     

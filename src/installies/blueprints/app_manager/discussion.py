@@ -26,7 +26,7 @@ from installies.forms.report import (
     ReportScriptForm,
 )
 from installies.forms.discussion import (
-    CreateThreadForm,
+    CreateAppThreadForm,
     CreateCommentForm,
     EditCommentForm,
 )
@@ -51,17 +51,17 @@ class CreateThreadView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for creating discussion threads."""
 
     template_path = 'discussion/create_thread.html'
-    form_class = CreateThreadForm
+    form_class = CreateAppThreadForm
 
     def form_valid(self, form, **kwargs):
-        thread = form.save(app=kwargs['app'])
+        app_thread = form.save(app=kwargs['app'])
 
         flash('Topic successfully created.', 'success')
         return redirect(
             url_for(
                 'app_manager.comments',
                 app_name=kwargs['app'].name,
-                thread_id=thread.thread.id
+                thread_id=app_thread.thread.id
             ),
             303
         )

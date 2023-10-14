@@ -18,17 +18,26 @@ class CreateThreadForm(Form):
     
     model = Thread
 
-    def save(self, app: App):
-        thread = Thread.create(
+    def save(self):
+        return Thread.create(
             title=self.data['title'],
             creator=g.user,
         )
+
+
+class CreateAppThreadForm(CreateThreadForm):
+    """A form to create AppThreads."""
+
+    model = AppThread
+
+    def save(self, app: App):
+        thread = super().save()
 
         return AppThread.create(
             thread=thread,
             app=app,
         )
-
+    
 
 class CommentForm(Form):
     """A base form for creating or editing comments."""

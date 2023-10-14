@@ -28,7 +28,8 @@ from installies.models.maintainer import Maintainer, Maintainers
 from installies.models.script import AppScript, Script, Shell
 from installies.models.user import User
 from installies.forms.script import (
-    AddScriptForm,
+    CreateScriptForm,
+    CreateAppScriptForm,
     EditScriptForm,
 )
 from installies.lib.view import (
@@ -144,17 +145,17 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for adding apps."""
 
     template_path = 'script/add_script.html'
-    form_class = AddScriptForm
+    form_class = CreateAppScriptForm
 
     def form_valid(self, form, **kwargs):
-        script = form.save(app=kwargs['app'])
+        app_script = form.save(app=kwargs['app'])
         
         flash('Script successfully created.', 'success')
         return redirect(
             url_for(
                 'app_manager.script_view',
                 app_name=kwargs['app'].name,
-                script_id=script.script.id
+                script_id=app_script.script.id
             ),
             303
         )
