@@ -23,7 +23,7 @@
   <tbody>
     {% for script in scripts %}
     <tr class="underline">
-      <td>[<a href="{{ url_for('app_manager.script_view', app_name=script.app_data.get().app.name, script_id=script.id) }}">View</a>]</td>
+      <td>[<a href="{{ url_for('app_manager.script_view', app_name=script.app_data.get().app.name, app_script_id=script.app_data.get().id) }}">View</a>]</td>
       {% if show_script_app %}
       <td><a href="{{ url_for('app_manager.app_view', app_name=script.app_data.get().app.name) }}">{{ script.app_data.get().app.name }}</a></td>
       {% endif %}

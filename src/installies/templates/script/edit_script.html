@@ -13,8 +13,8 @@
 <div class="container black auto-width" style="width:auto">
   <h2>Edit Script</h2>
 
-  {% set form_url = url_for('app_manager.edit_script', app_name=app.name, script_id=script.id) %}
-  {% set default_form_script = script %}
+  {% set form_url = url_for('app_manager.edit_script', app_name=app.name, app_script_id=app_script.id) %}
+  {% set default_form_script = app_script %}
   {% include "script/script_editor.html" %}
 </div>
 {% endblock %}

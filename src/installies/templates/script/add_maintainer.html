@@ -17,7 +17,7 @@
     you 100% trust.
   </p>
 
-  <form action="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, script_id=script.id) }}" method="post">
+  <form action="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, app_script_id=app_script.id) }}" method="post">
     <div class="form-input-container">
       <label for="username" >Username</label><br>
       <input type="text" name="username" id="username" class="textbox" required><br>

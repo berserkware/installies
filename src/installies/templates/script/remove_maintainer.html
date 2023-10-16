@@ -13,7 +13,7 @@
 <div class="container black" style="width:auto">
   <h2>Remove {{ user.username }} from maintainers of script?</h2>
   
-  <form action="{{ url_for('app_manager.remove_script_maintainer', app_name=app.name, script_id=script.id, username=user.username) }}" method="post">
+  <form action="{{ url_for('app_manager.remove_script_maintainer', app_name=app.name, app_script_id=app_script.id, username=user.username) }}" method="post">
     <input type="submit" value="Remove" class="button">
   </form>
 </div>

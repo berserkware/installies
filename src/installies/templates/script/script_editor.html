@@ -1,21 +1,21 @@
 <form action="{{ form_url }}" method="post" id="script-form">
   <div class="form-input-container">
     <label for="script-actions">Actions</label><br>
-    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ', '.join(default_form_script.get_supported_actions()) }}{% endif %}" required>
+    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ', '.join(default_form_script.script.get_supported_actions()) }}{% endif %}" required>
   </div>
 
   <div class="form-input-container">
     <label for="script-shell">Shell</label><br>
     <select name="script-shell" id="script-shells" required>
       {% for shell in get_shell_names() %}
-      <option value="{{ shell }}" {% if default_form_script and default_form_script.shell.name == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
+      <option value="{{ shell }}" {% if default_form_script and default_form_script.script.shell.name == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
       {% endfor %}
     </select>
   </div>
 
   <div class="form-input-container">
     <label for="script-description">Description</label><br>
-    <input type="text" name="script-description" id="script-description" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.description }}{% endif %}" style="width: 50%" required>
+    <input type="text" name="script-description" id="script-description" class="textbox" placeholder="e.g. Installs with pacman." value="{% if default_form_script %}{{ default_form_script.script.description }}{% endif %}" style="width: 50%" required>
   </div>
   
   <div class="form-input-container">
@@ -98,7 +98,7 @@
       addDistroButton.onclick = addDistroOnClick;
 
       {% if default_form_script %}
-        {% set supported_distros = default_form_script.supported_distros.get_as_dict() %}
+        {% set supported_distros = default_form_script.script.supported_distros.get_as_dict() %}
         {% for arch, distros in supported_distros.items() %}
       addDistro("{{ ', '.join(distros) }}", "{{ arch }}");
         {% endfor %}
@@ -153,7 +153,7 @@
   
   <div class="form-input-container">
     <label for="script-content">Script Content</label><br>
-    <textarea name="script-content" id="script-content">{% if default_form_script %}{% with f = default_form_script.open_content() %}{{ f.read() }}{% endwith %}{% endif %}</textarea>
+    <textarea name="script-content" id="script-content">{% if default_form_script %}{% with f = default_form_script.script.open_content() %}{{ f.read() }}{% endwith %}{% endif %}</textarea>
     
     <script>
       mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
@@ -166,12 +166,12 @@
 
   <div class="form-input-container">
     <label for="script-use-default-function-matcher">Use Default Function Matcher:</label>
-    <input type="checkbox" name="script-use-default-function-matcher" id="script-use-default-function-matcher" {% if default_form_script and default_form_script.use_default_function_matcher %}checked{% endif %}{% if not default_form_script %}checked{% endif %}>
+    <input type="checkbox" name="script-use-default-function-matcher" id="script-use-default-function-matcher" {% if default_form_script and default_form_script.script.use_default_function_matcher %}checked{% endif %}{% if not default_form_script %}checked{% endif %}>
   </div>
 
   <div class="form-input-container">
     <label for="for-version">For App Version <span style="color:var(--light-grey)">(optional)</span></label><br>
-    <input type="text" name="for-version" id="for-version" class="textbox" placeholder="e.g. 3.11.3" value="{% if default_form_script %}{{ default_form_script.version }}{% endif %}">
+    <input type="text" name="for-version" id="for-version" class="textbox" placeholder="e.g. 3.11.3" value="{% if default_form_script %}{{ default_form_script.script.version }}{% endif %}">
   </div>
   
   <div class="form-input-container">
