@@ -51,9 +51,9 @@ from installies.blueprints.app_manager.app import (
 
 class ScriptMixin:
     """
-    A mixin to get scripts by url params.
+    A mixin to get Scripts by url params.
 
-    Its gets the script's id from the script_id kwarg.
+    It gets the script's id from the script_id kwarg.
     """
 
     script_maintainer_only = False
@@ -89,6 +89,28 @@ class ScriptMixin:
             url_for('app_manager.script_view', app_name=kwargs['app'].name, script_id=script.id),
             303
         )
+
+
+class AppScriptMixin:
+    """
+    A mixin to get AppScripts by url_params.
+
+    It gets the AppScript's id from the script_id kwarg.
+    """
+
+    script_maintainer_only = False
+
+    def on_request(self, **kwargs):
+        script_id = kwargs['script_id']
+
+        script = AppScript.select().where(AppScript.id == script_id)
+
+        if script.exists() is False:
+            abort(404)
+
+        script = script.get()
+
+        if kwargs['app'] != script.app_data.get().app
 
 
 class ScriptListView(AppMixin, ListView):
