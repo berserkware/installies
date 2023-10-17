@@ -1,6 +1,6 @@
 {% extends "app/base.html" %}
 
-{% block app_page_title %}Delete Script for {% endblock %}
+{% block title %}Delete Script to {{ ", ".join(app_script.script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
 
 {% block header %}
 <script src="/static/js/codemirror/lib/codemirror.js"></script>
@@ -19,5 +19,5 @@
   </form>
 </div>
 
-{% include "script/info_container.html" %}
+{% include "app/script/info_container.html" %}
 {% endblock %}

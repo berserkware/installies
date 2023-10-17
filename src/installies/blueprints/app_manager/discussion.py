@@ -50,7 +50,7 @@ from installies.blueprints.app_manager.app import (
 class CreateThreadView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for creating discussion threads."""
 
-    template_path = 'discussion/create_thread.html'
+    template_path = 'app/discussion/create_thread.html'
     form_class = CreateAppThreadForm
 
     def form_valid(self, form, **kwargs):
@@ -103,7 +103,7 @@ class ThreadMixin:
 class DeleteThreadView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, FormView):
     """A view for deleting threads."""
 
-    template_path = 'discussion/delete_thread.html'
+    template_path = 'app/discussion/delete_thread.html'
     modify_view = True
 
     def post(self, **kwargs):
@@ -169,7 +169,7 @@ class CommentMixin:
 class EditCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, EditFormView):
     """A view for editing comments."""
 
-    template_path = 'discussion/edit_comment.html'
+    template_path = 'app/discussion/edit_comment.html'
     form_class = EditCommentForm
 
     def get_object_to_edit(self, **kwargs):
@@ -192,7 +192,7 @@ class EditCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Commen
 class DeleteCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, FormView):
     """A view for deleting comments."""
 
-    template_path = 'discussion/delete_comment.html'
+    template_path = 'app/discussion/delete_comment.html'
 
     def post(self, **kwargs):
         kwargs['comment'].delete_instance()
@@ -211,7 +211,7 @@ class DeleteCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Comm
 class CommentListView(AppMixin, ThreadMixin, ListView):
     """A view for listing comments."""
 
-    template_path = 'discussion/comments.html'
+    template_path = 'app/discussion/comments.html'
     group_name = 'comments'
     paginator = Paginate(
         default_per_page = 10,
@@ -225,7 +225,7 @@ class CommentListView(AppMixin, ThreadMixin, ListView):
 class ThreadListView(AppMixin, ListView):
     """A view for listing threads."""
 
-    template_path = 'discussion/threads.html'
+    template_path = 'app/discussion/threads.html'
     group_name = 'threads'
     paginator = Paginate(
         default_per_page = 10,

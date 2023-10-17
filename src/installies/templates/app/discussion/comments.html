@@ -8,7 +8,7 @@
 
 {% if g.is_authed %}
 {% set create_comment_form_route = url_for('app_manager.create_comment', app_name=app.name, thread_id=thread.id) %}
-{% include "discussion/create_comment.html" %}
+{% include "app/discussion/create_comment.html" %}
 {% endif %}
 
 <p>{{ total_object_count }} comment{% if total_object_count > 1 %}s{% endif%} found. Page {{ request.args.get('page', '1') }} of {{ page_count }}.</p>

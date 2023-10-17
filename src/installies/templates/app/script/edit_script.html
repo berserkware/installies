@@ -1,6 +1,6 @@
 {% extends "app/base.html" %}
 
-{% block app_page_title %}Edit Script for {% endblock %}
+{% block title %}Edit Script to {{ ", ".join(app_script.script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
 
 {% block header %}
 <script src="/static/js/codemirror/lib/codemirror.js"></script>
@@ -15,6 +15,6 @@
 
   {% set form_url = url_for('app_manager.edit_script', app_name=app.name, app_script_id=app_script.id) %}
   {% set default_form_script = app_script %}
-  {% include "script/script_editor.html" %}
+  {% include "app/script/script_editor.html" %}
 </div>
 {% endblock %}

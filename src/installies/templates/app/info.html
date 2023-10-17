@@ -1,5 +1,9 @@
 {% extends "app/base.html" %}
 
+{% block extra_meta %}
+<meta name="description" content="{{ app.description }}">
+{% endblock %}
+
 {% block content %}
 <table>
   <tr>
