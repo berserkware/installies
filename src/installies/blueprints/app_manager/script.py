@@ -198,7 +198,7 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
             url_for(
                 'app_manager.script_view',
                 app_name=kwargs['app'].name,
-                script_id=app_script.script.id
+                app_script_id=app_script.script.id
             ),
             303
         )

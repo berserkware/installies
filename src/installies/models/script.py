@@ -194,9 +194,6 @@ class Script(BaseModel):
 
     def delete_instance(self):
         """Deletes the script and its related objects."""
-
-        if self.app_data.exists():
-            self.app_data.get().delete_instance()
         
         Action.delete().where(Action.script == self).execute()
         
@@ -361,6 +358,7 @@ class AppScript(BaseModel):
     def delete_instance(self, **kwargs):
         deleted = super().delete_instance()
 
+        self.script.delete_instance()
         self.thread.delete_instance()
         
         return deleted
