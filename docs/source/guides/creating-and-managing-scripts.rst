@@ -11,9 +11,27 @@ Creating Scripts
   :alt: Add Script Form
 
 You can create a script by clicking the "Add Script" link on the app sidebar. This will
-take you to the add script form. The "Actions" input should contain a comma separated list of
-actions the script supports. You can select the script's shell using the drop-down selector titled
-"Shell". The default is bash. The "Description" input should contain a short sentence on how the script works.
+take you to the add script form. 
+
+Actions
+*******
+The Actions input should contain a comma-separated list of things that that script does. Some
+common actions are:
+
+ - install: installs the app.
+ - remove: removes the app.
+ - update: updates the app.
+ - compile: compiles the app.
+ - run: An action the can be used for scripts to just run code.
+
+Shell
+*****
+You can select a shell with the shell input.
+
+Description
+***********
+The description input should contain a basic description of how the script does what it does.
+e.g. "Installs with pacman" or "Compiles from source.".
 
 Supported Distros
 *****************
@@ -23,6 +41,28 @@ this script supports. Adding another row allows you to add distros that support 
 You can remove a row of distros by clicking the remove button on the left of the row. You can
 replace the distro or architecture name with an asterisk symbol to match any distro or
 architecture.
+
+Getting the Distro Names
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can get the name to put in the distro option by getting the id of the distro through the
+following command.
+
+.. code-block:: bash
+
+    $ grep ^ID= /etc/os-release
+    ID=arch
+
+Getting the Architecture Names
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can get the name to put in the architecture option by getting the architecture through
+the following command.
+
+.. code-block:: bash
+
+    $ uname -m
+    x86_64
 
 Content
 *******
