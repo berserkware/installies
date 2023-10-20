@@ -6,6 +6,7 @@ from installies.models.user import User
 from installies.groups.base import Group
 from installies.groups.modifiers import (
     JoinModifier,
+    SortByAttribute,
     SortBy,
     ByColumn,
     SearchableAttribute,
@@ -26,10 +27,10 @@ class ScriptGroup(Group):
         SortBy(
             model = Script,
             allowed_attributes = [
-                'version',
-                'last_modified',
-                'creation_date',
-                'submitter',
+                SortByAttribute('version'),
+                SortByAttribute('last_modified'),
+                SortByAttribute('creation_date'),
+                SortByAttribute('submitter'),
             ],
             default_attribute = 'last_modified',
             default_order = 'asc',
@@ -61,7 +62,7 @@ class ScriptGroup(Group):
             searchable_attributes = [
                 SearchableAttribute(
                     'description',
-                    lambda description, name, data: model.description.contains(data),
+                    lambda model, name, data: model.description.contains(data),
                 ),
                 SearchableAttribute(
                     'maintainers',

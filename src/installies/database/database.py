@@ -6,6 +6,7 @@ from installies.models.user import User, Session, Ban, PasswordResetRequest
 from installies.models.report import Report, ReportAppInfo, ReportScriptInfo, ReportCommentInfo
 from installies.models.discussion import AppThread, Thread, Comment
 from installies.models.maintainer import Maintainers, Maintainer
+from installies.models.voting import VoteJunction, Vote
 
 tables =  [
     User,
@@ -28,6 +29,8 @@ tables =  [
     Thread,
     AppThread,
     Comment,
+    VoteJunction,
+    Vote,
 ]
 
 def create_database():

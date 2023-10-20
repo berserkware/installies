@@ -14,6 +14,7 @@ from installies.models.app import App
 from installies.models.maintainer import Maintainers
 from installies.models.discussion import AppThread, Thread
 from installies.models.supported_distros import SupportedDistrosJunction
+from installies.models.voting import VoteJunction
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
@@ -64,6 +65,7 @@ class Script(BaseModel):
     submitter = ForeignKeyField(User, backref='scripts')
     maintainers = ForeignKeyField(Maintainers)
     description = CharField(255)
+    votes = ForeignKeyField(VoteJunction)
 
     filepath = CharField(255)
     supported_distros = ForeignKeyField(SupportedDistrosJunction)
@@ -134,6 +136,8 @@ class Script(BaseModel):
         distros = SupportedDistrosJunction.create()
         distros.create_from_list(supported_distros)
 
+        votes = VoteJunction.create()
+
         maintainers = Maintainers.create()
         
         created_script = super().create(
@@ -141,6 +145,7 @@ class Script(BaseModel):
             submitter=submitter,
             filepath=filepath,
             description=description,
+            votes=votes,
             supported_distros=distros,
             shell=shell,
             use_default_function_matcher=use_default_function_matcher,
@@ -202,6 +207,7 @@ class Script(BaseModel):
         os.remove(self.filepath)
         
         self.supported_distros.delete_instance()
+        self.votes.delete_instance()
 
     def serialize(self):
         """Turns the Script into a json serializable dict."""
@@ -220,6 +226,7 @@ class Script(BaseModel):
             data['content'] = c.read()
         data['submitter'] = self.submitter.username
         data['description'] = self.description
+        data['votes'] = self.votes.get_vote_sum()
 
         return data
 

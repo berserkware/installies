@@ -39,13 +39,36 @@ class JoinModifier(Modifier):
 
         return query
 
+
+class SortByAttribute(Modifier):
+    """
+    An attribute that can be sorted by with the SortByModifier.
+
+    :param attribute_name: The name of the attribute of the object to sort by.
+    :param attribute_getter: A function to get the attribute of the object to sort by. The
+                             function should take a model, and the attribute name.
+    :param models: Models to join to the query to get the attribute.
+    """
+
+    def __init__(self, attribute_name, attribute_getter: t.Callable=None, models=[]):
+        self.attribute_name = attribute_name
+        self.attribute_getter = attribute_getter
+        self.models = models
+
+    def get_attribute(self, model):
+        """Gets the attribute of the model to be sorted by."""
+        if self.attribute_getter is None:
+            return getattr(model, self.attribute_name)
+
+        return self.attribute_getter(model, self.attribute_name)
+
     
 class SortBy(Modifier):
     """
     A modifier class for sorting and ordering the SelectQuery by either ascending or descending.
 
     :param model: The model to sort by.
-    :param allowed_attributes: The attributes that the objects can be sorted by.
+    :param allowed_attributes: The a list of SortByAttributes that the objects can be sorted by.
     :param default_attribute: The attribute that the objects are softed by by default.
     :param default_order: The order that the objects are ordered by by default.
     """
@@ -67,14 +90,23 @@ class SortBy(Modifier):
         sort_by = params.get('sort-by', self.default_attribute)
         order_by = params.get('order-by', self.default_order)
 
-        if sort_by not in self.allowed_attributes:
+
+        sort_by_attribute = None
+        for attribute in self.allowed_attributes:
+            if attribute.attribute_name == sort_by:
+                sort_by_attribute = attribute
+
+        if sort_by_attribute is None:
             return query
 
         if order_by is None:
             return query
 
         # gets the column of the object to sort by
-        attribute = getattr(self.model, sort_by)
+        attribute = sort_by_attribute.get_attribute(self.model)
+
+        for model in sort_by_attribute.models:
+            query = query.join(model)
         
         if order_by == 'desc':
             return query.order_by(attribute.desc())
@@ -130,7 +162,8 @@ class SearchableAttribute:
     The check_contains function should take a model, attribute name, and the search.
     
     :param name: The name of the attribute.
-    :param check_contains: A function to check if the attribute contains the search.
+    :param check_contains: A function to check if the attribute contains the search. The
+                           function take a model, the attribute name, and the data.
     :param models: A list of models to join when searching.
     """
 

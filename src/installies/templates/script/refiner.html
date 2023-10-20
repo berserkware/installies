@@ -10,7 +10,6 @@
 	<select name="search-in" id="search-in">
 	  <option value="description" {% if request.args.get('search-in') == 'description' %}selected=""{% endif %}>Description</option>
 	  <option value="maintainers" {% if request.args.get('search-in') == 'maintainers' %}selected=""{% endif %}>Maintainers</option>
-	  <option value="submitter" {% if request.args.get('search-in') == 'submitter' %}selected=""{% endif %}>Submitter</option>
 	</select>
       </div>
       <div>
@@ -19,14 +18,13 @@
       </div>
       
       <div>
-	<label for="supports">Supports:</label>
+	<label for="supports">Distro:</label>
 	<input type="text" name="supports" id="supports" value="{{ request.args.get('supports', '') }}">
       </div>
       <div>
 	<label for="sort-by">Sort By:</label>
 	<select name="sort-by" id="sort-by">
 	  <option value="last_modified" {% if request.args.get('sort-by') == 'last_modified' %}selected=""{% endif %}>Last Modified</option>
-	  <option value="creation_date" {% if request.args.get('sort-by') == 'creation_date' %}selected=""{% endif %}>Creation Date</option>
 	  <option value="version" {% if request.args.get('sort-by') == 'version' %}selected=""{% endif %}>Version</option>
 	</select>
       </div>
@@ -48,10 +46,6 @@
 	  <option value="{{ shell }}" {% if request.args.get('shell', '') == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
 	  {% endfor %}
 	</select>
-      </div>
-      <div>
-	<label for="page">Page:</label>
-	<input type="text" name="page" id="page" size="4" value="{{ request.args.get('page', 1) }}">
       </div>
       <div>
 	<label for="per-page">Per Page:</label>

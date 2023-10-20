@@ -7,6 +7,7 @@ from installies.groups.base import Group
 from installies.groups.modifiers import (
     JoinModifier,
     SortBy,
+    SortByAttribute,
     ByColumn,
     SearchableAttribute,
     SearchInAttributes,
@@ -24,11 +25,11 @@ class AppGroup(Group):
         SortBy(
             model = App,
             allowed_attributes = [
-                'name',
-                'description',
-                'creation_date',
-                'last_modified',
-                'submitter',
+                SortByAttribute('name'),
+                SortByAttribute('description'),
+                SortByAttribute('creation_date'),
+                SortByAttribute('last_modified'),
+                SortByAttribute('submitter'),
             ],
             default_attribute = 'name',
             default_order = 'asc',

@@ -14,9 +14,7 @@
       <th>Description</th>
       <th>Supports</th>
       <th>For Version</th>
-      <th>Submitter</th>
       <th>Maintainers</th>
-      <th>Creation Date</th>
       <th>Last Modified</th>
     </tr>
   </thead>
@@ -43,13 +41,11 @@
       </td>
       {% set script_version = script.app_data.get().version %}
       <td>{% if script_version != '' %}{{ script_version }}{% else %}Any{% endif %}</td>
-      <td><a href="{{ url_for('auth.profile', username=script.submitter.username) }}">{{ script.submitter.username }}</a></td>
       <td>
 	{% for maintainer in script.maintainers.get_maintainers() %}
         <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if script.can_user_edit(g.user) %}{% endif %}{% if loop.index != script.maintainers.get_maintainers()|length %}, {% endif %}
         {% endfor %}
       </td>
-      <td>{{ script.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
       <td>{{ script.last_modified.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
     </tr>
     {% endfor %}
