@@ -1,6 +1,6 @@
 from peewee import Query
 from installies.models.app import App
-from installies.models.script import Script, Action, Shell
+from installies.models.script import AppScript, Script, Action, Shell
 from installies.models.supported_distros import SupportedDistro, SupportedDistrosJunction
 from functools import reduce
 
@@ -106,41 +106,32 @@ class BySupportedDistro(Modifier):
     A modifier class for getting by supported distros.
 
     This only works on App and Script object. This is becuase the SupportedDistro object only
-    contains backrefs to App and Script. It looks in the 'supports' param for the distro. The
-    'supports' param can contain multiple distros seporated by commas.
+    contains backrefs to App and Script. It used the 'distro' and 'arch' url params.
     """
     
     def modify(self, query: Query, params):
         """
         Modifies the query to only contain objects that support a specific distro.
 
-        If the 'supports' param is not present or contains a unsupported distro, the unmodified query is
-        returned.
+        If 'distro' or 'arch' param is not present, it is a wildcard to match any distro
+        or architecture.
         """
 
         # gets the supported distros of the object to get.
         supports = params.get('supports')
 
-        if supports is None or supports == '':
-            return query
-        
-        supported_distros = {}
-        for distro in supports.split(','):
-            distro = distro.split(':')
-            distro_name = distro[0].strip()
-            if len(distro) > 1:
-                architectures = distro[1:]
-            else:
-                supported_distros[distro_name] = ['*']
-                continue
+        # gets the distro and architecture
+        distro = params.get('distro', '')
+        arch = params.get('arch', '')
 
-            supported_distros[distro_name] = (arch.strip() for arch in architectures)
+        if distro == '':
+            distro = '*'
 
-        if supported_distros == {}:
-            return query
+        if arch == '':
+            arch = '*'
 
         if query.model == App:
-            query = query.join(Script)
+            query = query.join(AppScript).join(Script)
         
         query = (
             query
@@ -148,15 +139,13 @@ class BySupportedDistro(Modifier):
             .join(SupportedDistro)
         )
 
-        for distro in supported_distros.keys():
-            for arch in supported_distros[distro]:
-                query = query.where(
-                    reduce(
-                        lambda a, b: a & b,
-                        [(((SupportedDistro.distro_name == distro) | (SupportedDistro.distro_name == '*')) if distro != '*' else True) & (((SupportedDistro.architecture_name == arch) | (SupportedDistro.architecture_name == '*')) if arch != '*' else True)]
-                    )
-                )
-
+        query = query.where(
+            reduce(
+                lambda a, b: a & b,
+                [(((SupportedDistro.distro_name == distro) | (SupportedDistro.distro_name == '*')) if distro != '*' else True) & (((SupportedDistro.architecture_name == arch) | (SupportedDistro.architecture_name == '*')) if arch != '*' else True)]
+            )
+        )
+        
         return query
 
 
@@ -228,10 +217,12 @@ class BySupportedShell(Modifier):
         if 'shell' not in params.keys():
             return query
 
-        query = query.join(Shell)
+        alias = Shell.alias()
+        
+        query = query.join(alias)
         
         query = query.where(
-            Shell.name.contains(params['shell'])
+            alias.name.contains(params['shell'])
         )
 
         return query

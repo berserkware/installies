@@ -118,4 +118,4 @@ class ScriptGroup(Group):
         query = search_in_attributes.modify(query, params)
         query = query.switch(cls.model)
 
-        return query
+        return query.distinct()

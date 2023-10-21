@@ -101,4 +101,4 @@ class AppGroup(Group):
         query = query.switch(cls.model)
 
 
-        return query
+        return query.distinct()

@@ -6,6 +6,25 @@
   <form action="{{ url_for(url_for_route, **url_for_arguments) }}" method="get">
     <fieldset>
       <div>
+	<div>
+	<label for="distro">Distro:</label>
+	<input type="text" name="distro" id="distro" value="{{ request.args.get('distro', '') }}" style="width: 100px">
+      </div>
+
+      <div>
+	<label for="arch">Architecture:</label>
+	<input type="text" name="arch" id="arch" value="{{ request.args.get('arch', '') }}" style="width: 100px">
+      </div>
+
+      <div>
+	<label for="shell">Shell:</label>
+	<select name="shell" id="shell" required>
+	  {% for shell in get_shell_names() %}
+	  <option value="{{ shell }}" {% if request.args.get('shell', '') == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
+	  {% endfor %}
+	</select>
+      </div>
+	
 	<label for="search-in">Search In:</label>
 	<select name="search-in" id="search-in">
 	  <option value="description" {% if request.args.get('search-in') == 'description' %}selected=""{% endif %}>Description</option>
@@ -17,10 +36,6 @@
 	<input type="text" name="k" id="keywords" value="{{ request.args.get('k', '') }}">
       </div>
       
-      <div>
-	<label for="supports">Distro:</label>
-	<input type="text" name="supports" id="supports" value="{{ request.args.get('supports', '') }}">
-      </div>
       <div>
 	<label for="sort-by">Sort By:</label>
 	<select name="sort-by" id="sort-by">
@@ -39,14 +54,6 @@
       <div>
 	<label for="actions">Supported Actions:</label>
 	<input type="text" name="actions" id="actions" value="{{ request.args.get('actions', '') }}">
-      </div>
-      <div>
-	<label for="shell">Shell:</label>
-	<select name="script-shell" id="script-shells" required>
-	  {% for shell in get_shell_names() %}
-	  <option value="{{ shell }}" {% if request.args.get('shell', '') == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
-	  {% endfor %}
-	</select>
       </div>
       <div>
 	<label for="per-page">Per Page:</label>

@@ -62,7 +62,7 @@ class VoteJunction(BaseModel):
         vote = self.votes.where(Vote.user == user).get().delete_instance()
 
         # updates the vote count
-        self.script = self.get_score()
+        self.score = self.get_score()
         self.save()
 
         return vote
