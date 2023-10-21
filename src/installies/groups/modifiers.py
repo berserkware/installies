@@ -22,15 +22,15 @@ class Modifier:
 
         return query
 
-class SearchableAttribute:
+class SearchableField:
     """
-    A searchable attribute for the SearchInAttributes Modifier.
+    A searchable field for the SearchInFields Modifier.
 
-    The check_contains function should take a model, attribute name, and the search.
+    The check_contains function should take a model, field name, and the search.
     
     :param name: The name of the attribute.
-    :param check_contains: A function to check if the attribute contains the search. The
-                           function take a model, the attribute name, and the data.
+    :param check_contains: A function to check if the field contains the search. The
+                           function take a model, the field name, and the data.
     :param models: A list of models to join when searching.
     """
 
@@ -40,62 +40,62 @@ class SearchableAttribute:
         self.models = models
         
     def contains(self, model, data: str):
-        """Check if the attribute contains the data."""
+        """Check if the field contains the data."""
         if self.check_contains is None:
             return getattr(model, self.name).contains(data)
 
         return self.check_contains(model, self.name, data)
 
 
-class SearchInAttributes(Modifier):
+class SearchInFields(Modifier):
     """
-    A modifier class for searching in attributes.
+    A modifier class for searching in model fields.
 
-    The user can choose what attributes to search in with a comman separated list
+    The user can choose what fields to search in with a comman separated list
     in the 'search_in' kwargs. The search keywords go in the 'k' param.
 
     :param model: The model to search in.
-    :param allowed_attributes: The attributes the user can search in.
-    :param default_attribute: The attribute to search in by default.
+    :param allowed_fields: The fields the user can search in.
+    :param default_field: The field to search in by default.
     """
 
-    def __init__(self, model, searchable_attributes, default_attribute):
+    def __init__(self, model, searchable_fields, default_field):
         self.model = model
-        self.searchable_attributes = searchable_attributes
-        self.default_attribute = default_attribute
+        self.searchable_fields = searchable_fields
+        self.default_field = default_field
 
     def modify(self, query: Query, param):
         """
         Modifies the query to only contain objects that match the search query.
 
         If the search query param is not present, the unmodified query is returned. If no
-        usable attributes are found in the search_in param, the default attribute is used.
+        usable fields are found in the search_in param, the default field is used.
         """
 
         keywords = param.get('k')
-        search_in = param.get('search-in', self.default_attribute)
+        search_in = param.get('search-in', self.default_field)
 
         if keywords is None:
             return query
 
-        search_in_attribute_names = search_in.split(',')
-        search_in_attributes = []
+        search_in_field_names = search_in.split(',')
+        search_in_fields = []
         
-        for name in search_in_attribute_names:
+        for name in search_in_field_names:
             name = name.strip()
-            search_in_attributes.extend([attr for attr in self.searchable_attributes if attr.name == name])
+            search_in_fields.extend([attr for attr in self.searchable_fields if attr.name == name])
 
-        if search_in_attributes == []:
-            search_in_attributes = [default_attribute]
+        if search_in_fields == []:
+            search_in_fields = [default_field]
 
-        for attr in search_in_attributes:
-            for model in attr.models:
+        for field in search_in_fields:
+            for model in field.models:
                 query = query.join(model)
 
         keywords = keywords.split()
         for keyword in keywords:
             query = query.where(
-                reduce(lambda a, b: a | b, [attr.contains(self.model, keyword) for attr in search_in_attributes])
+                reduce(lambda a, b: a | b, [field.contains(self.model, keyword) for field in search_in_fields])
             )
 
         return query

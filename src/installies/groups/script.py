@@ -6,8 +6,8 @@ from installies.models.voting import VoteJunction
 from installies.models.user import User
 from installies.groups.base import Group
 from installies.groups.modifiers import (
-    SearchableAttribute,
-    SearchInAttributes,
+    SearchableField,
+    SearchInFields,
     BySupportedDistro,
     Paginate,
     BySupportedAction,
@@ -94,28 +94,28 @@ class ScriptGroup(Group):
         query = query.switch(cls.model)
         
         # gets the scripts by search
-        search_in_attributes = SearchInAttributes(
+        search_modifier = SearchInFields(
             model = cls.model,
-            searchable_attributes = [
-                SearchableAttribute(
+            searchable_fields = [
+                SearchableField(
                     'description',
                     lambda model, name, data: model.description.contains(data),
                 ),
-                SearchableAttribute(
+                SearchableField(
                     'maintainers',
                     lambda model, name, data: Maintainer.user.username.contains(data),
                     models=[Maintainers, Maintainer, User],
                 ),
-                SearchableAttribute(
+                SearchableField(
                     'submitter',
                     lambda model, name, data: getattr(model, name).username.contains(data),
                     models=[User]
                 ),
             ],
-            default_attribute = 'maintainers',
+            default_field = 'maintainers',
         )
 
-        query = search_in_attributes.modify(query, params)
+        query = search_modifier.modify(query, params)
         query = query.switch(cls.model)
 
         return query.distinct()

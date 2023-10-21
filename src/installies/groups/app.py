@@ -5,8 +5,8 @@ from installies.models.supported_distros import SupportedDistro
 from installies.models.user import User
 from installies.groups.base import Group
 from installies.groups.modifiers import (
-    SearchableAttribute,
-    SearchInAttributes,
+    SearchableField,
+    SearchInFields,
     BySupportedDistro,
     Paginate,
 )
@@ -78,26 +78,26 @@ class AppGroup(Group):
         query = query.switch(cls.model)
 
         # gets the apps by search
-        search_in_attributes = SearchInAttributes(
+        search_modifier = SearchInFields(
             model = App,
-            searchable_attributes = [
-                SearchableAttribute('name'),
-                SearchableAttribute('description'),
-                SearchableAttribute(
+            searchable_fields = [
+                SearchableField('name'),
+                SearchableField('description'),
+                SearchableField(
                     'maintainers',
                     lambda model, name, data: Maintainer.user.username.contains(data),
                     models=[Maintainers, Maintainer, User],
                 ),
-                SearchableAttribute(
+                SearchableField(
                     'submitter',
                     lambda model, name, data: getattr(model, name).username.contains(data),
                     models=[User],
                 ),
             ],
-            default_attribute = 'name',
+            default_field = 'name',
         )
 
-        query = search_in_attributes.modify(query, params)
+        query = search_modifier.modify(query, params)
         query = query.switch(cls.model)
 
 
