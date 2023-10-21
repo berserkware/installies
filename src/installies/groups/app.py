@@ -5,10 +5,6 @@ from installies.models.supported_distros import SupportedDistro
 from installies.models.user import User
 from installies.groups.base import Group
 from installies.groups.modifiers import (
-    JoinModifier,
-    SortBy,
-    SortByAttribute,
-    ByColumn,
     SearchableAttribute,
     SearchInAttributes,
     BySupportedDistro,
@@ -18,45 +14,71 @@ from datetime import datetime
 
 class AppGroup(Group):
     """
-    A class for getting multiple App objects from the database.
+    A class for getting multiple Script objects from the database.
     """
 
-    modifiers = [
-        SortBy(
-            model = App,
-            allowed_attributes = [
-                SortByAttribute('name'),
-                SortByAttribute('description'),
-                SortByAttribute('creation_date'),
-                SortByAttribute('last_modified'),
-                SortByAttribute('submitter'),
-            ],
-            default_attribute = 'name',
-            default_order = 'asc',
-        ),
-        ByColumn(
-            model = App,
-            param_name = 'name',
-            attribute = 'name',
-        ),
-        ByColumn(
-            model = App,
-            param_name = 'display_name',
-            attribute = 'display_name',
-        ),
-        ByColumn(
-            model = App,
-            param_name = 'creation_date',
-            attribute = 'creation_date',
-            converter = datetime.fromisoformat,
-        ),
-        ByColumn(
-            model = App,
-            param_name = 'last_modified',
-            attribute = 'last_modified',
-            converter = datetime.fromisoformat,
-        ),
-        SearchInAttributes(
+    model = App
+
+    @classmethod
+    def get(cls, params, query=None):
+        # gets the base query
+        if query is None:
+            query = cls.model.select()
+
+        # gets the app by a certain field
+        if params.get('name', '') is not '':
+            query = query.where(
+                (cls.model.name == params.get('name'))
+            )
+
+        if params.get('display_name', '') is not '':
+            query = query.where(
+                (cls.model.display_name == params.get('display_name'))
+            )
+
+        if params.get('last_modified', '') is not '':
+            query = query.where(
+                (cls.model.last_modified == datetime.fromisoformat(params.get('last_modified')))
+            )
+
+        if params.get('creation_date', '') is not '':
+            query = query.where(
+                (cls.model.creation_date == datetime.fromisoformat(params.get('creation_date')))
+            )
+
+
+        # sorts the query
+        sort_by = params.get('sort-by', 'score')
+        order_by = params.get('order-by', 'asc')
+
+        # the field to sort the object by
+        sort_by_field = None
+
+        # gets the field to sort by
+        match sort_by:
+            case 'name':
+                sort_by_field = cls.model.name
+            case 'description':
+                sort_by_field = cls.model.description
+            case 'creation_date':
+                sort_by_field = cls.model.creation_date
+            case 'last_modified':
+                sort_by_field = cls.model.last_modified
+            case 'submiter':
+                sort_by_field = cls.model.submitter
+
+        # orders and sorts the query
+        if order_by == 'desc':
+            query = query.order_by(sort_by_field.desc())
+        else:
+            query = query.order_by(sort_by_field)
+
+        # gets the app by supported distro
+        query = BySupportedDistro().modify(query, params)
+        query = query.switch(cls.model)
+
+        # gets the apps by search
+        search_in_attributes = SearchInAttributes(
             model = App,
             searchable_attributes = [
                 SearchableAttribute('name'),
@@ -73,7 +95,10 @@ class AppGroup(Group):
                 ),
             ],
             default_attribute = 'name',
-        ),
-        BySupportedDistro(),
-    ]
-    model = App
+        )
+
+        query = search_in_attributes.modify(query, params)
+        query = query.switch(cls.model)
+
+
+        return query

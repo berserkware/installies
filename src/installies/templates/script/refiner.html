@@ -24,6 +24,7 @@
       <div>
 	<label for="sort-by">Sort By:</label>
 	<select name="sort-by" id="sort-by">
+	  <option value="score" {% if request.args.get('sort-by') == 'score' %}selected=""{% endif %}>Score</option>
 	  <option value="last_modified" {% if request.args.get('sort-by') == 'last_modified' %}selected=""{% endif %}>Last Modified</option>
 	  <option value="version" {% if request.args.get('sort-by') == 'version' %}selected=""{% endif %}>Version</option>
 	</select>

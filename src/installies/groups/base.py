@@ -1,55 +1,20 @@
-from installies.config import database
-from installies.groups.modifiers import (
-    SortBy,
-)
-
 class Group:
     """
-    A class for getting multiple objects from the database.
+    A base class for defining the interface for groups.
 
-    This is a base class that needs to be inherited to work. The derivitive classes
-    should have a model attribute with the model that the group is of. It should
-    also have a list of Modifier classes named 'modifiers'.
+    Groups are for getting object by params submitted by users. The
+    derivitive classes should add a model attribute to the class that
+    contains the table that the group gets.
     """
 
-    modifiers = []
     model = None
 
     @classmethod
     def get(cls, params, query=None):
         """
-        Gets a group of objects from the database.
+        Gets the group of objects.
 
-        It uses the Modifier classes in the 'modifier' attribute. If the model in
-        the `model` attribute is none, then an empty list is returned.
-
+        :param params: The parameters submitted by the user to get the objects.
         :param query: A query to use instead of cls.model.select().
-        :param params: The params for the query modifiers.
         """
-
-        if cls.model is None:
-            return []
-
-        sort_by_modifier = None
-
-        if query is None:
-            query = cls.model.select()
-
-        new_queries = []
-        for modifier in cls.modifiers:
-            if type(modifier) == SortBy:
-                sort_by_modifier = modifier
-                continue
-
-            new_query = modifier.modify(query, params)
-            
-            new_queries.append(new_query)
-
-        for q in new_queries:
-            query = query & q
-
-        if sort_by_modifier is not None:
-            query = query & sort_by_modifier.modify(query, params)
-
-        return query
-        
+        return cls.model.select()
