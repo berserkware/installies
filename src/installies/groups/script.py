@@ -52,7 +52,7 @@ class ScriptGroup(Group):
 
         # sorts the query
         sort_by = params.get('sort-by', 'score')
-        order_by = params.get('order-by', 'asc')
+        order_by = params.get('order-by', 'desc')
 
         # the field to sort the object by
         sort_by_field = None
@@ -67,12 +67,12 @@ class ScriptGroup(Group):
                 sort_by_field = cls.model.creation_date
             case 'submitter':
                 sort_by_field = cls.model.submitter
-            case 'count':
+            case 'score':
                 sort_by_field = VoteJunction.score
 
-        if sort_by == 'count':
+        if sort_by == 'score':
             query = query.join(VoteJunction)
-                
+
         # orders and sorts the query
         if order_by == 'desc':
             query = query.order_by(sort_by_field.desc())

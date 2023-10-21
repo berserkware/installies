@@ -21,8 +21,8 @@ class VoteJunction(BaseModel):
 
         Also updates the score field.
         """
-        if self.has_user_voted(user) is False:
-            return
+        if self.has_user_voted(user):
+            self.remove_vote(user)
         
         Vote.create(
             user=user,
@@ -40,8 +40,8 @@ class VoteJunction(BaseModel):
 
         Also updates the score field.
         """
-        if self.has_user_voted(user) is False:
-            return
+        if self.has_user_voted(user):
+            self.remove_vote(user)
         
         Vote.create(
             user=user,
@@ -67,15 +67,23 @@ class VoteJunction(BaseModel):
 
         return vote
 
+    def has_user_upvoted(self, user: User):
+        """Checks if a given user has upvoted."""
+        return self.votes.where(Vote.user == user & Vote.is_upvote).exists()
+
+    def has_user_downvoted(self, user: User):
+        """Checks if a given user has downvoted."""
+        return self.votes.where(Vote.user == user & Vote.is_upvote == False).exists()
+    
     def has_user_voted(self, user: User):
         """Checks if a given user has voted."""
-        return self.votes.where(Vote.user == user).exists()
+        return self.has_user_upvoted(user) | self.has_user_downvoted(user)
 
     def get_score(self):
         """Gets the sum of all the votes (upvotes - downvotes)."""
         return (
-            self.votes.where(Vote.is_upvote is True).count() -
-            self.votes.where(Vote.is_upvote is False).count()
+            self.votes.where(Vote.is_upvote == True).count() -
+            self.votes.where(Vote.is_upvote == False).count()
         )
         
     

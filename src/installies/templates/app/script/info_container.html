@@ -17,6 +17,23 @@
       <td>{{ app_script.script.description }}</td>
     </tr>
     <tr>
+      <th class="bold">Score:</th>
+      <td>
+	{{ app_script.script.votes.score }}
+	{% if app_script.script.votes.has_user_upvoted(g.user) == False %}
+	<form action="{{ url_for('app_manager.upvote_script', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Upvote" class="button"></form>
+	{% else %}
+	<form action="{{ url_for('app_manager.remove_vote', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Un-Upvote" class="button"></form>
+	{% endif %}
+
+	{% if app_script.script.votes.has_user_downvoted(g.user) == False %}
+	<form action="{{ url_for('app_manager.downvote_script', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Downvote" class="button"></form>
+	{% else %}
+	<form action="{{ url_for('app_manager.remove_vote', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Un-Downvote" class="button"></form>
+	{% endif %}
+      </td>
+    </tr>
+    <tr>
       <th class="bold">Uses Function Matcher:</th>
       <td>{% if app_script.script.use_default_function_matcher %}Yes{% else %}No{% endif %}</td>
     </tr>

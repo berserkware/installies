@@ -301,3 +301,36 @@ class RemoveScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScrip
         
         flash(f'Maintainer successfully removed.', 'success')
         return self.get_script_view_redirect(**kwargs)
+
+
+class UpvoteScriptView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, View):
+    """A view for upvoting a script."""
+
+    def post(self, **kwargs):
+        script = kwargs['app_script'].script
+
+        script.votes.upvote(g.user)
+        
+        return self.get_script_view_redirect(**kwargs)
+
+
+class DownvoteScriptView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, View):
+    """A view for upvoting a script."""
+
+    def post(self, **kwargs):
+        script = kwargs['app_script'].script
+
+        script.votes.downvote(g.user)
+        
+        return self.get_script_view_redirect(**kwargs)
+
+
+class RemoveVoteView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, View):
+    """A view for upvoting a script."""
+
+    def post(self, **kwargs):
+        script = kwargs['app_script'].script
+
+        script.votes.remove_vote(g.user)
+        
+        return self.get_script_view_redirect(**kwargs)

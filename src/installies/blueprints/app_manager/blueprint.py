@@ -17,6 +17,9 @@ from installies.blueprints.app_manager.script import (
     DeleteScriptView,
     AddScriptMaintainerView,
     RemoveScriptMaintainerView,
+    UpvoteScriptView,
+    DownvoteScriptView,
+    RemoveVoteView,
 )
 from installies.blueprints.app_manager.report import (
     ReportAppView,
@@ -52,6 +55,10 @@ app_manager.add_url_rule('/apps/<app_name>/scripts/<int:app_script_id>/delete', 
 app_manager.add_url_rule('/apps/<app_name>/scripts/<int:app_script_id>/add-mantainer', 'add_script_maintainer', AddScriptMaintainerView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/scripts/<int:app_script_id>/maintainer/<username>/remove', 'remove_script_maintainer', RemoveScriptMaintainerView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/scripts/<int:app_script_id>/report', 'report_script', ReportScriptView.as_view(), methods=['GET', 'POST'])
+
+app_manager.add_url_rule('/apps/<app_name>/scripts/<int:app_script_id>/upvote', 'upvote_script', UpvoteScriptView.as_view(), methods=['POST'])
+app_manager.add_url_rule('/apps/<app_name>/scripts/<int:app_script_id>/downvote', 'downvote_script', DownvoteScriptView.as_view(), methods=['POST'])
+app_manager.add_url_rule('/apps/<app_name>/scripts/<int:app_script_id>/remove_vote', 'remove_vote', RemoveVoteView.as_view(), methods=['POST'])
 
 app_manager.add_url_rule('/apps/<app_name>/discussion/create-thread', 'create_thread', CreateThreadView.as_view(), methods=['GET', 'POST'])
 app_manager.add_url_rule('/apps/<app_name>/discussion/thread/<int:thread_id>/comment', 'create_comment', CreateCommentView.as_view(), methods=['POST'])

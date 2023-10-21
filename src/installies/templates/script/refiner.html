@@ -32,8 +32,8 @@
       <div>
 	<label for="order-by">Order By:</label>
 	<select name="order-by" id="order-by">
-	  <option value="asc" {% if request.args.get('order-by') == 'asc' %}selected=""{% endif %}>Ascending</option>
 	  <option value="desc" {% if request.args.get('order-by') == 'desc' %}selected=""{% endif %}>Descending</option>
+	  <option value="asc" {% if request.args.get('order-by') == 'asc' %}selected=""{% endif %}>Ascending</option>
 	</select>
       </div>
       <div>
