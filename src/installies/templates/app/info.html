@@ -7,6 +7,15 @@
 {% block content %}
 <table>
   <tr>
+    <th>Find a Script:</th>
+    <td>
+      <form action="{{ url_for('app_manager.app_scripts', app_name=app.name) }}" method="get">
+	<input type="text" name="distro" id="distro" placeholder="Enter a distro." class="no-margin" required>
+	<input type="submit" value="Search" class="no-margin">
+      </form>
+    </td>
+  </tr>
+  <tr>
     <th>Original Submitter:</th>
     <td><a class="link" href="{{ url_for("auth.profile", username=app.submitter.username) }}">{{ app.submitter.username }}</a></td>
   </tr>

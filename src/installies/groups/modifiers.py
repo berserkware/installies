@@ -121,8 +121,8 @@ class BySupportedDistro(Modifier):
         supports = params.get('supports')
 
         # gets the distro and architecture
-        distro = params.get('distro', '')
-        arch = params.get('arch', '')
+        distro = params.get('distro', '').lower()
+        arch = params.get('arch', '').lower()
 
         if distro == '':
             distro = '*'
