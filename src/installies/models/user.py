@@ -80,7 +80,7 @@ class User(BaseModel):
         # creates a verify string, goes untill a unique one is generated
         verify_string = gen_random_string(50)
         while True:
-            user = User.select().where(User.verify_string)
+            user = User.select().where(User.verify_string == verify_string)
             if user.exists() is False:
                 break
             verify_string = gen_random_string(50)

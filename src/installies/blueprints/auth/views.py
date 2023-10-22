@@ -16,6 +16,7 @@ from installies.blueprints.auth.decorators import (
 )
 from installies.lib.random import gen_random_string
 from installies.lib.email import send_email
+from installies.config import email_enabled
 from peewee import *
 from datetime import datetime, timedelta
 import calendar
@@ -51,14 +52,28 @@ def signup():
 
         new_user = User.create(username, email, password)
 
-        send_email(
-            new_user.email,
-            render_template('email/verify_user.html', user=new_user),
-            'Verify Email',
-        )
+        if email_enabled:
+            send_email(
+                new_user.email,
+                render_template(
+                    'email/verify_user.html',
+                    user=new_user,
+                ),
+                'Verify Email',
+            )
+            flash(
+                'Account successfully created. Check your email for a verification link.',
+                'success'
+            )
+        else:
+            new_user.verified = True
+            new_user.save()
+            flash(
+                'Account successfully created.',
+                'success'
+            )
 
         res = redirect('/')
-        flash('Account successfully created. Check your email for a verification link.', 'success')
         return res
     else:
         return render_template('signup.html')

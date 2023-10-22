@@ -14,7 +14,8 @@ server_config = config['server']
 
 host = server_config['Host']
 port = int(server_config['Port'])
-debug_mode = server_config['DebugMode']
+protocol = server_config['Protocol']
+debug_mode = (True if server_config['DebugMode'] == 'yes' else False)
 
 # config related to database
 database_config = config['database']
@@ -37,6 +38,7 @@ max_script_length = int(script_config['MaxLength'])
 # config related to email
 email_config = config['email']
 
+email_enabled = (True if email_config['Enabled'] == 'yes' else False)
 noreply_email = email_config['User']
 noreply_email_password = email_config['Passwd']
 smtp_server = email_config['SMTPAddr']

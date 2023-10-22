@@ -13,10 +13,9 @@ def send_email(to: str, body: str, subject: str):
     message['To'] = to
 
     message.attach(MIMEText(body, 'html'))
-    
+
     with smtplib.SMTP(smtp_server, smtp_server_port) as server:
         server.starttls()
-        
         server.login(noreply_email, noreply_email_password)
         server.sendmail(
             noreply_email,

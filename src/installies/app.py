@@ -3,7 +3,7 @@ from installies.blueprints.app_library.views import app_library
 from installies.blueprints.app_manager.blueprint import app_manager
 from installies.blueprints.auth.views import auth
 from installies.blueprints.admin.blueprint import admin
-from installies.config import database
+from installies.config import database, host, port, protocol
 from installies.models.user import User, Session
 from installies.models.script import Shell
 from installies.lib.dict import remove_value_from_dictionary, join_dictionaries
@@ -54,4 +54,8 @@ app.register_blueprint(admin)
 app.jinja_env.globals['remove_value_from_dictionary'] = remove_value_from_dictionary
 app.jinja_env.globals['join_dictionaries'] = join_dictionaries
 app.jinja_env.globals['__version__'] = __version__
+app.jinja_env.globals['host'] = host
+app.jinja_env.globals['port'] = port
+app.jinja_env.globals['protocol'] = protocol 
 app.jinja_env.globals['get_shell_names'] = Shell.get_all_names
+
