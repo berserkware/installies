@@ -1,5 +1,5 @@
 <div class="container black auto-width" style="width:auto">
-  <h2><a class="white-text" href="url_for('app_manager.script_view', app_name=app.name, app_script_id=app_script.id)">Script Info</a></h2>
+  <h2><a class="white-text" href="{{ url_for('app_manager.script_view', app_name=app.name, app_script_id=app_script.id) }}">Script Info</a></h2>
 
   <table>
     <td class="bold">Options:</td>
@@ -20,6 +20,7 @@
       <th class="bold">Score:</th>
       <td>
 	{{ app_script.script.votes.score }}
+	{% if app_script.script.can_user_edit(g.user) %}
 	{% if app_script.script.votes.has_user_upvoted(g.user) == False %}
 	<form action="{{ url_for('app_manager.upvote_script', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Upvote" class="button"></form>
 	{% else %}
@@ -30,6 +31,7 @@
 	<form action="{{ url_for('app_manager.downvote_script', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Downvote" class="button"></form>
 	{% else %}
 	<form action="{{ url_for('app_manager.remove_vote', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Un-Downvote" class="button"></form>
+	{% endif %}
 	{% endif %}
       </td>
     </tr>

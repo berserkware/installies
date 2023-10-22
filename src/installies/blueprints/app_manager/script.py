@@ -144,6 +144,7 @@ class ScriptListView(AppMixin, ListView):
         max_per_page = 50,
     )
 
+
     def get_group(self, **kwargs):
         group = ScriptGroup.get(
             request.args,

@@ -13,7 +13,9 @@
       <th>Actions</th>
       <th>Shell</th>
       <th>Description</th>
+      {% if not hide_script_supports %}
       <th>Supports</th>
+      {% endif %}
       <th>For Version</th>
       <th>Maintainers</th>
       <th>Last Modified</th>
@@ -30,6 +32,7 @@
       <td>{{ ", ".join(script.get_supported_actions()) }}</td>
       <td>{{ script.shell.name }}</td>
       <td>{{ script.description }}</td>
+      {% if not hide_script_supports %}
       <td>
 	<table class="initial-font-size">
 	  {% set distros = script.supported_distros.get_as_dict() %}
@@ -41,6 +44,7 @@
 	  {% endfor %}
 	</table>
       </td>
+      {% endif %}
       {% set script_version = script.app_data.get().version %}
       <td>{% if script_version != '' %}{{ script_version }}{% else %}Any{% endif %}</td>
       <td>
