@@ -57,7 +57,7 @@ class VoteJunction(BaseModel):
 
         Also updates the score field.
         """
-        if has_user_voted(user) is False:
+        if self.has_user_voted(user) is False:
             return
         
         vote = self.votes.where(Vote.user == user).get().delete_instance()
