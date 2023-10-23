@@ -258,8 +258,8 @@ class AddScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScriptMi
             return redirect(
                 url_for(
                     'app_manager.add_script_maintainer',
-                    app_name=app.name,
-                    script_id=script.id,
+                    app_name=kwargs['app'].name,
+                    app_script_id=script.id,
                 ),
                 303
             )

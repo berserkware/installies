@@ -147,6 +147,8 @@ class CreateCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Form
 class CommentMixin:
     """A mixin for getting comments from url variables."""
 
+    modify_view = False
+    
     def on_request(self, **kwargs):
         comment = Comment.select().where(Comment.id == kwargs['comment_id'])
 
@@ -155,7 +157,7 @@ class CommentMixin:
 
         comment = comment.get()
 
-        if comment.can_user_edit(g.user) is False:
+        if self.modify_view and comment.can_user_edit(g.user) is False:
             flash('You do not have permission to modify this comment.', 'error')
             return self.get_app_view_redirect(**kwargs)
 
@@ -171,6 +173,7 @@ class EditCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Commen
 
     template_path = 'app/discussion/edit_comment.html'
     form_class = EditCommentForm
+    modify_view = True
 
     def get_object_to_edit(self, **kwargs):
         return kwargs['comment']
@@ -193,7 +196,8 @@ class DeleteCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, Comm
     """A view for deleting comments."""
 
     template_path = 'app/discussion/delete_comment.html'
-
+    modify_view = True
+    
     def post(self, **kwargs):
         kwargs['comment'].delete_instance()
 

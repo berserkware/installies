@@ -20,7 +20,7 @@
       <th class="bold">Score:</th>
       <td>
 	{{ app_script.script.votes.score }}
-	{% if app_script.script.can_user_edit(g.user) %}
+	{% if g.is_authed %}
 	{% if app_script.script.votes.has_user_upvoted(g.user) == False %}
 	<form action="{{ url_for('app_manager.upvote_script', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Upvote" class="button"></form>
 	{% else %}
@@ -60,7 +60,7 @@
       <th class="bold">Maintainers:</th>
       <td>
        {% for maintainer in app_script.script.maintainers.get_maintainers() %}
-       <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if app_script.app.can_user_edit(g.user) %} [<a class='red' href="{{ url_for("app_manager.remove_script_maintainer", app_name=app_script.app.name, app_script_id=app_script.id, username=maintainer.user.username) }}">Remove</a>]{% endif %}{% if loop.index != app.maintainers.get_maintainers()|length %}, {% endif %}
+       <a class="link" href="{{ url_for("auth.profile", username=maintainer.user.username) }}">{{ maintainer.user.username }}</a>{% if app_script.script.can_user_edit(g.user) %} [<a class='red' href="{{ url_for("app_manager.remove_script_maintainer", app_name=app_script.app.name, app_script_id=app_script.id, username=maintainer.user.username) }}">Remove</a>]{% endif %}{% if loop.index != app_script.script.maintainers.get_maintainers()|length %}, {% endif %}
        {% endfor %}
      </td>
     </tr>

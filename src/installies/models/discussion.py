@@ -36,7 +36,7 @@ class Thread(BaseModel):
         if user.admin is True:
             return True
 
-        if user == creator:
+        if user == self.creator:
             return True
 
         return False
@@ -66,7 +66,7 @@ class Comment(BaseModel):
         if user.admin is True:
             return True
 
-        if user == creator:
+        if user == self.creator:
             return True
 
         return False
