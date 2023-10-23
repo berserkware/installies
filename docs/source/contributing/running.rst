@@ -21,6 +21,7 @@ you can run Installies. Here is an example configuration:
    [server]
    Host = 0.0.0.0
    Port = 8000
+   Protocol = http
    DebugMode = yes
 
    [database]
@@ -35,6 +36,7 @@ you can run Installies. Here is an example configuration:
    MaxLength = 10000
 
    [email]
+   Enabled = no
    User = installies@yourdomain.tld
    Passwd = pass123
    SMTPAddr = mail.example.com

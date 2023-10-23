@@ -217,6 +217,7 @@ class Script(BaseModel):
         data['actions'] = [action.name for action in self.actions]
         data['shell'] = self.shell.name
         data['supported_distros'] = self.supported_distros.get_as_dict()
+        data['creation_date'] = str(self.creation_date)
         data['last_modified'] = str(self.last_modified)
         
         if self.app_data.exists():
@@ -226,7 +227,7 @@ class Script(BaseModel):
             data['content'] = c.read()
         data['submitter'] = self.submitter.username
         data['description'] = self.description
-        data['votes'] = self.votes.get_vote_sum()
+        data['score'] = self.votes.score
 
         return data
 

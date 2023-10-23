@@ -30,9 +30,10 @@ URL Parameters
    - The attribute to search in. You can search in the name, description, maintainers, and submitter.
  * - k
    - The keywords to search.
- * - supports
-   - The linux distribution and architecture the app supports. Formatted as "architecture:distro".
-     You can replace the architecture or distro with "*" to match for any distro or architechture..
+ * - distro
+   - The distro the script supports.
+ * - arch
+   - The architecture the script supportst.
  * - sort-by
    - The attribute to sort by. It can be by the name, description, creation date, last modified, and submitter.
  * - order-by
@@ -89,13 +90,14 @@ URL Parameters
    - The attribute to search in. You can search in the method, maintainers, and the submitter.
  * - k
    - The keywords to search.
- * - supports
-   - The linux distribution and architecture the script supports. Formatted as "architecture:distro".
-     You can replace the architecture or distro with "*" to match for any distro or architechture.
+ * - distro
+   - The distro the script supports.
+ * - arch
+   - The architecture the script supportst.
  * - actions
    - The actions the script supports.
  * - sort-by
-   - The attribute to sort by. It can be by the version, last_modified, creation_date, and submitter.
+   - The attribute to sort by. It can be by the score, version, last_modified, creation_date, and submitter.
  * - order-by
    - What to order the objects by. Can be "asc" (ascending), or "desc" (descending). defaults to ascending.
  * - page
@@ -117,10 +119,13 @@ Response
                   "update"
               ],
               "content": "function install {\n\techo \"install\"\n}\n\nfunction remove {\n\techo \"remove\"\n}\n\nfunction update {\n\techo \"update\"\n}\n\nif [ \"$1\" == \"install\" ]; then\n    install\nfi\n\nif [ \"$1\" == \"remove\" ]; then\n    remove\nfi\n\nif [ \"$1\" == \"update\" ]; then\n    update\nfi\n",
+	      "creation_date": "2023-10-22 05:39:03",
               "for_version": "3.11.3",
               "id": 1,
               "last_modified": "2023-08-09 06:42:30",
+	      "score": 1,
               "method": "Installs with pacman.",
+	      "shell": "bash",
               "submitter": "berserkware",
               "supported_distros": {
                   "*": [

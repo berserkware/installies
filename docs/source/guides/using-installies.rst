@@ -32,10 +32,9 @@ Finding Scripts
 ***************
 
 You can find scripts under the Scripts tab on the app info page. Like the app search options,
-most of the search options for scripts are pretty straight foward to understand. The only two
-options that might not be simple are the "Supports" and "Supported Action" search options. The
-"Supports" option is the same as the app version. The "Supported Actions" option is where you
-can specify the actions that the script supports. It is a comman separated list.
+most of the search options for scripts are pretty straight foward to understand. The only
+option that might be confusing is the "Supported Actions" option is where you can specify the
+actions that the script supports. It is a comman separated list.
 
 .. image:: ../_static/script-refiner.png
   :alt: Script Refiner

@@ -42,7 +42,7 @@ def scripts(app_name):
 
     scripts = ScriptGroup.get(
         params=request.args,
-        query=Script.select().join(AppScript).where(AppScript.app == app)
+        query=Script.select().join(AppScript).where(AppScript.app == app).switch(Script)
     )
 
     paginator = Paginate(
