@@ -52,6 +52,12 @@ def signup():
 
         new_user = User.create(username, email, password)
 
+        # if user is the first user, make them admin.
+        if User.select().count() == 1:
+            new_user.admin = True
+            new_user.save()
+
+        # if email is enabled, send verification email, else make user auto verified
         if email_enabled:
             send_email(
                 new_user.email,

@@ -13,6 +13,10 @@
       <a class="white-link" href="{{ url_for("app_manager.app_view", app_name=app.name) }}">Infomation</a>
       <a class="white-link" href="{{ url_for("app_manager.app_scripts", app_name=app.name) }}">Scripts</a>
       <a class="white-link" href="{{ url_for("app_manager.discussion", app_name=app.name) }}">Discussion</a>
+      <form action="{{ url_for('app_manager.app_scripts', app_name=app.name) }}" method="get" class="float-right">
+	<input type="text" name="distro" id="distro" placeholder="Find script by distro." class="no-margin" required>
+	<input type="submit" value="Search" class="no-margin">
+      </form>
     </div>
   
   {% block content %}

@@ -356,6 +356,9 @@ th {
 .max-width {
     width: 100%;
 }
+.max-width {
+    width: 100%;
+}
 
 .no-list-style-type {
     list-style-type: none;
@@ -375,4 +378,12 @@ th {
 
 .initial-font-size {
     font-size: initial;
+}
+
+.CodeMirror {
+    height: 500px !important;
+}
+
+.float-right {
+    float: right;
 }
