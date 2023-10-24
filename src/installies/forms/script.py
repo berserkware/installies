@@ -9,7 +9,7 @@ from installies.validators.script import (
     ScriptDescriptionValidator,
     ScriptVersionValidator,
 )
-from installies.models.supported_distros import SupportedDistrosJunction
+from installies.models.supported_distros import SupportedDistro
 from installies.models.app import App
 from installies.models.script import AppScript, Script, Shell
 
@@ -33,7 +33,7 @@ class ModifyScriptForm(Form):
         FormInput(
             'script-supported-distros',
             ScriptDistroDictionaryValidator,
-            SupportedDistrosJunction.get_from_string,
+            SupportedDistro.get_dict_from_string,
             '',
         ),
         FormInput('script-content', ScriptContentValidator),
@@ -53,9 +53,8 @@ class CreateScriptForm(ModifyScriptForm):
 
     def save(self):
         shell = Shell.get(Shell.name == self.data['script-shell'])
-        
-        return Script.create(
-            supported_distros=self.data['script-supported-distros'],
+
+        script = Script.create(
             content=self.data['script-content'],
             actions=self.data['script-actions'],
             shell=shell,
@@ -63,6 +62,10 @@ class CreateScriptForm(ModifyScriptForm):
             submitter=g.user,
             use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
         )
+
+        distros = SupportedDistro.create_from_dict(script, self.data['script-supported-distros'])
+
+        return script
 
 
 class CreateAppScriptForm(CreateScriptForm):
@@ -87,11 +90,17 @@ class EditScriptForm(ModifyScriptForm):
     
     def save(self):
         shell = Shell.get(Shell.name == self.data['script-shell'])
+
+        for distro in self.original_object.supported_distros:
+            distro.delete_instance()
+        SupportedDistro.create_from_dict(
+            self.original_object,
+            self.data['script-supported-distros']
+        )
         
         return self.original_object.edit(
             actions=self.data['script-actions'],
             shell=shell,
-            supported_distros=self.data['script-supported-distros'],
             content=self.data['script-content'],
             version=self.data['for-version'],
             description=self.data['script-description'],

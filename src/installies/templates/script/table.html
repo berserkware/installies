@@ -35,7 +35,7 @@
       {% if not hide_script_supports %}
       <td>
 	<table class="initial-font-size">
-	  {% set distros = script.supported_distros.get_as_dict() %}
+	  {% set distros = script.get_supported_distros_as_dict() %}
 	  {% for architechture in distros %}
 	  <tr>
 	    <td class="no-height-padding">{{ architechture }}:</td>

@@ -1,7 +1,7 @@
 from peewee import Query
 from installies.models.app import App
 from installies.models.script import AppScript, Script, Action, Shell
-from installies.models.supported_distros import SupportedDistro, SupportedDistrosJunction
+from installies.models.supported_distros import SupportedDistro
 from functools import reduce
 
 import typing as t
@@ -132,7 +132,6 @@ class BySupportedDistro(Modifier):
         
         query = (
             query
-            .join(SupportedDistrosJunction)
             .join(SupportedDistro)
         )
 

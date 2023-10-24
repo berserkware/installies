@@ -13,7 +13,6 @@ from installies.models.user import User
 from installies.models.app import App
 from installies.models.maintainer import Maintainers
 from installies.models.discussion import AppThread, Thread
-from installies.models.supported_distros import SupportedDistrosJunction
 from installies.models.voting import VoteJunction
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
@@ -68,7 +67,6 @@ class Script(BaseModel):
     votes = ForeignKeyField(VoteJunction)
 
     filepath = CharField(255)
-    supported_distros = ForeignKeyField(SupportedDistrosJunction)
     shell = ForeignKeyField(Shell, backref="scripts")
     use_default_function_matcher = BooleanField(default=True)
     
@@ -113,7 +111,6 @@ class Script(BaseModel):
     @classmethod
     def create(
             cls,
-            supported_distros: list,
             content: str,
             description: str,
             actions: list[str],
@@ -124,7 +121,6 @@ class Script(BaseModel):
         """
         Create a Script object, and adds it to the database.
 
-        :param supported_distros: A list of distros that the script supports.
         :param content: The content of the script.
         :param description: The script's description.
         :param actions: The actions that the script supports.
@@ -132,9 +128,6 @@ class Script(BaseModel):
         :param submitter: The submitter.
         """
         filepath = cls.create_script_file(apps_path, content)
-
-        distros = SupportedDistrosJunction.create()
-        distros.create_from_list(supported_distros)
 
         votes = VoteJunction.create()
 
@@ -146,7 +139,6 @@ class Script(BaseModel):
             filepath=filepath,
             description=description,
             votes=votes,
-            supported_distros=distros,
             shell=shell,
             use_default_function_matcher=use_default_function_matcher,
         )
@@ -158,7 +150,6 @@ class Script(BaseModel):
 
     def edit(
             self,
-            supported_distros: list,
             content: str,
             description: str,
             actions: list[str],
@@ -169,7 +160,6 @@ class Script(BaseModel):
         """
         Edits the script. Also edits any related AppScripts.
 
-        :param supported_distros: The new supported distros.
         :param content: The new content.
         :param method: The script's method.
         :param actions: The sctions that the script supports.
@@ -180,8 +170,6 @@ class Script(BaseModel):
         self.last_modified = datetime.today()
         self.use_default_function_matcher = use_default_function_matcher
 
-        self.supported_distros.delete_all_distros()
-        self.supported_distros.create_from_list(supported_distros)
         self.description = description
         self.shell = shell
         self.save()
@@ -206,7 +194,6 @@ class Script(BaseModel):
         
         os.remove(self.filepath)
         
-        self.supported_distros.delete_instance()
         self.votes.delete_instance()
 
     def serialize(self):
@@ -216,7 +203,7 @@ class Script(BaseModel):
         data['id'] = self.id
         data['actions'] = [action.name for action in self.actions]
         data['shell'] = self.shell.name
-        data['supported_distros'] = self.supported_distros.get_as_dict()
+        data['supported_distros'] = self.get_supported_distros_as_dict()
         data['creation_date'] = str(self.creation_date)
         data['last_modified'] = str(self.last_modified)
         
@@ -300,6 +287,43 @@ class Script(BaseModel):
     def get_supported_actions(self):
         """Get the actions the script supports in a list."""
         return [action.name for action in self.actions]
+
+    def get_supported_distros_as_dict(self) -> dict:
+        """
+        Puts all the script's distros in a dictionary.
+
+        The keys are the distro's architechture, and the values are lists of distro names.
+        """
+
+        distros = {}
+
+        for distro in self.supported_distros:
+            if distro.architecture_name not in distros.keys():
+                distros[distro.architecture_name] = []
+
+            distros[distro.architecture_name].append(distro.distro_name)
+            
+        return distros
+
+    def get_supported_distros_as_string(self):
+        """
+        Turns the script's supported distros in the state the user would have entered them.
+
+        Example: "distro:arch:arch, distro:arch:arch".
+        """
+
+        distros = {}
+        for distro in self.supported_distros:
+            if distro.distro_name not in distros.keys():
+                distros[distro.distro_name] = []
+
+            distros[distro.distro_name].append(distro.architecture_name)
+
+        distro_strings = []
+        for distro in distros:
+            distro_strings.append(f'{distro}:{":".join(distros[distro])}')
+
+        return ', '.join(distro_strings)
 
 
 class Action(BaseModel):

@@ -9,6 +9,7 @@ from peewee import (
 )
 from installies.models.base import BaseModel
 from installies.models.user import User
+from installies.models.script import Script
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
@@ -21,51 +22,19 @@ import random
 import bleach
 
 
-class SupportedDistrosJunction(BaseModel):
-    """A junction model between SupportedDistro models and scripts."""
+class SupportedDistro(BaseModel):
+    """A model for storing a supported distro of a script."""
 
+    script = ForeignKeyField(Script, backref="supported_distros", on_delete="CASCADE")
+    distro_name = CharField(255)
+    architecture_name = CharField(255)
 
-    def get_as_dict(self) -> dict:
+    @classmethod
+    def create_from_dict(cls, script: Script, distros: dict):
         """
-        Gets all the distros, and put's them in a dictionary.
+        Creates multiple supported distros from a dictionary.
 
-        The keys are the distro's architechture, and the values are lists of distro names.
-        """
-
-        distros = {}
-
-        for distro in self.distros:
-            if distro.architecture_name not in distros.keys():
-                distros[distro.architecture_name] = []
-
-            distros[distro.architecture_name].append(distro.distro_name)
-            
-        return distros
-
-    def get_as_string(self):
-        """
-        Gets the distros in the state the user entered it.
-
-        Example: "distro:arch:arch, distro:arch:arch".
-        """
-
-        distros = {}
-        for distro in self.distros:
-            if distro.distro_name not in distros.keys():
-                distros[distro.distro_name] = []
-
-            distros[distro.distro_name].append(distro.architecture_name)
-
-        distro_strings = []
-        for distro in distros:
-            distro_strings.append(f'{distro}:{":".join(distros[distro])}')
-
-        return ', '.join(distro_strings)
-    
-    def create_from_list(self, distros: dict):
-        """
-        Creates mutliple supported distros from a list of distro slugs.
-        
+        :param script: The script the distros are for.
         :param distros: A dictionary of the distros and their architectures.
         """
 
@@ -78,7 +47,7 @@ class SupportedDistrosJunction(BaseModel):
 
             for architecture in architectures:
                 supported_distro = SupportedDistro.create(
-                    group=self,
+                    script=script,
                     distro_name=distro,
                     architecture_name=architecture,
                 )
@@ -87,11 +56,13 @@ class SupportedDistrosJunction(BaseModel):
         return supported_distros
 
     @classmethod
-    def get_from_string(cls, distro_string: str):
+    def get_dict_from_string(cls, distro_string: str) -> dict:
         """
         Gets a dictonary of supported distros and their architectures.
 
-        The distro string should be formatted as "distro1:arch1:arch2, distro2:arch1:arch2".
+        The distro string should be formatted as "distro1:arch1:arch2, distro2:arch1:arch2". It
+        will return a dictionary where the keys are the distros, and the values are a list of
+        architectures.
 
         :param distro_string: A comma separated list of distros.
         """
@@ -118,20 +89,3 @@ class SupportedDistrosJunction(BaseModel):
             distros[distro_name] = architectures
             
         return distros
-
-    def delete_all_distros(self):
-        """Delete all the distros related to this."""
-
-        SupportedDistro.delete().where(SupportedDistro.group == self).execute()
-
-    def delete_instance(self):
-        self.delete_all_distros()
-        super().delete_instance()
-
-
-class SupportedDistro(BaseModel):
-    """A model for storing a supported distro of a script."""
-
-    group = ForeignKeyField(SupportedDistrosJunction, backref="distros")
-    distro_name = CharField(255)
-    architecture_name = CharField(255)
