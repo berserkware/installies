@@ -30,12 +30,10 @@
     <th>Description:</th>
     <td>{{ app.description }}</td>
   </tr>
-  {% if app.current_version != ''%}
   <tr>
     <th>Current Version:</th>
-    <td>{{ app.current_version }}</td>
+    <td>{% if app.current_version %}{{ app.current_version }}{% else %}Unknown{% endif %}</td>
   </tr>
-  {% endif %}
 </table>
 {% endblock content %}
 

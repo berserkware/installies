@@ -73,10 +73,6 @@ class AppGroup(Group):
         else:
             query = query.order_by(sort_by_field)
 
-        # gets the app by supported distro
-        query = BySupportedDistro().modify(query, params)
-        query = query.switch(cls.model)
-
         # gets the apps by search
         search_modifier = SearchInFields(
             model = App,

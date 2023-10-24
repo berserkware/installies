@@ -117,9 +117,6 @@ class BySupportedDistro(Modifier):
         or architecture.
         """
 
-        # gets the supported distros of the object to get.
-        supports = params.get('supports')
-
         # gets the distro and architecture
         distro = params.get('distro', '').lower()
         arch = params.get('arch', '').lower()
