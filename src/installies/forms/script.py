@@ -14,9 +14,9 @@ from installies.models.app import App
 from installies.models.script import AppScript, Script, Shell
 
 
-class ModifyScriptForm(Form):
+class ModifyAppScriptForm(Form):
     """
-    A form for adding or editing scripts.
+    A form for adding or editing app scripts.
     """
 
     inputs = [
@@ -48,7 +48,7 @@ class ModifyScriptForm(Form):
     model = Script
 
 
-class CreateScriptForm(ModifyScriptForm):
+class CreateScriptForm(ModifyAppScriptForm):
     """A form for creating Scripts."""
 
     def save(self):
@@ -83,7 +83,7 @@ class CreateAppScriptForm(CreateScriptForm):
         )
 
 
-class EditScriptForm(ModifyScriptForm):
+class EditScriptForm(ModifyAppScriptForm):
     """A form for editing Scripts."""
 
     edit_form = True
@@ -102,7 +102,17 @@ class EditScriptForm(ModifyScriptForm):
             actions=self.data['script-actions'],
             shell=shell,
             content=self.data['script-content'],
-            version=self.data['for-version'],
             description=self.data['script-description'],
             use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
+        )
+
+
+class EditAppScriptForm(EditScriptForm):
+    """A form for editing AppScripts."""
+
+    def save(self, app_script: AppScript):
+        script = super().save(app_script.script)
+
+        return app_script.edit(
+            version=self.data['for-version']
         )

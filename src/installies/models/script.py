@@ -155,10 +155,9 @@ class Script(BaseModel):
             actions: list[str],
             shell: Shell,
             use_default_function_matcher: bool=True,
-            **kwargs,
     ):
         """
-        Edits the script. Also edits any related AppScripts.
+        Edits the script.
 
         :param content: The new content.
         :param method: The script's method.
@@ -181,9 +180,6 @@ class Script(BaseModel):
             f.write(content)
 
         self.save()
-
-        if self.app_data.exists():
-            self.app_data.get().edit(**kwargs)
 
     def delete_instance(self):
         """Deletes the script and its related objects."""

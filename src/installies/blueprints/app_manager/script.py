@@ -30,7 +30,7 @@ from installies.models.user import User
 from installies.forms.script import (
     CreateScriptForm,
     CreateAppScriptForm,
-    EditScriptForm,
+    EditAppScriptForm,
 )
 from installies.lib.view import (
     View,
@@ -209,10 +209,10 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, 
 
     template_path = 'app/script/edit_script.html'
     script_maintainer_only = True
-    form_class = EditScriptForm
+    form_class = EditAppScriptForm
     
     def form_valid(self, form, **kwargs):
-        form.save(kwargs['app_script'].script)
+        form.save(kwargs['app_script'])
 
         flash('Script successfully edited.', 'success')
         return self.get_script_view_redirect(**kwargs)
