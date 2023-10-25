@@ -30,7 +30,6 @@ from installies.forms.app import (
 from installies.lib.view import (
     View,
     FormView,
-    EditFormView,
     AuthenticationRequiredMixin,
     TemplateView,
     ListView,
@@ -100,18 +99,15 @@ class AppDetailView(AppMixin, TemplateView):
     template_path = 'app/info.html'
 
 
-class AppEditView(AuthenticationRequiredMixin, AppMixin, EditFormView):
+class AppEditView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view to edit apps."""
 
     template_path = 'app/edit.html'
     form_class = EditAppForm
     maintainer_only = True
 
-    def get_object_to_edit(self, **kwargs):
-        return kwargs['app']
-    
     def form_valid(self, form, **kwargs):
-        form.save()
+        form.save(kwargs['app'])
         
         flash('App succesfully edited.', 'success')
         return self.get_app_view_redirect(**kwargs)

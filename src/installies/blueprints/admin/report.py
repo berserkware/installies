@@ -6,7 +6,6 @@ from installies.lib.view import (
     AuthenticationRequiredMixin,
     TemplateView,
     ListView,
-    EditFormView,
 )
 from installies.blueprints.admin.views import AdminRequiredMixin
 

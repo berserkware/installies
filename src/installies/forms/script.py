@@ -88,17 +88,17 @@ class EditScriptForm(ModifyScriptForm):
 
     edit_form = True
     
-    def save(self):
+    def save(self, script: Script):
         shell = Shell.get(Shell.name == self.data['script-shell'])
 
-        for distro in self.original_object.supported_distros:
+        for distro in script.supported_distros:
             distro.delete_instance()
         SupportedDistro.create_from_dict(
-            self.original_object,
+            script,
             self.data['script-supported-distros']
         )
         
-        return self.original_object.edit(
+        return script.edit(
             actions=self.data['script-actions'],
             shell=shell,
             content=self.data['script-content'],

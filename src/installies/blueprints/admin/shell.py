@@ -6,7 +6,6 @@ from installies.lib.view import (
     AuthenticationRequiredMixin,
     TemplateView,
     ListView,
-    EditFormView,
 )
 from installies.forms.admin import (
     CreateShellForm,
@@ -44,15 +43,15 @@ class ShellMixin:
         return super().on_request(**kwargs)
     
 
-class EditShellFormView(AuthenticationRequiredMixin, AdminRequiredMixin, ShellMixin, EditFormView):
+class EditShellFormView(AuthenticationRequiredMixin, AdminRequiredMixin, ShellMixin, FormView):
     """A view for editing scripts."""
 
     template_path = 'shell/edit.html'
     form_class = EditShellForm
 
-    def get_object_to_edit(self, **kwargs):
-        return kwargs['shell']
-    
+    def create_form_class(self, **kwargs):
+        return self.form_class(request.form, kwargs['shell'])
+
     def form_valid(self, form, **kwargs):
         form.save(kwargs['shell'])
 

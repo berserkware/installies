@@ -158,40 +158,18 @@ class FormView(FormMixin, TemplateMixin, View):
         context = self.get_context_data(**kwargs)
         return render_template(self.template_path, **context)
 
+    def create_form_class(self, **kwargs):
+        """Creates the form class object."""
+        return self.form_class(request.form)
+    
     def post(self, **kwargs):
-        form = self.form_class(request.form)
+        form = self.create_form_class(**kwargs)
 
         if form.is_valid():
             return self.form_valid(form, **kwargs)
         else:
             return self.form_invalid(form, **kwargs)
 
-
-class EditFormMixin(FormMixin):
-    """
-    A mixin for getting form data to edit models.
-    """
-
-    def get_object_to_edit(self, **kwargs):
-        """Gets the object that the form is editting."""
-        return None
-
-
-class EditFormView(EditFormMixin, TemplateMixin, View):
-    """A view for editing apps."""
-
-    def get(self, **kwargs):
-        context = self.get_context_data(**kwargs)
-        return render_template(self.template_path, **context)
-
-    def post(self, **kwargs):
-        form = self.form_class(request.form, self.get_object_to_edit(**kwargs))
-
-        if form.is_valid():
-            return self.form_valid(form, **kwargs)
-        else:
-            return self.form_invalid(form, **kwargs)
-        
 
 class AuthenticationRequiredMixin:
     """A mixin for only allowing authenticated user."""

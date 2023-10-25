@@ -65,8 +65,7 @@ class EditCommentForm(CommentForm):
 
     edit_form = True
 
-    def save(self):
-        comment = self.original_object
+    def save(self, comment: Comment):
         comment.content = self.data['content']
         comment.edited = True
         comment.save()

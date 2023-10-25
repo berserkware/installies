@@ -66,17 +66,18 @@ class Form:
     form data.
 
     :param form_data: A dictionary with all the form data from the user.
-    :param original_object: If edit_form is True, you need to give the original object that
-    the form is editing.
+    :param original_object: If a form is for editing an object, you can
+                            set an original object to ignore the validator
+                            if the values are equal.
     """
 
     inputs = []
     model = None
     edit_form = False
 
-    def __init__(self, form_data: dict, original_object=None):
-        self.original_object = original_object
+    def __init__(self, form_data: dict, original_object = None):
         self.raw_form_data = form_data
+        self.original_object = original_object
         self.error = None
 
         data = {}
@@ -96,8 +97,13 @@ class Form:
             return False
 
         for inp in self.inputs:
-            # does not validate input if it isnt changed.
-            if self.edit_form and inp.original_data_getter is not None and inp.original_data_getter(self.original_object) == self.data[inp.name]:
+            # does not validate input the value hasnt changed changed.
+            if (
+                    self.edit_form and
+                    inp.original_data_getter is not None and
+                    self.original_object is not None and
+                    inp.original_data_getter(self.original_object) == self.data[inp.name]
+            ):
                 continue;
             
             try:

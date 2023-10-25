@@ -46,9 +46,9 @@ class EditAppForm(Form):
     model = App
     edit_form = True
 
-    def save(self):
+    def save(self, app: App):
         """Edits the app."""
-        return self.original_object.edit(
+        return app.edit(
             display_name=self.data['app-display-name'],
             description=self.data['app-desc'],
             current_version=self.data['app-current-version'],

@@ -35,7 +35,6 @@ from installies.forms.script import (
 from installies.lib.view import (
     View,
     FormView,
-    EditFormView,
     AuthenticationRequiredMixin,
     TemplateView,
     ListView,
@@ -205,18 +204,15 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
         )
 
 
-class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, EditFormView):
+class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, FormView):
     """A view for editing scripts."""
 
     template_path = 'app/script/edit_script.html'
     script_maintainer_only = True
     form_class = EditScriptForm
     
-    def get_object_to_edit(self, **kwargs):
-        return kwargs['app_script'].script
-    
     def form_valid(self, form, **kwargs):
-        form.save()
+        form.save(kwargs['app_script'].script)
 
         flash('Script successfully edited.', 'success')
         return self.get_script_view_redirect(**kwargs)
