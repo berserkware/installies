@@ -189,14 +189,16 @@ class BySupportedAction(Modifier):
     def modify(self, query: Query, params):
         if 'actions' not in params.keys():
             return query
+
+        alias = Action.alias()
         
         actions = [action.strip() for action in params['actions'].split(',')]
-
+        
         query = query.join(Action)
         
         for action in actions:
             query = query.where(
-                Action.name.contains(action)
+                alias.name.contains(action)
             )
 
         return query

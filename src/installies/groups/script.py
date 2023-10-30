@@ -85,10 +85,6 @@ class ScriptGroup(Group):
         query = BySupportedDistro().modify(query, params)
         query = query.switch(cls.model)
         
-        # gets the scripts by supported actions
-        query = BySupportedShell().modify(query, params)
-        query = query.switch(cls.model)
-        
         # gets the scripts by supported shell
         query = BySupportedShell().modify(query, params)
         query = query.switch(cls.model)

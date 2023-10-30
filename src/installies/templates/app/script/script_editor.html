@@ -1,7 +1,7 @@
 <form action="{{ form_url }}" method="post" id="script-form">
   <div class="form-input-container">
     <label for="script-actions">Actions</label><br>
-    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ', '.join(default_form_script.script.get_supported_actions()) }}{% endif %}" required>
+    <input type="text" name="script-actions" id="script-actions" class="textbox" placeholder="install,remove,update..." value="{% if default_form_script %}{{ ', '.join(default_form_script.get_supported_actions()) }}{% endif %}" required>
   </div>
 
   <div class="form-input-container">
@@ -166,7 +166,7 @@
 
   <div class="form-input-container">
     <label for="script-use-default-function-matcher">Use Default Function Matcher:</label>
-    <input type="checkbox" name="script-use-default-function-matcher" id="script-use-default-function-matcher" {% if default_form_script and default_form_script.script.use_default_function_matcher %}checked{% endif %}{% if not default_form_script %}checked{% endif %}>
+    <input type="checkbox" name="script-use-default-function-matcher" id="script-use-default-function-matcher" {% if default_form_script and default_form_script.use_default_function_matcher %}checked{% endif %}{% if not default_form_script %}checked{% endif %}>
   </div>
 
   <div class="form-input-container">

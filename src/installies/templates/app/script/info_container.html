@@ -6,7 +6,7 @@
     <td>{% if app_script.script.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, app_script_id=app_script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, app_script_id=app_script.id) }}">Delete</a>] [<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, app_script_id=app_script.id) }}">Add Maintainer</a>] {% endif %}[<a class="red" href="{{ url_for('app_manager.report_script', app_name=app.name, app_script_id=app_script.id) }}">Report</a>]</td>
     <tr>
       <th class="bold">Actions:</th>
-      <td>{{ ", ".join(app_script.script.get_supported_actions()) }}</td>
+      <td>{{ ", ".join(app_script.get_supported_actions()) }}</td>
     </tr>
     <tr>
       <th class="bold">Shell:</th>
@@ -37,7 +37,7 @@
     </tr>
     <tr>
       <th class="bold">Uses Function Matcher:</th>
-      <td>{% if app_script.script.use_default_function_matcher %}Yes{% else %}No{% endif %}</td>
+      <td>{% if app_script.use_default_function_matcher %}Yes{% else %}No{% endif %}</td>
     </tr>
     <tr>
       <th class="bold">For Version:</th>

@@ -56,11 +56,9 @@ class CreateScriptForm(ModifyAppScriptForm):
 
         script = Script.create(
             content=self.data['script-content'],
-            actions=self.data['script-actions'],
             shell=shell,
             description=self.data['script-description'],
             submitter=g.user,
-            use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
         )
 
         distros = SupportedDistro.create_from_dict(script, self.data['script-supported-distros'])
@@ -80,6 +78,8 @@ class CreateAppScriptForm(CreateScriptForm):
             script=script,
             app=app,
             version=self.data['for-version'],
+            actions=self.data['script-actions'],
+            use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
         )
 
 
@@ -99,11 +99,9 @@ class EditScriptForm(ModifyAppScriptForm):
         )
         
         return script.edit(
-            actions=self.data['script-actions'],
             shell=shell,
             content=self.data['script-content'],
             description=self.data['script-description'],
-            use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
         )
 
 
@@ -114,5 +112,7 @@ class EditAppScriptForm(EditScriptForm):
         script = super().save(app_script.script)
 
         return app_script.edit(
-            version=self.data['for-version']
+            version=self.data['for-version'],
+            use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
+            actions=self.data['script-actions'],
         )

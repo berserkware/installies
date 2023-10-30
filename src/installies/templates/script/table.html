@@ -29,7 +29,7 @@
       <td><a href="{{ url_for('app_manager.app_view', app_name=script.app_data.get().app.name) }}">{{ script.app_data.get().app.name }}</a></td>
       {% endif %}
       <td>{{ script.votes.score }}</td>
-      <td>{{ ", ".join(script.get_supported_actions()) }}</td>
+      <td>{{ ", ".join(script.app_data.get().get_supported_actions()) }}</td>
       <td>{{ script.shell.name }}</td>
       <td>{{ script.description }}</td>
       {% if not hide_script_supports %}

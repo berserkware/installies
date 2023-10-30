@@ -1,6 +1,6 @@
 {% extends "app/base.html" %}
 
-{% block title %}Script to {{ ", ".join(app_script.script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
+{% block title %}Script to {{ ", ".join(app_script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
 
 {% block extra_meta %}
 <meta name="description" content="{{ app_script.script.description }}">

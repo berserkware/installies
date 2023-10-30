@@ -1,6 +1,6 @@
 {% extends "app/base.html" %}
 
-{% block title %}Add Maintainer to Script to {{ ", ".join(app_script.script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
+{% block title %}Add Maintainer to Script to {{ ", ".join(app_script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
 
 {% block header %}
 <script src="/static/js/codemirror/lib/codemirror.js"></script>
