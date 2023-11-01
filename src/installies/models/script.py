@@ -186,12 +186,9 @@ class Script(BaseModel):
         data['creation_date'] = str(self.creation_date)
         data['last_modified'] = str(self.last_modified)
         
-        if self.app_data.exists():
-            data['actions'] = [action.name for action in self.app_data.get().actions]
-            data['for_version'] = self.app_data.get().version
-        
         with self.open_content() as c:
             data['content'] = c.read()
+        
         data['submitter'] = self.submitter.username
         data['description'] = self.description
         data['score'] = self.votes.score
@@ -212,57 +209,6 @@ class Script(BaseModel):
             return True
 
         return False
-
-
-    def add_function_matcher(self, content: str):
-        """Adds the action to function matcher to the given content."""
-        matcher = ''
-        actions = self.app_data.get().actions
-
-        matcher += f'{self.shell.function_matcher_start}\n\n'
-        for action in actions:
-            matcher += f'{self.shell.function_matcher_block}\n'.replace(
-                '<action>', action.name
-            )
-        matcher += f'\n{self.shell.function_matcher_end}\n'
-
-        matcher = matcher.replace(
-            '<actions>',
-            ' '.join([action.name for action in actions]),
-        )
-        
-        return content + matcher
-    
-
-    def complete_content(self, version=None):
-        """
-        Adds the stuff to the script's content to make it working, returns the content.
-
-        It replaces <version> with the given version. If the version is None, it uses the
-        app's current_version. It also adds a shebang.
-
-        :param version: The version of the script to install.
-        """
-        with self.open_content() as f:
-            new_content = f.read()
-
-        #replaces the version
-        if version is not None:
-            new_content = new_content.replace('<version>', version)
-        elif self.app_data.get().app.current_version is not None:
-            new_content = new_content.replace(
-                '<version>',
-                self.app_data.get().app.current_version
-            )
-
-        #adds the shebang
-        shebang = f'#!{self.shell.interpreter_path} {self.shell.interpreter_arg}\n\n'
-        new_content = shebang + new_content
-
-        if self.app_data.get().use_default_function_matcher:
-            new_content = self.add_function_matcher(new_content)
-
-        return new_content
 
     def get_supported_distros_as_dict(self) -> dict:
         """
@@ -394,9 +340,73 @@ class AppScript(BaseModel):
         
         return deleted
 
+    def add_function_matcher(self, content: str):
+        """Adds the action to function matcher to the given content."""
+        matcher = ''
+        actions = self.actions
+
+        matcher += f'{self.script.shell.function_matcher_start}\n\n'
+        for action in actions:
+            matcher += f'{self.script.shell.function_matcher_block}\n'.replace(
+                '<action>', action.name
+            )
+        matcher += f'\n{self.script.shell.function_matcher_end}\n'
+
+        matcher = matcher.replace(
+            '<actions>',
+            ' '.join([action.name for action in actions]),
+        )
+        
+        return content + matcher
+    
+    def complete_content(self, version=None):
+        """
+        Adds the stuff to the script's content to make it working, returns the content.
+
+        It replaces <version> with the given version. If the version is None, it uses the
+        app's current_version. It also adds a shebang.
+
+        :param version: The version of the script to install.
+        """
+        with self.script.open_content() as f:
+            new_content = f.read()
+
+        #replaces the version
+        if version is not None:
+            new_content = new_content.replace('<version>', version)
+        elif self.app.current_version is not None:
+            new_content = new_content.replace(
+                '<version>',
+                self.app.current_version
+            )
+
+        #adds the shebang
+        shebang = f'#!{self.script.shell.interpreter_path} {self.script.shell.interpreter_arg}\n\n'
+        new_content = shebang + new_content
+
+        if self.use_default_function_matcher:
+            new_content = self.add_function_matcher(new_content)
+
+        return new_content
+
     def get_supported_actions(self):
         """Get the actions the script supports in a list."""
         return [action.name for action in self.actions]
+
+    def serialize(self, version=None):
+        """
+        Gets the Scripts serialized data, including the extra data from the AppScript.
+
+        :param version: The version for the complete_content method.
+        """
+
+        data = self.script.serialize()
+
+        data['actions'] = [action.name for action in self.actions]
+        data['for_version'] = self.version
+        data['content'] = self.complete_content(version)
+
+        return data
 
 
 class Action(BaseModel):

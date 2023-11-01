@@ -57,8 +57,7 @@ def scripts(app_name):
     }
 
     for script in scripts:
-        serialized_script = script.serialize()
-        serialized_script['content'] = script.complete_content(request.args.get('version'))
+        serialized_script = script.app_data.get().serialize(request.args.get('version'))
         data['scripts'].append(serialized_script)
 
     return data

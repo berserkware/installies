@@ -84,7 +84,7 @@
     </tr>
   </table>
   <p>Content</p>
-  <textarea name="script-content" id="script-content">{{ app_script.script.complete_content() }}</textarea>
+  <textarea name="script-content" id="script-content">{{ app_script.complete_content() }}</textarea>
   <script>
     mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
 	lineNumbers: true,

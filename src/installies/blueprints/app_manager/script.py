@@ -174,7 +174,7 @@ class ScriptDownloadView(AppMixin, AppScriptMixin, View):
 
     def get(self, **kwargs):
         app_script = kwargs['app_script']
-        content = app_script.script.complete_content(request.args.get('version'))
+        content = app_script.complete_content(request.args.get('version'))
         script_file = io.BytesIO(content.encode('utf-8'))
         return send_file(
             script_file,
