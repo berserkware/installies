@@ -33,7 +33,7 @@ URL Parameters
  * - distro
    - The distro the script supports.
  * - arch
-   - The architecture the script supportst.
+   - The architecture the script supports.
  * - sort-by
    - The attribute to sort by. It can be by the name, description, creation date, last modified, and submitter.
  * - order-by
@@ -93,7 +93,7 @@ URL Parameters
  * - distro
    - The distro the script supports.
  * - arch
-   - The architecture the script supportst.
+   - The architecture the script supports.
  * - actions
    - The actions the script supports.
  * - sort-by
