@@ -14,8 +14,8 @@ The app name cannot contain capitals or spaces. You can stylise the name with th
 display name field. You can describe the app with the description.
 
 When you create an app, there are four input fields. The "Current Version" field
-is the only one that might not be self-explanatory. It needs to contain the current
-version of the app the script is installing. This gets passed into the scripts if the
+is the only one that might not be self-explanatory. You can put the the current
+version of the app. This gets passed into the scripts if the
 user doesn't specify a version to install.
 
 Managing Apps
