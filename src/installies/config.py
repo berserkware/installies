@@ -15,6 +15,7 @@ server_config = config['server']
 host = server_config['Host']
 port = int(server_config['Port'])
 protocol = server_config['Protocol']
+hostname = server_config.get('Hostname', None)
 debug_mode = (True if server_config['DebugMode'] == 'yes' else False)
 
 # config related to database

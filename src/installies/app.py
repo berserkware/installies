@@ -7,6 +7,7 @@ from installies.config import database, host, port, protocol
 from installies.models.user import User, Session
 from installies.models.script import Shell
 from installies.lib.dict import remove_value_from_dictionary, join_dictionaries
+from installies.lib.url import get_base_url
 from installies import __version__
 from flask import Flask, request, g, render_template
 from peewee import *
@@ -54,8 +55,5 @@ app.register_blueprint(admin)
 app.jinja_env.globals['remove_value_from_dictionary'] = remove_value_from_dictionary
 app.jinja_env.globals['join_dictionaries'] = join_dictionaries
 app.jinja_env.globals['__version__'] = __version__
-app.jinja_env.globals['host'] = host
-app.jinja_env.globals['port'] = port
-app.jinja_env.globals['protocol'] = protocol 
 app.jinja_env.globals['get_shell_names'] = Shell.get_all_names
-
+app.jinja_env.globals['get_base_url'] = get_base_url
