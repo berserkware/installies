@@ -23,6 +23,7 @@ you can run Installies. Here is an example configuration:
    Port = 8000
    Protocol = http
    DebugMode = yes
+   Hostname = example.com ; optional
 
    [database]
    Name = Installies

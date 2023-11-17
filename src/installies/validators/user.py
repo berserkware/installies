@@ -14,7 +14,7 @@ class UsernameValidator(Validator):
 
     checkers = [
         EmptyChecker(),
-        LengthChecker(max_len=32),
+        LengthChecker(max_len=32, min_len=7),
         CharacterWhitelistChecker(
             allow_extra=['-', '_', '<', '>', '!']
         ),
@@ -41,7 +41,7 @@ class PasswordValidator(Validator):
 
     checkers = [
         EmptyChecker(),
-        LengthChecker(max_len=32)
+        LengthChecker(max_len=32, min_len=8),
     ]
 
     data_name = 'Password'
