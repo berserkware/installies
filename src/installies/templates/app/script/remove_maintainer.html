@@ -2,13 +2,6 @@
 
 {% block title %}Remove Maintainer of Script to {{ ", ".join(app_script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
 
-{% block header %}
-<script src="/static/js/codemirror/lib/codemirror.js"></script>
-<link rel="stylesheet" href="/static/js/codemirror/lib/codemirror.css">
-<link rel="stylesheet" href="/static/js/codemirror/theme/monokai.css">
-<script src="/static/js/codemirror/mode/shell/shell.js"></script>
-{% endblock %}
-
 {% block content %}
 <div class="container black" style="width:auto">
   <h2>Remove {{ user.username }} from maintainers of script?</h2>
