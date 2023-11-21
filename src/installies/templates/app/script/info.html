@@ -1,23 +1,26 @@
-{% extends "app/base.html" %}
+{% extends "app/script/base.html" %}
 
-{% block title %}Script to {{ ", ".join(app_script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
+{% block script_page_content %}
 
-{% block extra_meta %}
-<meta name="description" content="{{ app_script.script.description }}">
-{% endblock %}
+<div class="container black auto-width" style="width:auto">
+  <h3>Script Source</h3>
+  <textarea name="script-content" id="script-content">{{ app_script.complete_content() }}</textarea>
+  <script>
+    mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
+	lineNumbers: true,
+	mode: "shell",
+        theme: "monokai",
+        readOnly: true,
+    });
+  </script>
+  <br>
+  <h3>Download Script</h3>
+  <form action="{{ url_for('app_manager.script_download', app_name=app_script.app.name, app_script_id=app_script.id) }}" method="get">
+    <label for="version">Version <span style="color:var(--light-grey)">(optional)</span>:</label><br>
+    <input type="text" name="version" id="version" class="textbox" placeholder="{{ app_script.app.current_version }}">
+    <input type="submit" value="Download" style="font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+  </form>
+</div>
 
-{% block content %}
-{% include "app/script/info_container.html" %}
-
-<h2>Latest Comments</h2>
-
-{% for comment in app_script.thread.comments.limit(10) %}
-{% set edit_comment_route = url_for('app_manager.edit_comment', app_name=app.name, thread_id=app_script.thread.id, comment_id=comment.id) %}
-{% set delete_comment_route = url_for('app_manager.delete_comment', app_name=app.name, thread_id=app_script.thread.id, comment_id=comment.id) %}
-{% set report_comment_route = url_for('app_manager.report_comment', app_name=app.name, thread_id=app_script.thread.id, comment_id=comment.id) %}
-{% include "discussion/comment.html" %}
-{% endfor %}
-
-<a class="link" href="{{ url_for("app_manager.comments", app_name=app_script.app.name, thread_id=app_script.thread.id) }}">View all comments</a>
 
 {% endblock %}

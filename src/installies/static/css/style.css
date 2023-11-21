@@ -182,15 +182,15 @@ table {
 
 td {
     padding-right: 20px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 
 th {
     font-family: Inter Bold;
     padding-right: 20px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 
 .link-button {
@@ -275,6 +275,16 @@ th {
 
 .grid-column-start-1 {
     grid-column-start: 1;
+}
+
+.grid-column-start-2 {
+    grid-column-start: 2;
+}
+
+.two-column-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 10px;
 }
 
 .side-options-grid {
