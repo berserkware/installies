@@ -1,8 +1,8 @@
-{% extends "app/base.html" %}
+{% extends "app/script/base.html" %}
 
-{% block title %}Report Script to {{ ", ".join(app_script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
+{% block pre_title %}Report{% endblock %}
 
-{% block content %}
+{% block script_page_content %}
 <div class="container black" style="width:auto">
     <h2>Report Script</h2>
     
@@ -23,5 +23,4 @@
     </form>
 </div>
 
-{% include "app/script/info_container.html" %}
 {% endblock %}

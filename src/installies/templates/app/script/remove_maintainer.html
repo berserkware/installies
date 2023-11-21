@@ -1,8 +1,8 @@
-{% extends "app/base.html" %}
+{% extends "app/script/base.html" %}
 
-{% block title %}Remove Maintainer of Script to {{ ", ".join(app_script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
+{% block pre_title %}Remove maintainer of{% endblock %}
 
-{% block content %}
+{% block script_page_content %}
 <div class="container black" style="width:auto">
   <h2>Remove {{ user.username }} from maintainers of script?</h2>
   
@@ -10,6 +10,4 @@
     <input type="submit" value="Remove" class="button">
   </form>
 </div>
-
-{% include "app/script/info_container.html" %}
 {% endblock %}

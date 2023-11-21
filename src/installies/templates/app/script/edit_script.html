@@ -1,8 +1,8 @@
-{% extends "app/base.html" %}
+{% extends "app/script/base.html" %}
 
-{% block title %}Edit Script to {{ ", ".join(app_script.get_supported_actions()) }} {{ app_script.app.name }}{% endblock %}
+{% block pre_title %}Edit{% endblock %}
 
-{% block content %}
+{% block script_page_content %}
 <div class="container black auto-width" style="width:auto">
   <h2>Edit Script</h2>
 
