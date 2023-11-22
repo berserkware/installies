@@ -13,18 +13,25 @@
 	<td>{{ ", ".join(app_script.get_supported_actions()) }}</td>
       </tr>
       <tr>
-	<th class="bold">Uses Function Matcher:</th>
-	<td>{% if app_script.use_default_function_matcher %}Yes{% else %}No{% endif %}</td>
-      </tr>
-      <tr>
 	<th class="bold">For Version:</th>
 	{% set script_version = app_script.version %}
 	<td>{% if script_version != '' %}{{ script_version }}{% else %}Any{% endif %}</td>
       </tr>
       <tr>
+	<th class="bold">Uses Function Matcher:</th>
+	<td>{% if app_script.use_default_function_matcher %}Yes{% else %}No{% endif %}</td>
+      </tr>
+      <tr>
 	<th class="bold">Supported Distros:</th>
 	<td>
 	  <table>
+	    <thead>
+	    <tr class="underline initial-font-size">
+              <th class="no-height-padding">Arch</th>
+	      <th class="no-height-padding">Distro</th>
+	    </tr>
+	    </thead>
+	    <tbody>
 	    {% set distros = app_script.script.get_supported_distros_as_dict() %}
 	    {% for architecture in distros %}
 	    <tr class="initial-font-size">
@@ -32,6 +39,7 @@
 	      <td class="no-height-padding">{{ ', '.join(distros[architecture]) }}</td>
 	    </tr>
 	    {% endfor %}
+	    </tbody>
 	  </table>
 	</td>
       </tr>
@@ -61,10 +69,6 @@
 	</td>
       </tr>
       <tr>
-	<th class="bold">Discussion:</th>
-	<td><a class="link" href="{{ url_for("app_manager.comments", app_name=app_script.app.name, thread_id=app_script.thread.id) }}">View this script's discussion.</a></td>
-      </tr>
-      <tr>
 	<th class="bold">Score:</th>
 	<td>
 	  {{ app_script.script.votes.score }}
@@ -87,4 +91,4 @@
   </div>
 </div>
 
-[<a href="{{ url_for('app_manager.script_view', app_name=app.name, app_script_id=app_script.id) }}">Source</a>]{% if app_script.script.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, app_script_id=app_script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, app_script_id=app_script.id) }}">Delete</a>] [<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, app_script_id=app_script.id) }}">Add Maintainer</a>] {% endif %}[<a class="red" href="{{ url_for('app_manager.report_script', app_name=app.name, app_script_id=app_script.id) }}">Report</a>]
+[<a href="{{ url_for('app_manager.script_view', app_name=app.name, app_script_id=app_script.id) }}">Source</a>] [<a href="{{ url_for("app_manager.comments", app_name=app_script.app.name, thread_id=app_script.thread.id) }}">Discussion</a>] {% if app_script.script.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, app_script_id=app_script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, app_script_id=app_script.id) }}">Delete</a>] [<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, app_script_id=app_script.id) }}">Add Maintainer</a>] {% endif %}[<a class="red" href="{{ url_for('app_manager.report_script', app_name=app.name, app_script_id=app_script.id) }}">Report</a>]
