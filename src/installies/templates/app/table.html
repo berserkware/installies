@@ -5,7 +5,6 @@
 	<th>Description</th>
         <th>Creation Date</th>
         <th>Last Modified</th>
-        <th>Current Version</th>
         <th>Submitter</th>
         <th>Maintainers</th>
       </tr>
@@ -17,7 +16,6 @@
 	<td>{{ app.description }}</td>
 	<td>{{ app.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
 	<td>{{ app.last_modified.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
-        <td>{% if app.current_version %}{{ app.current_version }}{% else %}Unknown{% endif %}</td>
         <td><a href="{{ url_for('auth.profile', username=app.submitter.username) }}">{{ app.submitter.username }}</a></td>
         <td>
 	  {% for maintainer in app.maintainers.get_maintainers() %}

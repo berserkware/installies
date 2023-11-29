@@ -15,11 +15,6 @@
     <label for="app-desc" >Description</label><br>
     <textarea name="app-desc" id="app-desc" class="textbox" cols="30" rows="6" placeholder="This is my very cool app.">{% if default_form_app %}{{ default_form_app.description }}{% endif %}</textarea>
   </div>
-  
-  <div class="form-input-container">
-    <label for="app-current-version">Current Version <span style="color:var(--light-grey)">(optional)</span></label><br>
-    <input type="text" name="app-current-version" id="app-current-version" class="textbox" placeholder="1.23.4" {% if default_form_app %}value="{{ default_form_app.current_version }}"{% endif %}><br>
-  </div>
       
   <div class="form-input-container">
     <input type="submit" value="Submit" class="button">

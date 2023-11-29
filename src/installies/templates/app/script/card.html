@@ -12,11 +12,7 @@
         readOnly: true,
     });
   </script>
-  <br>
-  <h3>Download Script</h3>
   <form action="{{ url_for('app_manager.script_download', app_name=app_script.app.name, app_script_id=app_script.id) }}" method="get">
-    <label for="version">Version <span style="color:var(--light-grey)">(optional)</span>:</label><br>
-    <input type="text" name="version" id="version" class="textbox" placeholder="{{ app_script.app.current_version }}">
     <input type="submit" value="Download" style="font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
   </form>
   {% endif %}

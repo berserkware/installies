@@ -359,26 +359,13 @@ class AppScript(BaseModel):
         
         return content + matcher
     
-    def complete_content(self, version=None):
+    def complete_content(self):
         """
         Adds the stuff to the script's content to make it working, returns the content.
-
-        It replaces <version> with the given version. If the version is None, it uses the
-        app's current_version. It also adds a shebang.
-
-        :param version: The version of the script to install.
         """
         with self.script.open_content() as f:
             new_content = f.read()
 
-        #replaces the version
-        if version is not None:
-            new_content = new_content.replace('<version>', version)
-        elif self.app.current_version is not None:
-            new_content = new_content.replace(
-                '<version>',
-                self.app.current_version
-            )
 
         #adds the shebang
         shebang = f'#!{self.script.shell.interpreter_path} {self.script.shell.interpreter_arg}\n\n'
@@ -393,7 +380,7 @@ class AppScript(BaseModel):
         """Get the actions the script supports in a list."""
         return [action.name for action in self.actions]
 
-    def serialize(self, version=None):
+    def serialize(self):
         """
         Gets the Scripts serialized data, including the extra data from the AppScript.
 
@@ -404,7 +391,7 @@ class AppScript(BaseModel):
 
         data['actions'] = [action.name for action in self.actions]
         data['for_version'] = self.version
-        data['content'] = self.complete_content(version)
+        data['content'] = self.complete_content()
 
         return data
 

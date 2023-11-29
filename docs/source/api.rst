@@ -52,7 +52,6 @@ Response
 	"apps": [
 	    {
 	        "creation_date": "2023-08-07 07:02:39",
-	        "current_version": "",
 	        "description": "The python3 programming language.",
 	        "display_name": "Python3",
 	        "id": 1,
