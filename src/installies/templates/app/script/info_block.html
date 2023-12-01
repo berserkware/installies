@@ -91,4 +91,12 @@
   </div>
 </div>
 
-[<a href="{{ url_for('app_manager.script_view', app_name=app.name, app_script_id=app_script.id) }}">Source</a>] [<a href="{{ url_for("app_manager.comments", app_name=app_script.app.name, thread_id=app_script.thread.id) }}">Discussion</a>] {% if app_script.script.can_user_edit(g.user) %}[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, app_script_id=app_script.id) }}">Edit</a>] [<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, app_script_id=app_script.id) }}">Delete</a>] [<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, app_script_id=app_script.id) }}">Add Maintainer</a>] {% endif %}[<a class="red" href="{{ url_for('app_manager.report_script', app_name=app.name, app_script_id=app_script.id) }}">Report</a>]
+[<a href="{{ url_for('app_manager.script_view', app_name=app.name, app_script_id=app_script.id) }}">Source</a>]
+[<a href="{{ url_for('app_manager.script_download', app_name=app_script.app.name, app_script_id=app_script.id) }}">Download</a>]
+[<a href="{{ url_for("app_manager.comments", app_name=app_script.app.name, thread_id=app_script.thread.id) }}">Discussion</a>]
+{% if app_script.script.can_user_edit(g.user) %}
+[<a href="{{ url_for('app_manager.edit_script', app_name=app.name, app_script_id=app_script.id) }}">Edit</a>]
+[<a class='red' href="{{ url_for('app_manager.delete_script', app_name=app.name, app_script_id=app_script.id) }}">Delete</a>]
+[<a href="{{ url_for('app_manager.add_script_maintainer', app_name=app.name, app_script_id=app_script.id) }}">Add Maintainer</a>]
+{% endif %}
+[<a class="red" href="{{ url_for('app_manager.report_script', app_name=app.name, app_script_id=app_script.id) }}">Report</a>]

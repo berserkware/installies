@@ -12,8 +12,5 @@
         readOnly: true,
     });
   </script>
-  <form action="{{ url_for('app_manager.script_download', app_name=app_script.app.name, app_script_id=app_script.id) }}" method="get">
-    <input type="submit" value="Download" style="font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
-  </form>
   {% endif %}
 </div>
