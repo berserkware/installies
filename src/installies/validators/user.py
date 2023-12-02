@@ -14,9 +14,9 @@ class UsernameValidator(Validator):
 
     checkers = [
         EmptyChecker(),
-        LengthChecker(max_len=32, min_len=7),
+        LengthChecker(max_len=16, min_len=5),
         CharacterWhitelistChecker(
-            allow_extra=['-', '_', '<', '>', '!']
+            allow_extra=['-', '_',],
         ),
         UniqueChecker(table=User, column_name='username'),
     ]
