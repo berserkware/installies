@@ -345,7 +345,7 @@ class AppScript(BaseModel):
         matcher = ''
         actions = self.actions
 
-        matcher += f'{self.script.shell.function_matcher_start}\n\n'
+        matcher += f'\n\n{self.script.shell.function_matcher_start}\n\n'
         for action in actions:
             matcher += f'{self.script.shell.function_matcher_block}\n'.replace(
                 '<action>', action.name
