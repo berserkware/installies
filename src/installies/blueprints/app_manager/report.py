@@ -61,7 +61,7 @@ class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
 class ReportScriptView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, FormView):
     """A view for reporting scripts."""
 
-    template_path = 'app/script/report_script.html'
+    template_path = 'app_script/report.html'
     form_class = ReportScriptForm
 
     def form_valid(self, form, **kwargs):

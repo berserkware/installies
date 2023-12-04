@@ -136,7 +136,7 @@ class AppScriptMixin:
 class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""
 
-    template_path = 'app/script/app_scripts.html'
+    template_path = 'app_script/app_scripts.html'
     group_name = 'scripts'
     paginator = Paginate(
         default_per_page = 10,
@@ -162,7 +162,7 @@ class ScriptListView(AppMixin, ListView):
 class ScriptDetailView(AppMixin, AppScriptMixin, DetailView):
     """A view for getting the details of a script."""
 
-    template_path = 'app/script/info.html'
+    template_path = 'app_script/info.html'
     model_name = 'script'
 
     def get_object(self, **kwargs):
@@ -187,7 +187,7 @@ class ScriptDownloadView(AppMixin, AppScriptMixin, View):
 class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for adding apps."""
 
-    template_path = 'app/script/add_script.html'
+    template_path = 'app_script/create.html'
     form_class = CreateAppScriptForm
 
     def form_valid(self, form, **kwargs):
@@ -207,7 +207,7 @@ class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
 class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, FormView):
     """A view for editing scripts."""
 
-    template_path = 'app/script/edit_script.html'
+    template_path = 'app_script/edit.html'
     script_maintainer_only = True
     form_class = EditAppScriptForm
     
@@ -221,7 +221,7 @@ class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, 
 class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, TemplateView):
     """A view for deleting scripts."""
 
-    template_path = 'app/script/delete_script.html'
+    template_path = 'app_script/delete.html'
     script_maintainer_only = True
 
     def post(self, **kwargs):
@@ -234,7 +234,7 @@ class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, Te
 class AddScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, TemplateView):
     """A view for adding maintainers to scripts."""
 
-    template_path = 'app/script/add_maintainer.html'
+    template_path = 'app_script/add_maintainer.html'
     script_maintainer_only = True
 
     def post(self, **kwargs):
@@ -269,7 +269,7 @@ class AddScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScriptMi
 class RemoveScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, TemplateView):
     """A view for removing a maintainer."""
 
-    template_path = 'app/script/remove_maintainer.html'
+    template_path = 'app_script/remove_maintainer.html'
     maintainer_only = True
 
     def on_request(self, **kwargs):

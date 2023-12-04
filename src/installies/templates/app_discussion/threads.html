@@ -22,7 +22,7 @@
       {% for thread in threads %}
       <tr class="underline">
 	<td><a href="{{ url_for('app_manager.comments', app_name=app.name, thread_id=thread.id) }}">{{ thread.title }}</a></td>
-	<td>{% if thread.creator %}<a href="url_for('auth.profile', username=thread.creator.username)">{{ thread.creator.username }}{% else %}system{% endif %}</a></td>
+	<td>{% if thread.creator %}<a href="{{ url_for('auth.profile', username=thread.creator.username) }}">{{ thread.creator.username }}{% else %}system{% endif %}</a></td>
 	<td>{{ thread.creation_date.strftime('%d-%m-%Y %H:%M') }} (UTC)</td>
 	<td>{{ thread.comments|length }}</td>
       </tr>
@@ -34,6 +34,6 @@
 
 {% set url_for_route = 'app_manager.discussion' %}
 {% set url_for_arguments = {'app_name': app.name} %}
-{% include "pager.html" %}
+{% include "partials/pager.html" %}
 
 {% endblock %}

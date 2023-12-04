@@ -4,11 +4,11 @@
 
 {% block content %}
 
-{% include "discussion/thread_container.html" %}
+{% include "partials/discussion/thread_container.html" %}
 
 {% if g.is_authed %}
 {% set create_comment_form_route = url_for('app_manager.create_comment', app_name=app.name, thread_id=thread.id) %}
-{% include "app/discussion/create_comment.html" %}
+{% include "partials/discussion/comment_form.html" %}
 {% endif %}
 
 <p>{{ total_object_count }} comment{% if total_object_count > 1 %}s{% endif%} found. Page {{ request.args.get('page', '1') }} of {{ page_count }}.</p>
@@ -17,12 +17,12 @@
 {% set edit_comment_route = url_for('app_manager.edit_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
 {% set delete_comment_route = url_for('app_manager.delete_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
 {% set report_comment_route = url_for('app_manager.report_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
-{% include "discussion/comment.html" %}
+{% include "partials/discussion/comment.html" %}
 
 {% endfor %}
 
 {% set url_for_route = 'app_manager.comments' %}
 {% set url_for_arguments = {'app_name': app.name, 'thread_id': thread.id} %}
-{% include "pager.html" %}
+{% include "partials/pager.html" %}
 
 {% endblock %}

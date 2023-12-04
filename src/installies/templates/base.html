@@ -17,7 +17,7 @@
     {% endblock %}
 </head>
 <body>
-  {% include "nav.html" %}
+  {% include "partials/nav.html" %}
 
   {% with errors = get_flashed_messages(category_filter=["error"]) %}
   {% if errors %}
@@ -44,6 +44,6 @@
   {% block body %}
   {% endblock %}
 
-  {% include "footer.html" %}
+  {% include "partials/footer.html" %}
 </body>
 </html>

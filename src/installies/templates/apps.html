@@ -63,12 +63,12 @@
   {% if apps|length == 0 %}
   <p class="no-margin">No Apps Found</p>
   {% else %}
-  {% include "app/table.html" %}
+  {% include "partials/app/table.html" %}
   {% endif %}
 </div>
 
 {% set url_for_route = 'app_library.apps' %}
 {% set url_for_arguments = {} %}
-{% include "pager.html" %}
+{% include "partials/pager.html" %}
 
 {% endblock %}

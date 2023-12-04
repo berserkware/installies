@@ -83,7 +83,7 @@ class AppMixin:
 class CreateAppFormView(AuthenticationRequiredMixin, FormView):
     """A view for creating an app."""
 
-    template_path = 'create_app.html'
+    template_path = 'app/create.html'
     form_class = CreateAppForm
 
     def form_valid(self, form, **kwargs):

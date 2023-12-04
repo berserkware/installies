@@ -1,4 +1,4 @@
-{% extends "app/script/base.html" %}
+{% extends "app_script/base.html" %}
 
 {% block pre_title %}Edit{% endblock %}
 
@@ -8,6 +8,6 @@
 
   {% set form_url = url_for('app_manager.edit_script', app_name=app.name, app_script_id=app_script.id) %}
   {% set default_form_script = app_script %}
-  {% include "app/script/script_editor.html" %}
+  {% include "partials/app_script/script_editor.html" %}
 </div>
 {% endblock %}

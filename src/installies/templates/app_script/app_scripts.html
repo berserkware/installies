@@ -7,13 +7,13 @@
 {% block content %}
 {% set url_for_route = 'app_manager.app_scripts' %}
 {% set url_for_arguments = {'app_name': app.name} %}
-{% include "script/refiner.html" %}
+{% include "partials/script/refiner.html" %}
 
 {% if request.args.get('distro', '') != '' and request.args.get('sort-by', 'score') == 'score' and scripts.count() > 0 and request.args.get('page', '1')|int == 1 %}
 <h2>Top Script for {{ request.args.get('distro', '') }}{% if request.args.get('arch', '') != '' %} and {{ request.args.get('arch', '') }}{% endif %}</h2>
 {% set app_script = scripts[0].app_data.get() %}
 {% set include_source = True %}
-{% include "app/script/card.html" %}
+{% include "partials/app_script/card.html" %}
 {% set scripts = scripts.offset(1) %}
 {% set hide_script_supports = True %}
 <h3>Other Scripts</h3>
@@ -25,12 +25,12 @@
 {% else %}
 {% for script in scripts %}
 {% set app_script = script.app_data.get() %}
-{% include "app/script/card.html" %}
+{% include "partials/app_script/card.html" %}
 {% endfor %}
 {% endif %}
 
 {% set url_for_route = 'app_manager.app_scripts' %}
 {% set url_for_arguments = {'app_name': app.name} %}
-{% include "pager.html" %}
+{% include "partials/pager.html" %}
 
 {% endblock %}
