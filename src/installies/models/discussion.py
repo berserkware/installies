@@ -21,7 +21,7 @@ class Thread(BaseModel):
     def delete_instance(self):
         if self.app_data.exists():
             self.app_data.get().delete_instance()
-        
+
         for comment in self.comments:
             comment.delete_instance()
         
@@ -70,3 +70,9 @@ class Comment(BaseModel):
             return True
 
         return False
+
+    def delete_instance(self):
+        for comment_report in self.reports:
+            comment_report.report.delete_instance()
+            
+        super().delete_instance()

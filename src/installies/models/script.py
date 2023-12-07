@@ -169,6 +169,9 @@ class Script(BaseModel):
 
     def delete_instance(self):
         """Deletes the script and its related objects."""
+
+        for script_report in self.reports:
+            script_report.report.delete_instance()
         
         super().delete_instance()
         
@@ -331,8 +334,6 @@ class AppScript(BaseModel):
 
 
     def delete_instance(self):
-        Action.delete().where(Action.script == self).execute()
-        
         deleted = super().delete_instance()
 
         self.script.delete_instance()
@@ -400,7 +401,7 @@ class Action(BaseModel):
     """A model for storing an action that an app script supports."""
 
     name = CharField(255)
-    app_script = ForeignKeyField(AppScript, backref='actions')
+    app_script = ForeignKeyField(AppScript, backref='actions', on_delete='CASCADE')
 
     @classmethod
     def create_from_list(cls, app_script: AppScript, actions: list[str]):

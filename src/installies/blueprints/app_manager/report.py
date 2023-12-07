@@ -74,7 +74,7 @@ class ReportScriptView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, Fo
 class ReportAppCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, FormView):
     """A view for reporting comments."""
 
-    template_path = 'discussion/report_comment.html'
+    template_path = 'app_discussion/report_comment.html'
     form_class = ReportCommentForm
 
     def form_valid(self, form, **kwargs):

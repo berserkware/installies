@@ -4,7 +4,7 @@
 
 {% block content %}
 
-{% include "discussion/thread_container.html" %}
+{% include "partials/discussion/thread_container.html" %}
 
 <div class="container black" style="width:auto">
     <h2>Delete Comment</h2>
@@ -20,6 +20,6 @@
 {% set edit_comment_route = url_for('app_manager.edit_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
 {% set delete_comment_route = url_for('app_manager.delete_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
 {% set report_comment_route = url_for('app_manager.report_comment', app_name=app.name, thread_id=thread.id, comment_id=comment.id) %}
-{% include "partial/discussion/comment.html" %}
+{% include "partials/discussion/comment.html" %}
 
 {% endblock %}

@@ -121,6 +121,9 @@ class App(BaseModel):
 
         for thread in self.threads:
             thread.delete_instance()
+
+        for app_report in self.reports:
+            app_report.report.delete_instance()
         
         super().delete_instance()
 

@@ -57,15 +57,9 @@ class Maintainers(BaseModel):
 
         return False
 
-    def delete_instance(self):
-        for maintainer in self.maintainers:
-            maintainer.delete_instance()
-
-        super().delete_instance()
-
 
 class Maintainer(BaseModel):
     """A model for storing maintainer data."""
 
     user = ForeignKeyField(User, backref="maintains")
-    group = ForeignKeyField(Maintainers, backref="maintainers")
+    group = ForeignKeyField(Maintainers, backref="maintainers", on_delete='CASCADE')
