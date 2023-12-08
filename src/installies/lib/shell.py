@@ -49,6 +49,11 @@ class BashShell(Shell):
     name = 'bash'
     interpreter_path = '/bin/bash'
 
+class ZshShell(Shell):
+
+    name = 'zsh'
+    interpreter_path = '/bin/zsh'
+
 class PythonShell(Shell):
     
     name = 'python'
