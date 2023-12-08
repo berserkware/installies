@@ -1,6 +1,6 @@
 from peewee import Query
 from installies.models.app import App
-from installies.models.script import AppScript, Script, Action, Shell
+from installies.models.script import AppScript, Script, Action
 from installies.models.supported_distros import SupportedDistro
 from functools import reduce
 
@@ -214,13 +214,9 @@ class BySupportedShell(Modifier):
     def modify(self, query: Query, params):
         if 'shell' not in params.keys():
             return query
-
-        alias = Shell.alias()
-        
-        query = query.join(alias)
         
         query = query.where(
-            alias.name.contains(params['shell'])
+            Script.shell.contains(params['shell'])
         )
 
         return query

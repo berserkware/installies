@@ -11,7 +11,7 @@ from installies.validators.script import (
 )
 from installies.models.supported_distros import SupportedDistro
 from installies.models.app import App
-from installies.models.script import AppScript, Script, Shell
+from installies.models.script import AppScript, Script
 
 
 class ModifyAppScriptForm(Form):
@@ -52,11 +52,9 @@ class CreateScriptForm(ModifyAppScriptForm):
     """A form for creating Scripts."""
 
     def save(self):
-        shell = Shell.get(Shell.name == self.data['script-shell'])
-
         script = Script.create(
             content=self.data['script-content'],
-            shell=shell,
+            shell=self.data['script-shell'],
             description=self.data['script-description'],
             submitter=g.user,
         )
@@ -89,8 +87,6 @@ class EditScriptForm(ModifyAppScriptForm):
     edit_form = True
     
     def save(self, script: Script):
-        shell = Shell.get(Shell.name == self.data['script-shell'])
-
         for distro in script.supported_distros:
             distro.delete_instance()
         SupportedDistro.create_from_dict(
@@ -99,7 +95,7 @@ class EditScriptForm(ModifyAppScriptForm):
         )
         
         return script.edit(
-            shell=shell,
+            shell=self.data['script-shell'],
             content=self.data['script-content'],
             description=self.data['script-description'],
         )

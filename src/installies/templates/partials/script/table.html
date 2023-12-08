@@ -30,7 +30,7 @@
       {% endif %}
       <td>{{ script.votes.score }}</td>
       <td>{{ ", ".join(script.app_data.get().get_supported_actions()) }}</td>
-      <td>{{ script.shell.name }}</td>
+      <td>{{ script.shell }}</td>
       <td>{{ script.description }}</td>
       {% if not hide_script_supports %}
       <td>

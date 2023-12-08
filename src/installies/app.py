@@ -5,9 +5,9 @@ from installies.blueprints.auth.views import auth
 from installies.blueprints.admin.blueprint import admin
 from installies.config import database, host, port, protocol
 from installies.models.user import User, Session
-from installies.models.script import Shell
 from installies.lib.dict import remove_value_from_dictionary, join_dictionaries
 from installies.lib.url import get_base_url
+from installies.lib.shell import Shell
 from installies import __version__
 from flask import Flask, request, g, render_template
 from peewee import *

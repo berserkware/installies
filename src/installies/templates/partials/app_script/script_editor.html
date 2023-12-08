@@ -8,7 +8,7 @@
     <label for="script-shell">Shell</label><br>
     <select name="script-shell" id="script-shells" required>
       {% for shell in get_shell_names() %}
-      <option value="{{ shell }}" {% if default_form_script and default_form_script.script.shell.name == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
+      <option value="{{ shell }}" {% if default_form_script and default_form_script.script.shell == shell %}selected="selected"{% endif %}>{{ shell.capitalize() }}</option>
       {% endfor %}
     </select>
   </div>

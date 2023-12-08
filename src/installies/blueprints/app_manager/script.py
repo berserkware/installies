@@ -25,7 +25,7 @@ from installies.validators.script import (
 from installies.groups.script import ScriptGroup
 from installies.models.app import App
 from installies.models.maintainer import Maintainer, Maintainers
-from installies.models.script import AppScript, Script, Shell
+from installies.models.script import AppScript, Script
 from installies.models.user import User
 from installies.forms.script import (
     CreateScriptForm,

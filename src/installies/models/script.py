@@ -17,6 +17,7 @@ from installies.models.voting import VoteJunction
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
+from installies.lib.shell import Shell
 from datetime import datetime
 
 import json
@@ -29,33 +30,6 @@ class ScriptNotFound(Exception):
     """An exception to raise when an app cannot be found."""
 
 
-class Shell(BaseModel):
-    """A model for storing a shell that a script supports."""
-
-    name = CharField(255)
-    file_extension = CharField(255)
-    file_mimetype = CharField(255)
-    interpreter_path = CharField(255)
-    interpreter_arg = CharField(255)
-
-    #action to function matcher fields
-
-    # this is code that runs no matter the action. It can
-    # be used to import the modules to get the cli args.
-    function_matcher_start = TextField()
-    # The code is added for each action the script supports. when this
-    # is added <action> get replaced with the action the block is for.
-    # It should call the function to run the action.
-    function_matcher_block = TextField()
-    # This is code to run if the user didn't select a supported function.
-    function_matcher_end = TextField()
-
-    @classmethod
-    def get_all_names(cls) -> list[str]:
-        """Gets the names of all the shells in a list."""
-        return [shell.name for shell in Shell.select()] 
-
-    
 class Script(BaseModel):
     """A model for storing data about scripts."""
 
@@ -67,7 +41,7 @@ class Script(BaseModel):
     votes = ForeignKeyField(VoteJunction)
 
     filepath = CharField(255)
-    shell = ForeignKeyField(Shell, backref="scripts")
+    shell = CharField(255)
     
     def open_content(self, mode='r'):
         """
@@ -112,7 +86,7 @@ class Script(BaseModel):
             cls,
             content: str,
             description: str,
-            shell: Shell,
+            shell: str,
             submitter: User,
     ):
         """
@@ -120,7 +94,7 @@ class Script(BaseModel):
 
         :param content: The content of the script.
         :param description: The script's description.
-        :param shell: The shell the script is for.
+        :param shell: The name of the shell the script is for.
         :param submitter: The submitter.
         """
         filepath = cls.create_script_file(apps_path, content)
@@ -146,14 +120,14 @@ class Script(BaseModel):
             self,
             content: str,
             description: str,
-            shell: Shell,
+            shell: str,
     ):
         """
         Edits the script.
 
         :param content: The new content.
         :param method: The script's method.
-        :param shell: The shell the script is for.
+        :param shell: The name of the shell the script is for.
         """
 
         self.last_modified = datetime.today()
@@ -184,7 +158,7 @@ class Script(BaseModel):
         data = {}
 
         data['id'] = self.id
-        data['shell'] = self.shell.name
+        data['shell'] = self.shell
         data['supported_distros'] = self.get_supported_distros_as_dict()
         data['creation_date'] = str(self.creation_date)
         data['last_modified'] = str(self.last_modified)
@@ -343,15 +317,19 @@ class AppScript(BaseModel):
 
     def add_function_matcher(self, content: str):
         """Adds the action to function matcher to the given content."""
-        matcher = ''
+        matcher = '\n'
         actions = self.actions
 
-        matcher += f'\n\n{self.script.shell.function_matcher_start}\n\n'
+        shell = Shell.get_shell_by_name(self.script.shell)
+
+        if shell.function_matcher_start is not '':
+            matcher += f'{shell.function_matcher_start}\n\n'
+        
         for action in actions:
-            matcher += f'{self.script.shell.function_matcher_block}\n'.replace(
+            matcher += f'{shell.function_matcher_block}\n'.replace(
                 '<action>', action.name
             )
-        matcher += f'\n{self.script.shell.function_matcher_end}\n'
+        matcher += f'{shell.function_matcher_end}\n'
 
         matcher = matcher.replace(
             '<actions>',
@@ -367,9 +345,10 @@ class AppScript(BaseModel):
         with self.script.open_content() as f:
             new_content = f.read()
 
+        shell = Shell.get_shell_by_name(self.script.shell)
 
         #adds the shebang
-        shebang = f'#!{self.script.shell.interpreter_path} {self.script.shell.interpreter_arg}\n\n'
+        shebang = f'#!{shell.interpreter_path} {shell.interpreter_arg}\n\n'
         new_content = shebang + new_content
 
         if self.use_default_function_matcher:
