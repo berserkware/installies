@@ -28,9 +28,9 @@ echo "Please re-run the script with one of the following actions as the first ar
     def get_all_names(cls):
         """Gets all the names of the shell subclasses."""
         all_shells = cls.get_all_subshells()
-
-        # the list of shells are reverse so that the bash shell is the first.
-        return [shell.name for shell in all_shells][::-1]
+        
+        # returns the list with bash as the first shell.
+        return ['bash'] +  [shell.name for shell in all_shells if shell.name != 'bash']
 
     @classmethod
     def get_shell_by_name(cls, name: str):
