@@ -46,7 +46,7 @@ from installies.groups.modifiers import Paginate
 from installies.blueprints.app_manager.app import (
     AppMixin,
 )
-
+from installies.lib.shell import Shell
 
 class ScriptMixin:
     """
@@ -176,10 +176,11 @@ class ScriptDownloadView(AppMixin, AppScriptMixin, View):
         app_script = kwargs['app_script']
         content = app_script.complete_content()
         script_file = io.BytesIO(content.encode('utf-8'))
+        shell = Shell.get_shell_by_name(app_script.script.shell)
         return send_file(
             script_file,
-            mimetype=app_script.script.shell.file_mimetype,
-            download_name=f'{app_script.app.name}.{app_script.script.shell.file_extension}',
+            mimetype=shell.file_mimetype,
+            download_name=f'{app_script.app.name}.{shell.file_extension}',
             as_attachment=True
         )
     
