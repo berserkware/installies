@@ -12,7 +12,7 @@ from installies.models.base import BaseModel
 from installies.models.user import User
 from installies.models.app import App
 from installies.models.maintainer import Maintainers
-from installies.models.discussion import AppThread, Thread
+from installies.models.discussion import Thread
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
@@ -250,9 +250,6 @@ class AppScript(BaseModel):
         thread = Thread.create(
             title=f'Discussion of script: "{script.description}"',
             creator=None,
-        )
-        app_thread = AppThread.create(
-            thread=thread,
             app=app,
         )
 
