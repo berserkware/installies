@@ -1,10 +1,10 @@
-{% extends "app_script/base.html" %}
+{% extends "script/base.html" %}
 
 {% block script_page_content %}
 
 <div class="container black auto-width" style="width:auto">
   <h3>Script Source</h3>
-  <textarea name="script-content" id="script-content">{{ app_script.complete_content() }}</textarea>
+  <textarea name="script-content" id="script-content">{{ script.complete_content() }}</textarea>
   <script>
     mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
 	lineNumbers: true,

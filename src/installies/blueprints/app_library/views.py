@@ -5,7 +5,7 @@ from installies.groups.script import ScriptGroup
 from installies.groups.modifiers import Paginate
 from installies.models.app import App
 from installies.models.maintainer import Maintainer
-from installies.models.script import Script, AppScript
+from installies.models.script import Script
 from peewee import *
 from installies.lib.email import send_email
 

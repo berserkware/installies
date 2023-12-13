@@ -40,7 +40,7 @@ from installies.blueprints.app_manager.app import (
     AppMixin,
 )
 from installies.blueprints.app_manager.script import (
-    AppScriptMixin,
+    ScriptMixin,
 )
 from installies.blueprints.app_manager.discussion import CommentMixin, ThreadMixin
 
@@ -58,14 +58,14 @@ class ReportAppView(AuthenticationRequiredMixin, AppMixin, FormView):
         return self.get_app_view_redirect(**kwargs)
 
 
-class ReportScriptView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, FormView):
+class ReportScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):
     """A view for reporting scripts."""
 
-    template_path = 'app_script/report.html'
+    template_path = 'script/report.html'
     form_class = ReportScriptForm
 
     def form_valid(self, form, **kwargs):
-        form.save(script=kwargs['app_script'].script)
+        form.save(script=kwargs['script'])
 
         flash('Script successfully reported.', 'success')
         return self.get_script_view_redirect(**kwargs)
@@ -74,7 +74,7 @@ class ReportScriptView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, Fo
 class ReportAppCommentView(AuthenticationRequiredMixin, AppMixin, ThreadMixin, CommentMixin, FormView):
     """A view for reporting comments."""
 
-    template_path = 'app_discussion/report_comment.html'
+    template_path = 'discussion/report_comment.html'
     form_class = ReportCommentForm
 
     def form_valid(self, form, **kwargs):

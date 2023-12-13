@@ -40,6 +40,12 @@ class Script(BaseModel):
 
     filepath = CharField(255)
     shell = CharField(255)
+    use_default_function_matcher = BooleanField(default=True)
+
+    version = CharField(64, null=True)
+    
+    app = ForeignKeyField(App, backref='scripts')
+    thread = ForeignKeyField(Thread, backref='for_script')
     
     def open_content(self, mode='r'):
         """
@@ -86,6 +92,10 @@ class Script(BaseModel):
             description: str,
             shell: str,
             submitter: User,
+            app,
+            actions: list[str],
+            version=None,
+            use_default_function_matcher: bool=True,
     ):
         """
         Create a Script object, and adds it to the database.
@@ -94,7 +104,19 @@ class Script(BaseModel):
         :param description: The script's description.
         :param shell: The name of the shell the script is for.
         :param submitter: The submitter.
+
+        :param app: The app the script is of.
+        :param actions: The actions that the script supports.
+        :param version: The version of the app the script is for.
+        :param use_default_function_matcher: A boolean to mark if the
+            script uses the function to action matcher.
         """
+        thread = Thread.create(
+            title=f'Discussion of script: "{description}"',
+            creator=None,
+            app=app,
+        )
+        
         filepath = cls.create_script_file(apps_path, content)
 
         maintainers = Maintainers.create()
@@ -105,7 +127,13 @@ class Script(BaseModel):
             filepath=filepath,
             description=description,
             shell=shell,
+            app=app,
+            version=version,
+            use_default_function_matcher=use_default_function_matcher,
+            thread=thread,
         )
+
+        actions = Action.create_from_list(created_script, actions)
 
         maintainers.add_maintainer(submitter)
 
@@ -116,6 +144,9 @@ class Script(BaseModel):
             content: str,
             description: str,
             shell: str,
+            actions: list[str],
+            version=None,
+            use_default_function_matcher: bool=True,
     ):
         """
         Edits the script.
@@ -123,16 +154,29 @@ class Script(BaseModel):
         :param content: The new content.
         :param method: The script's method.
         :param shell: The name of the shell the script is for.
+        :param actions: The actions that the script supports.
+        :param version: The version of the app the script is for.
+        :param use_default_function_matcher: A boolean to mark if the
+            script uses the function to action matcher.
         """
+
+        self.thread.title = f'Discussion of script: "{description}"'
+        self.thread.save()
 
         self.last_modified = datetime.today()
 
         self.description = description
         self.shell = shell
+
+        self.version = version
+        self.use_default_function_matcher = use_default_function_matcher
         self.save()
 
         with self.open_content('w') as f:
             f.write(content)
+
+        Action.delete().where(Action.script == self).execute()
+        Action.create_from_list(self, actions)
 
         self.save()
 
@@ -143,10 +187,10 @@ class Script(BaseModel):
             script_report.report.delete_instance()
         
         super().delete_instance()
+
+        self.thread.delete_instance()
         
         os.remove(self.filepath)
-        
-        self.votes.delete_instance()
 
     def serialize(self):
         """Turns the Script into a json serializable dict."""
@@ -163,6 +207,10 @@ class Script(BaseModel):
         
         data['submitter'] = self.submitter.username
         data['description'] = self.description
+
+        data['actions'] = [action.name for action in self.actions]
+        data['for_version'] = self.version
+        data['content'] = self.complete_content()
 
         return data
 
@@ -218,100 +266,12 @@ class Script(BaseModel):
 
         return ', '.join(distro_strings)
 
-    
-class AppScript(BaseModel):
-    """A model for storing scripts for apps."""
-
-    script = ForeignKeyField(Script, backref='app_data')
-    app = ForeignKeyField(App, backref='scripts')
-    version = CharField(64, null=True)
-    use_default_function_matcher = BooleanField(default=True)
-    thread = ForeignKeyField(Thread, backref='for_script')
-
-    @classmethod
-    def create(
-            cls,
-            script: Script,
-            app,
-            actions: list[str],
-            version=None,
-            use_default_function_matcher: bool=True,
-    ):
-        """
-        Creates an AppScript.
-
-        :param script: The script the AppScript object is for.
-        :param app: The app the script is of.
-        :param actions: The actions that the script supports.
-        :param version: The version of the app the script is for.
-        :param use_default_function_matcher: A boolean to mark if the
-            script uses the function to action matcher.
-        """
-        thread = Thread.create(
-            title=f'Discussion of script: "{script.description}"',
-            creator=None,
-            app=app,
-        )
-
-        app_script = super().create(
-            script=script,
-            app=app,
-            version=version,
-            use_default_function_matcher=use_default_function_matcher,
-            thread=thread,
-        )
-
-        actions = Action.create_from_list(app_script, actions)
-
-        app.last_modified = datetime.today()
-        app.save()
-
-        return app_script
-
-
-    def edit(
-            self,
-            actions: list[str],
-            version=None,
-            use_default_function_matcher: bool=True,
-    ):
-        """
-        Edits an AppScript.
-
-        :param actions: The actions that the script supports.
-        :param version: The version of the app the script is for.
-        :param use_default_function_matcher: A boolean to mark if the
-            script uses the function to action matcher.
-        """
-        self.thread.title = f'Discussion of script: "{self.script.description}"'
-        self.thread.save()
-        
-        self.version = version
-        self.use_default_function_matcher = use_default_function_matcher
-
-        Action.delete().where(Action.app_script == self).execute()
-        Action.create_from_list(self, actions)
-
-        self.app.last_modified = datetime.today()
-        self.app.save()
-
-        self.save()
-
-
-    def delete_instance(self):
-        deleted = super().delete_instance()
-
-        self.script.delete_instance()
-        self.thread.delete_instance()
-        
-        return deleted
-
     def add_function_matcher(self, content: str):
         """Adds the action to function matcher to the given content."""
         matcher = '\n'
         actions = self.actions
 
-        shell = Shell.get_shell_by_name(self.script.shell)
+        shell = Shell.get_shell_by_name(self.shell)
 
         if shell.function_matcher_start is not '':
             matcher += f'{shell.function_matcher_start}\n\n'
@@ -333,10 +293,10 @@ class AppScript(BaseModel):
         """
         Adds the stuff to the script's content to make it working, returns the content.
         """
-        with self.script.open_content() as f:
+        with self.open_content() as f:
             new_content = f.read()
 
-        shell = Shell.get_shell_by_name(self.script.shell)
+        shell = Shell.get_shell_by_name(self.shell)
 
         #adds the shebang
         shebang = f'#!{shell.interpreter_path} {shell.interpreter_arg}\n\n'
@@ -351,34 +311,19 @@ class AppScript(BaseModel):
         """Get the actions the script supports in a list."""
         return [action.name for action in self.actions]
 
-    def serialize(self):
-        """
-        Gets the Scripts serialized data, including the extra data from the AppScript.
-
-        :param version: The version for the complete_content method.
-        """
-
-        data = self.script.serialize()
-
-        data['actions'] = [action.name for action in self.actions]
-        data['for_version'] = self.version
-        data['content'] = self.complete_content()
-
-        return data
-
 
 class Action(BaseModel):
     """A model for storing an action that an app script supports."""
 
     name = CharField(255)
-    app_script = ForeignKeyField(AppScript, backref='actions', on_delete='CASCADE')
+    script = ForeignKeyField(Script, backref='actions', on_delete='CASCADE')
 
     @classmethod
-    def create_from_list(cls, app_script: AppScript, actions: list[str]):
+    def create_from_list(cls, script: Script, actions: list[str]):
         """Creates multiple action objects from a list."""
         action_objects = []
         
         for action in actions:
-            action_objects.append(Action.create(name=action, app_script=app_script))
+            action_objects.append(Action.create(name=action, script=script))
 
         return action_objects

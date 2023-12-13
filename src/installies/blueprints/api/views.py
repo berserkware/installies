@@ -3,7 +3,7 @@ from installies.groups.app import AppGroup
 from installies.groups.script import ScriptGroup
 from installies.groups.modifiers import Paginate
 from installies.models.app import App
-from installies.models.script import Script, AppScript
+from installies.models.script import Script
 from peewee import *
 
 import json
@@ -42,7 +42,7 @@ def scripts(app_name):
 
     scripts = ScriptGroup.get(
         params=request.args,
-        query=Script.select().join(AppScript).where(AppScript.app == app).switch(Script)
+        query=Script.select().where(Script.app == app)
     )
 
     paginator = Paginate(
@@ -57,7 +57,7 @@ def scripts(app_name):
     }
 
     for script in scripts:
-        serialized_script = script.app_data.get().serialize(request.args.get('version'))
+        serialized_script = script.serialize()
         data['scripts'].append(serialized_script)
 
     return data

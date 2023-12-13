@@ -23,11 +23,11 @@
   <tbody>
     {% for script in scripts %}
     <tr class="underline">
-      <td>[<a href="{{ url_for('app_manager.script_view', app_name=script.app_data.get().app.name, app_script_id=script.app_data.get().id) }}">View</a>]</td>
+      <td>[<a href="{{ url_for('app_manager.script_view', app_name=script.app.name, script_id=script.id) }}">View</a>]</td>
       {% if show_script_app %}
-      <td><a href="{{ url_for('app_manager.app_view', app_name=script.app_data.get().app.name) }}">{{ script.app_data.get().app.name }}</a></td>
+      <td><a href="{{ url_for('app_manager.app_view', app_name=script.app.name) }}">{{ script.app.name }}</a></td>
       {% endif %}
-      <td>{{ ", ".join(script.app_data.get().get_supported_actions()) }}</td>
+      <td>{{ ", ".join(script.get_supported_actions()) }}</td>
       <td>{{ script.shell }}</td>
       <td>{{ script.description }}</td>
       {% if not hide_script_supports %}
@@ -43,7 +43,7 @@
 	</table>
       </td>
       {% endif %}
-      {% set script_version = script.app_data.get().version %}
+      {% set script_version = script.version %}
       <td>{% if script_version != '' %}{{ script_version }}{% else %}Any{% endif %}</td>
       <td>
 	{% for maintainer in script.maintainers.get_maintainers() %}

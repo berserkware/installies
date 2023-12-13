@@ -1,9 +1,9 @@
 <div class="container black">
-  {% include "partials/app_script/info_block.html" %}
+  {% include "partials/script/info_block.html" %}
   <p></p>
   {% if include_source == True %}
   <h3>Source</h3>
-  <textarea name="script-content" id="script-content">{{ app_script.complete_content() }}</textarea>
+  <textarea name="script-content" id="script-content">{{ script.complete_content() }}</textarea>
   <script>
     mirror = CodeMirror.fromTextArea(document.getElementById("script-content"), {
 	lineNumbers: true,

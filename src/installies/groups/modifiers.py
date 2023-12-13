@@ -1,6 +1,6 @@
 from peewee import Query
 from installies.models.app import App
-from installies.models.script import AppScript, Script, Action
+from installies.models.script import Script, Action
 from installies.models.supported_distros import SupportedDistro
 from functools import reduce
 
@@ -128,7 +128,7 @@ class BySupportedDistro(Modifier):
             arch = '*'
 
         if query.model == App:
-            query = query.join(AppScript).join(Script)
+            query = query.join(Script)
         
         query = (
             query

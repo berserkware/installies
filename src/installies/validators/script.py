@@ -11,7 +11,7 @@ from installies.validators.check import (
 )
 from installies.validators.app import VersionValidator
 from installies.models.app import App
-from installies.models.script import Script, AppScript
+from installies.models.script import Script
 from installies.lib.shell import Shell
 from installies.config import (
     max_script_length,

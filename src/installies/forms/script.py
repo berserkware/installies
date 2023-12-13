@@ -11,10 +11,10 @@ from installies.validators.script import (
 )
 from installies.models.supported_distros import SupportedDistro
 from installies.models.app import App
-from installies.models.script import AppScript, Script
+from installies.models.script import Script
 
 
-class ModifyAppScriptForm(Form):
+class ModifyScriptForm(Form):
     """
     A form for adding or editing app scripts.
     """
@@ -48,15 +48,21 @@ class ModifyAppScriptForm(Form):
     model = Script
 
 
-class CreateScriptForm(ModifyAppScriptForm):
+class CreateScriptForm(ModifyScriptForm):
     """A form for creating Scripts."""
 
-    def save(self):
+    model = Script
+    
+    def save(self, app: App):
         script = Script.create(
             content=self.data['script-content'],
             shell=self.data['script-shell'],
             description=self.data['script-description'],
             submitter=g.user,
+            app=app,
+            version=self.data['for-version'],
+            actions=self.data['script-actions'],
+            use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
         )
 
         distros = SupportedDistro.create_from_dict(script, self.data['script-supported-distros'])
@@ -64,24 +70,7 @@ class CreateScriptForm(ModifyAppScriptForm):
         return script
 
 
-class CreateAppScriptForm(CreateScriptForm):
-    """A form for creating AppScripts"""
-
-    model = AppScript
-
-    def save(self, app: App):
-        script = super().save()
-
-        return AppScript.create(
-            script=script,
-            app=app,
-            version=self.data['for-version'],
-            actions=self.data['script-actions'],
-            use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
-        )
-
-
-class EditScriptForm(ModifyAppScriptForm):
+class EditScriptForm(ModifyScriptForm):
     """A form for editing Scripts."""
 
     edit_form = True
@@ -89,6 +78,7 @@ class EditScriptForm(ModifyAppScriptForm):
     def save(self, script: Script):
         for distro in script.supported_distros:
             distro.delete_instance()
+        
         SupportedDistro.create_from_dict(
             script,
             self.data['script-supported-distros']
@@ -98,16 +88,6 @@ class EditScriptForm(ModifyAppScriptForm):
             shell=self.data['script-shell'],
             content=self.data['script-content'],
             description=self.data['script-description'],
-        )
-
-
-class EditAppScriptForm(EditScriptForm):
-    """A form for editing AppScripts."""
-
-    def save(self, app_script: AppScript):
-        script = super().save(app_script.script)
-
-        return app_script.edit(
             version=self.data['for-version'],
             use_default_function_matcher=(True if self.data.get('script-use-default-function-matcher') is not None else False),
             actions=self.data['script-actions'],

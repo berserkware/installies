@@ -13,7 +13,7 @@
 <h2>Top Script for {{ request.args.get('distro', '') }}{% if request.args.get('arch', '') != '' %} and {{ request.args.get('arch', '') }}{% endif %}</h2>
 {% set app_script = scripts[0].app_data.get() %}
 {% set include_source = True %}
-{% include "partials/app_script/card.html" %}
+{% include "partials/script/card.html" %}
 {% set scripts = scripts.offset(1) %}
 {% set hide_script_supports = True %}
 <h3>Other Scripts</h3>
@@ -24,8 +24,7 @@
 <p class="no-margin">No Scripts Found</p>
 {% else %}
 {% for script in scripts %}
-{% set app_script = script.app_data.get() %}
-{% include "partials/app_script/card.html" %}
+{% include "partials/script/card.html" %}
 {% endfor %}
 {% endif %}
 

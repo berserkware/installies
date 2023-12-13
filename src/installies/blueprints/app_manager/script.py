@@ -25,12 +25,11 @@ from installies.validators.script import (
 from installies.groups.script import ScriptGroup
 from installies.models.app import App
 from installies.models.maintainer import Maintainer, Maintainers
-from installies.models.script import AppScript, Script
+from installies.models.script import Script
 from installies.models.user import User
 from installies.forms.script import (
     CreateScriptForm,
-    CreateAppScriptForm,
-    EditAppScriptForm,
+    EditScriptForm,
 )
 from installies.lib.view import (
     View,
@@ -67,7 +66,7 @@ class ScriptMixin:
 
         script = script.get()
 
-        if kwargs['app'] != script.app_data.get().app:
+        if kwargs['app'] != script.app:
             abort(404)
 
         if script.can_user_edit(g.user) is False and self.script_maintainer_only:
@@ -90,53 +89,10 @@ class ScriptMixin:
         )
 
 
-class AppScriptMixin:
-    """
-    A mixin to get AppScripts by url_params.
-
-    It gets the AppScript's id from the script_id kwarg.
-    """
-
-    script_maintainer_only = False
-
-    def on_request(self, **kwargs):
-        app_script_id = kwargs['app_script_id']
-
-        app_script = AppScript.select().where(AppScript.id == app_script_id)
-
-        if app_script.exists() is False:
-            abort(404)
-
-        app_script = app_script.get()
-
-        if kwargs['app'] != app_script.app:
-            abort(404)
-
-        if app_script.script.can_user_edit(g.user) is False and self.script_maintainer_only:
-            flash(
-                'You do not have permission to do that.',
-                'error'
-            )
-            return redirect(url_for('app_manager.app_scripts', app_name=kwargs['app'].name), 303)
-
-        kwargs['app_script'] = app_script
-
-        return super().on_request(**kwargs)
-
-
-    def get_script_view_redirect(self, **kwargs):
-        """Gets the redirect to the script view page."""
-        app_script = kwargs['app_script']
-        return redirect(
-            url_for('app_manager.script_view', app_name=kwargs['app'].name, app_script_id=app_script.id),
-            303
-        )
-
-
 class ScriptListView(AppMixin, ListView):
     """A view for listing scripts"""
 
-    template_path = 'app_script/app_scripts.html'
+    template_path = 'script/app_scripts.html'
     group_name = 'scripts'
     paginator = Paginate(
         default_per_page = 10,
@@ -150,37 +106,35 @@ class ScriptListView(AppMixin, ListView):
             query=(
                 Script
                 .select()
-                .join(AppScript)
-                .where(AppScript.app == kwargs['app'])
-                .switch(Script)
+                .where(Script.app == kwargs['app'])
             )
         )
         
         return group
 
 
-class ScriptDetailView(AppMixin, AppScriptMixin, DetailView):
+class ScriptDetailView(AppMixin, ScriptMixin, DetailView):
     """A view for getting the details of a script."""
 
-    template_path = 'app_script/info.html'
+    template_path = 'script/info.html'
     model_name = 'script'
 
     def get_object(self, **kwargs):
-        return kwargs['app_script']
+        return kwargs['script']
 
 
-class ScriptDownloadView(AppMixin, AppScriptMixin, View):
+class ScriptDownloadView(AppMixin, ScriptMixin, View):
     """A view for getting the content of scripts."""
 
     def get(self, **kwargs):
-        app_script = kwargs['app_script']
-        content = app_script.complete_content()
+        script = kwargs['script']
+        content = script.complete_content()
         script_file = io.BytesIO(content.encode('utf-8'))
-        shell = Shell.get_shell_by_name(app_script.script.shell)
+        shell = Shell.get_shell_by_name(script.shell)
         return send_file(
             script_file,
             mimetype=shell.file_mimetype,
-            download_name=f'{app_script.app.name}.{shell.file_extension}',
+            download_name=f'{script.app.name}.{shell.file_extension}',
             as_attachment=True
         )
     
@@ -188,54 +142,54 @@ class ScriptDownloadView(AppMixin, AppScriptMixin, View):
 class AddScriptFormView(AuthenticationRequiredMixin, AppMixin, FormView):
     """A view for adding apps."""
 
-    template_path = 'app_script/create.html'
-    form_class = CreateAppScriptForm
+    template_path = 'script/create.html'
+    form_class = CreateScriptForm
 
     def form_valid(self, form, **kwargs):
-        app_script = form.save(app=kwargs['app'])
+        script = form.save(app=kwargs['app'])
         
         flash('Script successfully created.', 'success')
         return redirect(
             url_for(
                 'app_manager.script_view',
                 app_name=kwargs['app'].name,
-                app_script_id=app_script.script.id
+                script_id=script.id
             ),
             303
         )
 
 
-class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, FormView):
+class EditScriptFormView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, FormView):
     """A view for editing scripts."""
 
-    template_path = 'app_script/edit.html'
+    template_path = 'script/edit.html'
     script_maintainer_only = True
-    form_class = EditAppScriptForm
+    form_class = EditScriptForm
     
     def form_valid(self, form, **kwargs):
-        form.save(kwargs['app_script'])
+        form.save(kwargs['script'])
 
         flash('Script successfully edited.', 'success')
         return self.get_script_view_redirect(**kwargs)
 
 
-class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, TemplateView):
+class DeleteScriptView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, TemplateView):
     """A view for deleting scripts."""
 
-    template_path = 'app_script/delete.html'
+    template_path = 'script/delete.html'
     script_maintainer_only = True
 
     def post(self, **kwargs):
-        app_script = kwargs['app_script']
-        app_script.delete_instance()
+        script = kwargs['script']
+        script.delete_instance()
         flash('Script successfully deleted.', 'success')
         return self.get_app_view_redirect(**kwargs)
 
 
-class AddScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, TemplateView):
+class AddScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, TemplateView):
     """A view for adding maintainers to scripts."""
 
-    template_path = 'app_script/add_maintainer.html'
+    template_path = 'script/add_maintainer.html'
     script_maintainer_only = True
 
     def post(self, **kwargs):
@@ -248,7 +202,7 @@ class AddScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScriptMi
             return self.get(**kwargs)
 
         user = user.get()
-        script = kwargs['app_script'].script
+        script = kwargs['script'].script
         
         if script.maintainers.is_maintainer(user):
             flash(f'{user.username} is already a maintainer.', 'error')
@@ -256,7 +210,7 @@ class AddScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScriptMi
                 url_for(
                     'app_manager.add_script_maintainer',
                     app_name=kwargs['app'].name,
-                    app_script_id=script.id,
+                    script_id=script.id,
                 ),
                 303
             )
@@ -267,10 +221,10 @@ class AddScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScriptMi
         return self.get_script_view_redirect(**kwargs)
 
 
-class RemoveScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScriptMixin, TemplateView):
+class RemoveScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, ScriptMixin, TemplateView):
     """A view for removing a maintainer."""
 
-    template_path = 'app_script/remove_maintainer.html'
+    template_path = 'script/remove_maintainer.html'
     maintainer_only = True
 
     def on_request(self, **kwargs):
@@ -286,7 +240,7 @@ class RemoveScriptMaintainerView(AuthenticationRequiredMixin, AppMixin, AppScrip
         return super().on_request(**kwargs)
     
     def post(self, **kwargs):
-        script = kwargs['app_script'].script
+        script = kwargs['script']
 
         if len(script.maintainers.get_maintainers()) == 1:
             flash(f'You cannot remove the last maintainer.', 'error')
