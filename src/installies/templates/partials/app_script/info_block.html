@@ -68,25 +68,6 @@
 	  {% endfor %}
 	</td>
       </tr>
-      <tr>
-	<th class="bold">Score:</th>
-	<td>
-	  {{ app_script.script.votes.score }}
-	  {% if g.is_authed %}
-	  {% if app_script.script.votes.has_user_upvoted(g.user) == False %}
-	  <form action="{{ url_for('app_manager.upvote_script', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Upvote" class="button"></form>
-	  {% else %}
-	  <form action="{{ url_for('app_manager.remove_vote', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Un-Upvote" class="button"></form>
-	  {% endif %}
-	  
-	  {% if app_script.script.votes.has_user_downvoted(g.user) == False %}
-	  <form action="{{ url_for('app_manager.downvote_script', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Downvote" class="button"></form>
-	  {% else %}
-	  <form action="{{ url_for('app_manager.remove_vote', app_name=app.name, app_script_id=app_script.id) }}" method="post" class="inline"><input type="submit" value="Un-Downvote" class="button"></form>
-	  {% endif %}
-	  {% endif %}
-	</td>
-      </tr>
     </table>
   </div>
 </div>

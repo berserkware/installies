@@ -13,7 +13,6 @@ from installies.models.user import User
 from installies.models.app import App
 from installies.models.maintainer import Maintainers
 from installies.models.discussion import AppThread, Thread
-from installies.models.voting import VoteJunction
 from installies.config import database, apps_path
 from installies.lib.url import make_slug
 from installies.lib.random import gen_random_id
@@ -38,7 +37,6 @@ class Script(BaseModel):
     submitter = ForeignKeyField(User, backref='scripts')
     maintainers = ForeignKeyField(Maintainers)
     description = CharField(255)
-    votes = ForeignKeyField(VoteJunction)
 
     filepath = CharField(255)
     shell = CharField(255)
@@ -99,8 +97,6 @@ class Script(BaseModel):
         """
         filepath = cls.create_script_file(apps_path, content)
 
-        votes = VoteJunction.create()
-
         maintainers = Maintainers.create()
         
         created_script = super().create(
@@ -108,7 +104,6 @@ class Script(BaseModel):
             submitter=submitter,
             filepath=filepath,
             description=description,
-            votes=votes,
             shell=shell,
         )
 
@@ -168,7 +163,6 @@ class Script(BaseModel):
         
         data['submitter'] = self.submitter.username
         data['description'] = self.description
-        data['score'] = self.votes.score
 
         return data
 

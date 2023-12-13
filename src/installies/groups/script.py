@@ -51,7 +51,7 @@ class ScriptGroup(Group):
             )
 
         # sorts the query
-        sort_by = params.get('sort-by', 'score')
+        sort_by = params.get('sort-by', 'last_modified')
         order_by = params.get('order-by', 'desc')
 
         # the field to sort the object by
@@ -67,19 +67,14 @@ class ScriptGroup(Group):
                 sort_by_field = cls.model.creation_date
             case 'submitter':
                 sort_by_field = cls.model.submitter
-            case 'score':
-                sort_by_field = VoteJunction.score
-
-        if sort_by == 'score':
-            query = query.join(VoteJunction)
+            case _:
+                sort_by_field = cls.model.last_modified
 
         # orders and sorts the query
         if order_by == 'desc':
             query = query.order_by(sort_by_field.desc())
         else:
             query = query.order_by(sort_by_field)
-
-        query = query.switch(cls.model)
 
         # gets the scripts by supported distro
         query = BySupportedDistro().modify(query, params)

@@ -48,7 +48,7 @@ class AppGroup(Group):
 
 
         # sorts the query
-        sort_by = params.get('sort-by', 'score')
+        sort_by = params.get('sort-by', 'name')
         order_by = params.get('order-by', 'asc')
 
         # the field to sort the object by
@@ -66,6 +66,8 @@ class AppGroup(Group):
                 sort_by_field = cls.model.last_modified
             case 'submiter':
                 sort_by_field = cls.model.submitter
+            case _:
+                sort_by_field = cls.model.name
 
         # orders and sorts the query
         if order_by == 'desc':

@@ -9,7 +9,6 @@
       {% if show_script_app %}
       <th>App</th>
       {% endif %}
-      <th>Score</th>
       <th>Actions</th>
       <th>Shell</th>
       <th>Description</th>
@@ -28,7 +27,6 @@
       {% if show_script_app %}
       <td><a href="{{ url_for('app_manager.app_view', app_name=script.app_data.get().app.name) }}">{{ script.app_data.get().app.name }}</a></td>
       {% endif %}
-      <td>{{ script.votes.score }}</td>
       <td>{{ ", ".join(script.app_data.get().get_supported_actions()) }}</td>
       <td>{{ script.shell }}</td>
       <td>{{ script.description }}</td>
